@@ -73,7 +73,7 @@
 - [Overview & Research Motivation](#-overview--research-motivation)
 - [System Architecture](#-system-architecture)
 - [End-to-End Clinical RAG Pipeline](#-end-to-end-clinical-rag-pipeline)
-- [100% Out-of-Domain Refusal Benchmark](#-100-out-of-domain-refusal-benchmark)
+- [Domain Refusal Benchmark](#-100-out-of-domain-refusal-benchmark)
 - [Structured Evidence Extraction (PICO Format)](#-structured-evidence-extraction-pico-format)
 - [FastAPI REST API Documentation](#-fastapi-rest-api-documentation)
 - [Interactive Web Dashboard](#-interactive-web-dashboard)
