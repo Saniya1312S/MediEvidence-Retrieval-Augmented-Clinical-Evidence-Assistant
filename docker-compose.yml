@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  # ═══════════════════════════════════════════════════════
+  # Qdrant — High-Performance Vector Database
+  # ═══════════════════════════════════════════════════════
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: medievidence-qdrant
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - ./data/qdrant_storage:/qdrant/storage
+    restart: unless-stopped
+
+  # ═══════════════════════════════════════════════════════
+  # MediEvidence FastAPI Service
+  # ═══════════════════════════════════════════════════════
+  api:
+    build: .
+    container_name: medievidence-api
+    ports:
+      - "8000:8000"
+    environment:
+      - QDRANT_URL=http://qdrant:6333
+      - OLLAMA_URL=http://host.docker.internal:11434
+    depends_on:
+      - qdrant
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
+
+  # ═══════════════════════════════════════════════════════
+  # n8n — Clinical Document Automation
+  # ═══════════════════════════════════════════════════════
+  n8n:
+    image: docker.n8n.io/n8nio/n8n:latest
+    container_name: medievidence-n8n
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_BASIC_AUTH_ACTIVE=false
+      - QDRANT_URL=http://qdrant:6333
+      - OLLAMA_HOST=http://host.docker.internal:11434
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ./data/n8n_data:/home/node/.n8n
+      - ./scripts:/scripts
+    depends_on:
+      - qdrant
+    restart: unless-stopped

@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediEvidence — Retrieval-Augmented Clinical Evidence Assistant</title>
+    <meta name="description" content="MediEvidence: A domain-specific AI assistant to query medical research papers & generate cited answers using an end-to-end RAG pipeline with LLMs, embeddings, Qdrant, and TF-IDF evidence extraction.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Animated background particles -->
+    <canvas id="particleCanvas"></canvas>
+
+    <!-- Hero Section -->
+    <header class="hero" id="hero">
+        <div class="hero-glow"></div>
+        <nav class="navbar">
+            <div class="nav-brand">
+                <span class="nav-icon">🧬</span>
+                <span class="nav-title">MediEvidence</span>
+            </div>
+            <div class="nav-links">
+                <a href="#pipeline">Pipeline</a>
+                <a href="#architecture">Architecture</a>
+                <a href="#components">Components</a>
+                <a href="#config">Config</a>
+                <a href="#demo">Demo</a>
+            </div>
+        </nav>
+        <div class="hero-content">
+            <div class="hero-badge">
+                <span class="badge-dot"></span>
+                AI-Powered Medical Research
+            </div>
+            <h1 class="hero-title">
+                MediEvidence<br>
+                <span class="gradient-text">Clinical Evidence Assistant</span>
+            </h1>
+            <p class="hero-subtitle">
+                A Retrieval-Augmented Generation pipeline that ingests medical PDFs, 
+                builds hybrid search indexes, reranks with cross-encoders, and generates 
+                grounded clinical answers with citations and confidence scores.
+            </p>
+            <div class="hero-stats">
+                <div class="stat-card">
+                    <span class="stat-number" data-target="636">0</span>
+                    <span class="stat-label">Chunks Processed</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" data-target="384">0</span>
+                    <span class="stat-label">Embedding Dims</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" data-target="3">0</span>
+                    <span class="stat-label">AI Models</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-number" data-target="8">0</span>
+                    <span class="stat-label">Evidence Fields</span>
+                </div>
+            </div>
+            <div class="hero-cta">
+                <a href="#pipeline" class="btn-primary">Explore Pipeline</a>
+                <a href="#demo" class="btn-secondary">Try Demo</a>
+            </div>
+        </div>
+        <div class="scroll-indicator">
+            <div class="scroll-arrow"></div>
+        </div>
+    </header>
+
+    <!-- Pipeline Section -->
+    <section class="section pipeline-section" id="pipeline">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">How It Works</span>
+                <h2>The RAG Pipeline</h2>
+                <p>From PDF ingestion to grounded clinical answers — every step of the journey.</p>
+            </div>
+            <div class="pipeline-flow">
+                <div class="pipeline-step" data-step="1">
+                    <div class="step-icon">📄</div>
+                    <div class="step-content">
+                        <h3>PDF Upload</h3>
+                        <p>Upload multiple medical research PDFs for processing</p>
+                    </div>
+                    <div class="step-connector"></div>
+                </div>
+                <div class="pipeline-step" data-step="2">
+                    <div class="step-icon">📝</div>
+                    <div class="step-content">
+                        <h3>Text Extraction</h3>
+                        <p>PyMuPDF extracts text page-by-page with metadata</p>
+                    </div>
+                    <div class="step-connector"></div>
+                </div>
+                <div class="pipeline-step" data-step="3">
+                    <div class="step-icon">✂️</div>
+                    <div class="step-content">
+                        <h3>Heading-Aware Chunking</h3>
+                        <p>Intelligent splitting preserving section boundaries (800 chars, 100 overlap)</p>
+                    </div>
+                    <div class="step-connector"></div>
+                </div>
+                <div class="pipeline-step" data-step="4">
+                    <div class="step-icon">🔢</div>
+                    <div class="step-content">
+                        <h3>Embedding Generation</h3>
+                        <p>BAAI/bge-small-en-v1.5 creates 384-dim dense vectors</p>
+                    </div>
+                    <div class="step-connector"></div>
+                </div>
+                <div class="pipeline-step" data-step="5">
+                    <div class="step-icon">📊</div>
+                    <div class="step-content">
+                        <h3>Dual Index Building</h3>
+                        <p>FAISS (L2 distance) + BM25Okapi for hybrid search</p>
+                    </div>
+                    <div class="step-connector"></div>
+                </div>
+                <div class="pipeline-step" data-step="6">
+                    <div class="step-icon">🔍</div>
+                    <div class="step-content">
+                        <h3>Hybrid Retrieval</h3>
+                        <p>Combines semantic (FAISS) and lexical (BM25) matches</p>
+                    </div>
+                    <div class="step-connector"></div>
+                </div>
+                <div class="pipeline-step" data-step="7">
+                    <div class="step-icon">🏆</div>
+                    <div class="step-content">
+                        <h3>Cross-Encoder Reranking</h3>
+                        <p>ms-marco-MiniLM-L-6-v2 reorders by relevance (threshold: 0.6)</p>
+                    </div>
+                    <div class="step-connector"></div>
+                </div>
+                <div class="pipeline-step" data-step="8">
+                    <div class="step-icon">🤖</div>
+                    <div class="step-content">
+                        <h3>LLM Generation</h3>
+                        <p>Flan-T5-Large generates grounded answers with guardrails</p>
+                    </div>
+                    <div class="step-connector"></div>
+                </div>
+                <div class="pipeline-step final" data-step="9">
+                    <div class="step-icon">📋</div>
+                    <div class="step-content">
+                        <h3>Output</h3>
+                        <p>Answer + Citations + Confidence Score + Structured Evidence</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Architecture Section -->
+    <section class="section architecture-section" id="architecture">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">System Design</span>
+                <h2>Architecture Overview</h2>
+                <p>The dual-path retrieval architecture combining dense and sparse representations.</p>
+            </div>
+            <div class="arch-diagram">
+                <div class="arch-layer ingestion-layer">
+                    <h4 class="layer-title">Ingestion Layer</h4>
+                    <div class="arch-nodes">
+                        <div class="arch-node" id="node-pdf">
+                            <span class="node-emoji">📄</span>
+                            <span>PDF Files</span>
+                        </div>
+                        <div class="arch-arrow">→</div>
+                        <div class="arch-node" id="node-pymupdf">
+                            <span class="node-emoji">📝</span>
+                            <span>PyMuPDF</span>
+                        </div>
+                        <div class="arch-arrow">→</div>
+                        <div class="arch-node" id="node-chunker">
+                            <span class="node-emoji">✂️</span>
+                            <span>Chunker</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="arch-divider"></div>
+
+                <div class="arch-layer index-layer">
+                    <h4 class="layer-title">Index Layer</h4>
+                    <div class="arch-nodes dual">
+                        <div class="arch-branch">
+                            <div class="arch-node dense">
+                                <span class="node-emoji">🔢</span>
+                                <span>BGE Embeddings</span>
+                            </div>
+                            <div class="arch-arrow-down">↓</div>
+                            <div class="arch-node dense">
+                                <span class="node-emoji">📊</span>
+                                <span>FAISS Index</span>
+                            </div>
+                        </div>
+                        <div class="arch-branch">
+                            <div class="arch-node sparse">
+                                <span class="node-emoji">📝</span>
+                                <span>Tokenization</span>
+                            </div>
+                            <div class="arch-arrow-down">↓</div>
+                            <div class="arch-node sparse">
+                                <span class="node-emoji">📊</span>
+                                <span>BM25 Index</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="arch-divider"></div>
+
+                <div class="arch-layer retrieval-layer">
+                    <h4 class="layer-title">Retrieval & Generation</h4>
+                    <div class="arch-nodes">
+                        <div class="arch-node">
+                            <span class="node-emoji">🔍</span>
+                            <span>Hybrid Merge</span>
+                        </div>
+                        <div class="arch-arrow">→</div>
+                        <div class="arch-node">
+                            <span class="node-emoji">🏆</span>
+                            <span>Reranker</span>
+                        </div>
+                        <div class="arch-arrow">→</div>
+                        <div class="arch-node">
+                            <span class="node-emoji">🛡️</span>
+                            <span>Guardrails</span>
+                        </div>
+                        <div class="arch-arrow">→</div>
+                        <div class="arch-node highlight">
+                            <span class="node-emoji">🤖</span>
+                            <span>Flan-T5</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Components Section -->
+    <section class="section components-section" id="components">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Deep Dive</span>
+                <h2>Core Components</h2>
+                <p>Every module in the RAG pipeline, explained.</p>
+            </div>
+            <div class="components-grid">
+                <div class="component-card" data-aos="fade-up">
+                    <div class="card-glow"></div>
+                    <div class="card-icon">📄</div>
+                    <h3>PDF Ingestion</h3>
+                    <p>Uses PyMuPDF (fitz) to extract text page-by-page, along with document metadata like title, doc_id, and page numbers.</p>
+                    <div class="card-tech">
+                        <span class="tech-tag">PyMuPDF</span>
+                        <span class="tech-tag">fitz</span>
+                    </div>
+                </div>
+
+                <div class="component-card" data-aos="fade-up">
+                    <div class="card-glow"></div>
+                    <div class="card-icon">✂️</div>
+                    <h3>Heading-Aware Chunking</h3>
+                    <p>Two-stage approach: first segments by detected headings (ABSTRACT, METHODS, etc.), then applies fixed-size chunking within each section.</p>
+                    <div class="card-tech">
+                        <span class="tech-tag">800 chars</span>
+                        <span class="tech-tag">100 overlap</span>
+                        <span class="tech-tag">Regex</span>
+                    </div>
+                </div>
+
+                <div class="component-card" data-aos="fade-up">
+                    <div class="card-glow"></div>
+                    <div class="card-icon">🔢</div>
+                    <h3>Dense Embeddings</h3>
+                    <p>BAAI/bge-small-en-v1.5 generates 384-dimensional dense vector representations for semantic similarity search.</p>
+                    <div class="card-tech">
+                        <span class="tech-tag">BGE</span>
+                        <span class="tech-tag">384-dim</span>
+                        <span class="tech-tag">SentenceTransformers</span>
+                    </div>
+                </div>
+
+                <div class="component-card" data-aos="fade-up">
+                    <div class="card-glow"></div>
+                    <div class="card-icon">📊</div>
+                    <h3>FAISS + BM25 Indexes</h3>
+                    <p>Dual indexing strategy — FAISS IndexFlatL2 for semantic search and BM25Okapi for keyword-based retrieval.</p>
+                    <div class="card-tech">
+                        <span class="tech-tag">FAISS</span>
+                        <span class="tech-tag">L2 Distance</span>
+                        <span class="tech-tag">BM25Okapi</span>
+                    </div>
+                </div>
+
+                <div class="component-card" data-aos="fade-up">
+                    <div class="card-glow"></div>
+                    <div class="card-icon">🏆</div>
+                    <h3>Cross-Encoder Reranking</h3>
+                    <p>ms-marco-MiniLM-L-6-v2 scores query-chunk pairs for fine-grained relevance, filtering below 0.6 threshold.</p>
+                    <div class="card-tech">
+                        <span class="tech-tag">Cross-Encoder</span>
+                        <span class="tech-tag">MiniLM</span>
+                        <span class="tech-tag">Threshold 0.6</span>
+                    </div>
+                </div>
+
+                <div class="component-card" data-aos="fade-up">
+                    <div class="card-glow"></div>
+                    <div class="card-icon">🤖</div>
+                    <h3>LLM Generation</h3>
+                    <p>Google's Flan-T5-Large (Seq2Seq) with 4-bit quantization generates grounded answers constrained to retrieved context.</p>
+                    <div class="card-tech">
+                        <span class="tech-tag">Flan-T5</span>
+                        <span class="tech-tag">4-bit</span>
+                        <span class="tech-tag">Beam Search</span>
+                    </div>
+                </div>
+
+                <div class="component-card" data-aos="fade-up">
+                    <div class="card-glow"></div>
+                    <div class="card-icon">🛡️</div>
+                    <h3>Guardrails</h3>
+                    <p>Multi-layer safety: reranker score filtering, LLM output checking for "insufficient evidence", and minimum confidence thresholds.</p>
+                    <div class="card-tech">
+                        <span class="tech-tag">Score ≥ 0.6</span>
+                        <span class="tech-tag">Confidence ≥ 0.5</span>
+                    </div>
+                </div>
+
+                <div class="component-card" data-aos="fade-up">
+                    <div class="card-glow"></div>
+                    <div class="card-icon">🔬</div>
+                    <h3>Structured Evidence</h3>
+                    <p>LLM extracts PICO-style evidence: StudyType, SampleSize, Population, Intervention, Comparator, Outcome, KeyResult, Limitations.</p>
+                    <div class="card-tech">
+                        <span class="tech-tag">8 Fields</span>
+                        <span class="tech-tag">JSON</span>
+                        <span class="tech-tag">PICO</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Configuration Section -->
+    <section class="section config-section" id="config">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Settings</span>
+                <h2>Configuration</h2>
+                <p>Fine-tuned parameters powering the pipeline.</p>
+            </div>
+            <div class="config-grid">
+                <div class="config-panel">
+                    <h3>🧠 Models</h3>
+                    <div class="config-items">
+                        <div class="config-item">
+                            <span class="config-key">Embedding</span>
+                            <span class="config-value">BAAI/bge-small-en-v1.5</span>
+                        </div>
+                        <div class="config-item">
+                            <span class="config-key">Reranker</span>
+                            <span class="config-value">cross-encoder/ms-marco-MiniLM-L-6-v2</span>
+                        </div>
+                        <div class="config-item">
+                            <span class="config-key">LLM</span>
+                            <span class="config-value">google/flan-t5-large</span>
+                        </div>
+                        <div class="config-item">
+                            <span class="config-key">Quantization</span>
+                            <span class="config-value">4-bit NF4</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="config-panel">
+                    <h3>⚙️ Parameters</h3>
+                    <div class="config-items">
+                        <div class="config-item">
+                            <span class="config-key">Chunk Size</span>
+                            <span class="config-value">800 chars</span>
+                        </div>
+                        <div class="config-item">
+                            <span class="config-key">Chunk Overlap</span>
+                            <span class="config-value">100 chars</span>
+                        </div>
+                        <div class="config-item">
+                            <span class="config-key">Reranker Threshold</span>
+                            <span class="config-value">0.6</span>
+                        </div>
+                        <div class="config-item">
+                            <span class="config-key">Min Confidence</span>
+                            <span class="config-value">0.5</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="config-panel">
+                    <h3>📈 Generation</h3>
+                    <div class="config-items">
+                        <div class="config-item">
+                            <span class="config-key">Max New Tokens</span>
+                            <span class="config-value">256</span>
+                        </div>
+                        <div class="config-item">
+                            <span class="config-key">Num Beams</span>
+                            <span class="config-value">5</span>
+                        </div>
+                        <div class="config-item">
+                            <span class="config-key">No Repeat N-gram</span>
+                            <span class="config-value">2</span>
+                        </div>
+                        <div class="config-item">
+                            <span class="config-key">Embedding Dim</span>
+                            <span class="config-value">384</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Demo Section -->
+    <section class="section demo-section" id="demo">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Interactive</span>
+                <h2>Try the Pipeline</h2>
+                <p>Simulated demo of the RAG pipeline in action.</p>
+            </div>
+            <div class="demo-container">
+                <div class="demo-input-area">
+                    <div class="demo-label">Ask a clinical question</div>
+                    <textarea id="demoQuery" placeholder="e.g., What are the effects of immunotherapy on tumor response rates?"></textarea>
+                    <button id="demoBtn" class="btn-primary">
+                        <span class="btn-icon">🔍</span>
+                        Run RAG Pipeline
+                    </button>
+                </div>
+                <div class="demo-output" id="demoOutput">
+                    <div class="demo-placeholder">
+                        <span class="placeholder-icon">💡</span>
+                        <p>Enter a question above and click "Run RAG Pipeline" to see the simulated output.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Evaluation Section -->
+    <section class="section eval-section" id="evaluation">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Metrics</span>
+                <h2>Evaluation</h2>
+                <p>Retrieval performance measured with synthetic QA pairs.</p>
+            </div>
+            <div class="eval-grid">
+                <div class="eval-card">
+                    <h3>Precision@K</h3>
+                    <div class="metric-bars">
+                        <div class="metric-row">
+                            <span class="metric-label">@1</span>
+                            <div class="metric-bar-bg"><div class="metric-bar-fill" data-width="60"></div></div>
+                            <span class="metric-val">0.60</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">@3</span>
+                            <div class="metric-bar-bg"><div class="metric-bar-fill" data-width="73"></div></div>
+                            <span class="metric-val">0.73</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">@5</span>
+                            <div class="metric-bar-bg"><div class="metric-bar-fill" data-width="80"></div></div>
+                            <span class="metric-val">0.80</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">@10</span>
+                            <div class="metric-bar-bg"><div class="metric-bar-fill" data-width="90"></div></div>
+                            <span class="metric-val">0.90</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="eval-card">
+                    <h3>Recall@K</h3>
+                    <div class="metric-bars">
+                        <div class="metric-row">
+                            <span class="metric-label">@1</span>
+                            <div class="metric-bar-bg"><div class="metric-bar-fill recall" data-width="60"></div></div>
+                            <span class="metric-val">0.60</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">@3</span>
+                            <div class="metric-bar-bg"><div class="metric-bar-fill recall" data-width="73"></div></div>
+                            <span class="metric-val">0.73</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">@5</span>
+                            <div class="metric-bar-bg"><div class="metric-bar-fill recall" data-width="80"></div></div>
+                            <span class="metric-val">0.80</span>
+                        </div>
+                        <div class="metric-row">
+                            <span class="metric-label">@10</span>
+                            <div class="metric-bar-bg"><div class="metric-bar-fill recall" data-width="90"></div></div>
+                            <span class="metric-val">0.90</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="eval-card eval-summary">
+                    <h3>Evaluation Summary</h3>
+                    <div class="eval-stat">
+                        <span class="eval-number">5</span>
+                        <span class="eval-desc">Synthetic QA Pairs</span>
+                    </div>
+                    <div class="eval-stat">
+                        <span class="eval-number">636</span>
+                        <span class="eval-desc">Total Chunks Indexed</span>
+                    </div>
+                    <div class="eval-stat">
+                        <span class="eval-number">4</span>
+                        <span class="eval-desc">K Values Tested</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Evidence Structure Section -->
+    <section class="section evidence-section" id="evidence">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Extraction</span>
+                <h2>Structured Evidence</h2>
+                <p>PICO-style structured extraction from clinical contexts.</p>
+            </div>
+            <div class="evidence-table-wrapper">
+                <table class="evidence-table">
+                    <thead>
+                        <tr>
+                            <th>Field</th>
+                            <th>Description</th>
+                            <th>Example</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="field-badge">StudyType</span></td>
+                            <td>Research methodology used</td>
+                            <td>Randomized Controlled Trial</td>
+                        </tr>
+                        <tr>
+                            <td><span class="field-badge">SampleSize</span></td>
+                            <td>Number of participants/samples</td>
+                            <td>120 patients</td>
+                        </tr>
+                        <tr>
+                            <td><span class="field-badge">Population</span></td>
+                            <td>Participant characteristics</td>
+                            <td>Adults with Type 2 Diabetes</td>
+                        </tr>
+                        <tr>
+                            <td><span class="field-badge">Intervention</span></td>
+                            <td>Treatment or exposure applied</td>
+                            <td>Drug X at 10mg/kg</td>
+                        </tr>
+                        <tr>
+                            <td><span class="field-badge">Comparator</span></td>
+                            <td>Control or alternative</td>
+                            <td>Placebo</td>
+                        </tr>
+                        <tr>
+                            <td><span class="field-badge">Outcome</span></td>
+                            <td>Primary outcome measured</td>
+                            <td>Reduction in HbA1c</td>
+                        </tr>
+                        <tr>
+                            <td><span class="field-badge">KeyResult</span></td>
+                            <td>Main quantitative findings</td>
+                            <td>HbA1c reduced by 1.5% (p&lt;0.01)</td>
+                        </tr>
+                        <tr>
+                            <td><span class="field-badge">Limitations</span></td>
+                            <td>Acknowledged study limits</td>
+                            <td>Small sample size, short follow-up</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <span class="nav-icon">🧬</span>
+                    <span>MediEvidence – Retrieval-Augmented Clinical Evidence Assistant</span>
+                </div>
+                <div class="footer-tech">
+                    Python · FastAPI · Qdrant · Ollama (nomic-embed-text) · Cross-Encoder · PyMuPDF · TF-IDF
+                </div>
+                <div class="footer-note">
+                    100% Out-of-Domain Refusal Accuracy · Zero Hallucination Guardrails
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
