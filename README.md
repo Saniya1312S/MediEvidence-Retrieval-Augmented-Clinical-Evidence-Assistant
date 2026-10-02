@@ -208,7 +208,7 @@ flowchart TD
 
 ---
 
-## 🛡️ 100% Out-of-Domain Refusal Benchmark
+## 🛡️  Domain Refusal Benchmark
 
 In clinical and safety-critical domains, an AI assistant **must refuse to answer questions not substantiated by the uploaded evidence**. MediEvidence implements automated refusal verification (`GET /api/benchmark/refusal` and `scripts/eval_rag.py`):
 
