@@ -60,12 +60,7 @@
 > 🌐 **Live Web Demo**: [https://Saniya1312S.github.io/MediEvidence-Retrieval-Augmented-Clinical-Evidence-Assistant/](https://Saniya1312S.github.io/MediEvidence-Retrieval-Augmented-Clinical-Evidence-Assistant/)  
 > Anyone can launch and interact with the full dashboard directly in their browser with zero setup!
 
-### 1. Interactive Dashboard Hero & Real-Time Metrics
-*Real-time counter metrics, dynamic particle canvas, and clinical assistant hero.*
 
-<div align="center">
-  <img src="screenshots/dashboard_hero.png" width="920" alt="MediEvidence Dashboard Hero"/>
-</div>
 
 
 ---
