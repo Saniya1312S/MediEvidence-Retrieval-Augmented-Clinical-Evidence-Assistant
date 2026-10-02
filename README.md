@@ -67,32 +67,6 @@
   <img src="screenshots/dashboard_hero.png" width="920" alt="MediEvidence Dashboard Hero"/>
 </div>
 
-### 2. Dual-Path Retrieval & Clinical Architecture
-*Multi-layer overview illustrating document ingestion, dual indexing (Dense FAISS/Qdrant + Sparse BM25/TF-IDF), cross-encoder reranking, and grounded LLM output.*
-
-<div align="center">
-  <img src="screenshots/architecture_diagram.png" width="920" alt="MediEvidence Architecture"/>
-</div>
-
-### 3. End-to-End Pipeline & Component Breakdown
-*Sentence-aware chunking, 768-dim vector embeddings, hybrid retrieval, and strict citation formatting.*
-
-<div align="center">
-  <img src="screenshots/pipeline_overview.png" width="920" alt="MediEvidence Pipeline Overview"/>
-</div>
-
-<br/>
-
-<div align="center">
-  <img src="screenshots/components_detail.png" width="920" alt="MediEvidence Components"/>
-</div>
-
-### 4. Interactive Clinical Query Simulator & Out-of-Domain Refusal Guardrail
-*Test domain-specific clinical queries with inline `[page X]` citations, view confidence scoring meters, or test out-of-domain queries to observe immediate refusal.*
-
-<div align="center">
-  <img src="screenshots/interactive_demo.png" width="920" alt="MediEvidence Interactive Demo"/>
-</div>
 
 ---
 
