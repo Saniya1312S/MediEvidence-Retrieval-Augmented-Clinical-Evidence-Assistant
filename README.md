@@ -20,7 +20,7 @@
 
 <br/><br/>
 
-<a href="https://Saniya1312S.github.io/MediEvidence/" target="_blank">
+<a href="https://Saniya1312S.github.io/MediEvidence-Retrieval-Augmented-Clinical-Evidence-Assistant/" target="_blank">
   <img src="https://img.shields.io/badge/🌐_LIVE_SITE-Open_Interactive_Dashboard-6366f1?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Live Site"/>
 </a>
 
@@ -30,7 +30,7 @@
 
 <br/>
 
-[🌐 Live Site Demo](https://Saniya1312S.github.io/MediEvidence/) · [📸 Dashboard Screenshots](#-live-dashboard--visual-showcase) · [🚀 Quick Start](#-quick-start) · [🏗️ Architecture](#-system-architecture) · [📊 Pipeline](#-end-to-end-clinical-rag-pipeline) · [🛡️ Refusal Benchmark](#-100-out-of-domain-refusal-benchmark) · [📡 API Reference](#-fastapi-rest-api-documentation)
+[🌐 Live Site Demo](https://Saniya1312S.github.io/MediEvidence-Retrieval-Augmented-Clinical-Evidence-Assistant/) · [📸 Dashboard Screenshots](#-live-dashboard--visual-showcase) · [🚀 Quick Start](#-quick-start) · [🏗️ Architecture](#-system-architecture) · [📊 Pipeline](#-end-to-end-clinical-rag-pipeline) · [🛡️ Refusal Benchmark](#-100-out-of-domain-refusal-benchmark) · [📡 API Reference](#-fastapi-rest-api-documentation)
 
 </div>
 
@@ -49,7 +49,7 @@
 
 ## 📸 Live Dashboard & Visual Showcase
 
-> 🌐 **Live Web Demo**: [https://Saniya1312S.github.io/MediEvidence/](https://Saniya1312S.github.io/MediEvidence/)  
+> 🌐 **Live Web Demo**: [https://Saniya1312S.github.io/MediEvidence-Retrieval-Augmented-Clinical-Evidence-Assistant/](https://Saniya1312S.github.io/MediEvidence-Retrieval-Augmented-Clinical-Evidence-Assistant/)  
 > Anyone can launch and interact with the full dashboard directly in their browser with zero setup!
 
 ### 1. Interactive Dashboard Hero & Real-Time Metrics
