@@ -34,7 +34,15 @@
 
 </div>
 
----
+## 🖥️ Live Dashboard
+
+<div align="center">
+  <a href="https://saniya1312s.github.io/MediEvidence-Retrieval-Augmented-Clinical-Evidence-Assistant/" target="_blank">
+    <img src="dashboard_live.png" width="920" alt="MediEvidence Live Dashboard"/>
+  </a>
+  <br/>
+  <sub>👉 <b><a href="https://saniya1312s.github.io/MediEvidence-Retrieval-Augmented-Clinical-Evidence-Assistant/">Click here or the image above to launch the live site</a></b></sub>
+</div>
 
 ## 📌 Executive Summary
 
