@@ -1,0 +1,1917 @@
+--- PAGE 1 [pdf_text] ---
+Published in Transactions on Machine Learning Research (10/2026)
+Retrieval-Augmented Correction for Generalist Medical
+Image Segmentation
+Vincenzo Marcianò
+vincenzo.marciano@eurecom.fr
+EURECOM
+Sorbonne Université
+King’s College London
+Xiaoming Zhang
+xiaoming.zhang@eurecom.fr
+EURECOM
+Sorbonne Université
+Michela Antonelli
+michela.antonelli@kcl.ac.uk
+King’s College London
+Sébastien Ourselin
+sebastien.ourselin@kcl.ac.uk
+King’s College London
+Maria A. Zuluaga
+maria.zuluaga@eurecom.fr
+EURECOM
+King’s College London
+Reviewed on OpenReview: https: // openreview. net/ forum? id= PeDqE0SQRe
+Abstract
+Automated segmentation is routinely used as the first step in quantitative image-based
+clinical workflows, where predicted masks are subsequently reviewed and corrected by human
+operators.
+Automated correction of the residual structural errors is currently addressed
+one anatomy at a time, so the number of trained correctors scales with the number of
+segmentation targets.
+We present GRACE, a retrieval-augmented refiner that edits an
+input mask under context drawn from a shared knowledge base of verified prior cases.
+The refiner is trained once on a multi-organ corpus spanning compact organs, cavities,
+branching vessels, and tumour lesions. In the held-out dataset-transfer evaluation, three
+held-out datasets query a fixed knowledge base built from training data only. A separate
+leave-one-anatomy-out experiment tests parameter-free index extension: verified cases of
+an unseen solid organ enter the knowledge base, and the refiner stays frozen. A shapeaware retrieval projector ranks the neighbours. This light projection head sits on a frozen
+multimodal encoder and maps embedding similarity to the shape agreement of the masks.
+Thus, the knowledge base returns cases that the refiner can use as a shape prior. We evaluate
+GRACE on 18 public datasets spanning CT, MRI and ultrasound, including three held-out
+CT/MRI datasets for held-out dataset transfer, using nine refinement configurations and
+seven upstream segmentors that span weak, mid, and strong operating regimes. We report
+each change with the DSC of its input mask. On the weak tier, the input DSC is 0.386 and
+GRACE adds up to +0.35 DSC. On a strong segmentor, the input DSC is 0.932 and the
+mean change is small. Transfer to an imaging modality that is absent from training and
+from the index is partial and depends on the anatomy. We present it as an open research
+direction.
+Our results suggest retrieval-conditioned refinement is a practical alternative
+to anatomy-specific correction models. Open-source code and implementation available at
+https://github.com/robustml-eurecom/grace.
+1
+arXiv:2611.23189v1 [cs.CV] 17 Nov 2026
+
+--- PAGE 2 [pdf_text] ---
+Published in Transactions on Machine Learning Research (10/2026)
+1
+Introduction
+Medical image segmentation has advanced rapidly with deep learning (Isensee et al., 2021; Hatamizadeh
+et al., 2022; Ma et al., 2024), becoming the de facto approach for extracting anatomical structures in clinical
+workflows. Although widely adopted, state-of-the-art models remain prone to structural errors and artifacts
+that require costly manual correction before clinical use (Azad et al., 2023; Galati et al., 2022). These artifacts
+typically manifest as over-segmentation, under-segmentation, boundary imprecision, or topological violations.
+Challenging cases involve ambiguous boundaries, small structures, or out-of-distribution pathologies that
+deviate from the expected normative anatomy (Galati et al., 2022).
+Despite these advances in segmentation accuracy, automated correction of segmentation errors remains an
+open problem. Unlike segmentation, which predicts pixel-wise labels from image intensities, correction requires reasoning about anatomical plausibility and restoring coherent structures from imperfect predictions.
+Despite growing interest in automated segmentation quality control and refinement (Valindria et al., 2017;
+Robinson et al., 2018; Audelan & Delingette, 2019; Liu et al., 2019; Robinson et al., 2019; Larrazabal et al.,
+2020; Painchaud et al., 2020; Wang et al., 2020; Fournel et al., 2021; Lin et al., 2023; Qiu et al., 2023;
+Marcianò et al., 2026), the field currently lacks generalisable, fully-automated solutions.
+Existing approaches largely fall into two restrictive paradigms. On the one hand, single-anatomy specialists (Larrazabal et al., 2020; Wang et al., 2020; Painchaud et al., 2020) learn to encode anatomical shape
+priors, which are then used to validate and improve anatomically implausible segmentations. However, while
+effective, these approaches require training a dedicated model from scratch for each new organ or imaging
+modality. Another set of techniques interprets refinement as a signal restoration problem, where given a
+corrupted mask, the goal is to recover the anatomically plausible structure (Yuan et al., 2020; Terris et al.,
+2026). While such models demonstrate strong capabilities in generic signal restoration, they do not explicitly
+incorporate structured anatomical priors, which are critical for correcting geometric segmentation errors.
+We argue that medical segmentation refinement can be naturally formulated as a Retrieval-Augmented Generation (RAG) problem (Lewis et al., 2020). Given a corrupted segmentation, a model retrieves anatomically
+similar cases from a knowledge base and conditions the refinement process on this retrieved context. In this
+way, anatomy-specific information is provided at inference time rather than being encoded into the model
+parameters, enabling a single refiner to operate across organs and imaging modalities represented in the
+knowledge base. Although retrieval has become a powerful paradigm for knowledge-intensive learning, its
+potential for anatomy-agnostic segmentation refinement remains largely unexplored. To this end, we present
+GRACE (Generalist Retrieval-Augmented Correction for Segmentation Errors) as a retrieval-conditioned
+segmentation-refinement framework (Fig. 1) that separates anatomy-aware retrieval from the refiner representation. The framework itself does not commit to a particular refinement representation: pixel-space
+and latent-space refiners are treated as interchangeable instantiations of a common retrieval interface. Our
+contributions are, thus, summarised as follows:
+• A retrieval-augmented framework for segmentation refinement whose common interface supports both
+pixel-space and latent-space refiners. The retrieval step supplies anatomy-specific information at inference
+time, allowing a single anatomy-agnostic refiner to generalise across the organs and imaging modalities
+represented in the knowledge base. The framework can use a fixed knowledge base or incorporate verified
+support cases without retraining the refiner.
+• Exemplar-conditioned refinement. The retrieved mask enters the refiner as a spatial channel and gives the
+shape prior for the correction. When we set this channel to zero, the refiner loses 40% of its gain at the
+most severe preset (Sec. 4.5). A shape-aware retrieval projector on a frozen multimodal encoder selects
+the same-class case. Its contribution is smaller, and we report it as a component ablation (Table 5).
+• Three complementary instantiations of the proposed framework spanning deterministic pixel-space refinement, deterministic latent refinement, and latent flow matching. We compare all three across the
+upstream operating regimes and on the trade-off between accuracy and runtime.
+• Extensive validation across 18 public datasets, multiple imaging modalities, seven upstream segmentors,
+and nine refinement configurations, including three held-out datasets for held-out dataset transfer and a
+leave-one-modality-out study. We also analyse retrieval, knowledge-base scaling, robustness to a wrong
+2
+
+--- PAGE 3 [pdf_text] ---
+Published in Transactions on Machine Learning Research (10/2026)
+Image+Mask
+Multimodal
+Encoder
+Textual PromptTextual Prompt-1
+Textual Prompt
+Encoder
+Multimodal
+Encoder
+𝓟
+Decoder
+𝒀
+𝓟
+𝒏
+𝓔
+𝒛
+𝓖
+ 𝒀∗
+Anatomy-aware
+Knowledge Base 𝓚
+Test Subject
+Coarse Segmentation 𝒀∗
+Retrieval 
+from 𝓚
+Latent Refiner
+𝓡
+Top-K
+Similar
+Latents
+Refined Mask
+…
+…
+…
+ModalityModality-1
+𝒏
+Vectorized
+Liver
+Brain
+Lung
+Spleen
+Pancreas
+Prostate
+∗
+(a)
+(c)
+(b)
+…
+…
+ˆ
+Figure 1: Overview of GRACE. (a) The knowledge base stores multimodal embeddings of verified cases
+together with their corresponding masks. (b) At inference, the query (corrupted mask Y ∗and image X)
+is embedded, and the top-k same-class neighbours are retrieved from a FAISS index. The top-1 mask Yr
+is used as an exemplar.
+(c) The refiner produces the corrected mask ˆY ∗from the query and retrieved
+context using either a pixel-space or a latent-space instantiation. Figure elements that depict a compact
+latent representation illustrate the latent variant; the pixel-space variant follows the same retrieval interface
+without an encoder–decoder pair. The multimodal encoder P is frozen, and the projection head ϕψ (Sec. 3.3)
+is not drawn. In (c), z∗=E(Y ∗).
+class query, case-level failure rates and statistical significance, and release the code, pretrained models,
+and knowledge base.
+2
+Related Work
+Segmentation quality control and refinement.
+Segmentation refinement is a distinct problem from
+segmentation itself and has been approached along three main lines. The first is classical, hand-designed
+post-processing that enforces geometric or topological constraints on the raw prediction: morphological operations and connected-component filtering to remove small false-positive blobs or retain the largest anatomically plausible regions (Isensee et al., 2021; Dulau et al., 2023) and topological penalties ensuring continuous
+boundaries (Hu et al., 2019; Li et al., 2025). These methods are fast and interpretable but cannot recover
+structure that was never in the raw prediction, and their handcrafted rules do not transfer across anatomies.
+The second line replaces handcrafted rules with learned anatomical priors, typically encoded through autoencoders, variational autoencoders, or more recently latent diffusion models (Oktay et al., 2018; Larrazabal
+et al., 2020; Wang et al., 2020; Painchaud et al., 2020; Galati & Zuluaga, 2021; Marcianò et al., 2026). These
+methods learn a manifold of anatomically plausible segmentations that guides refinement. However, as the
+manifold is typically learned for a single anatomy, these methods require retraining for each new organ or
+imaging modality. Finally, the third line does not consider a dedicated corrector, approaching the problem
+via test-time adaptation (TTA) (Karani et al., 2021). Instead, the upstream segmentor is briefly refitted on
+each test volume to close a domain gap. TTA improves segmentation performance without producing a corrected mask directly. Therefore, it is complementary to a refiner rather than a substitute for it. GRACE sits
+in the refiner slot, replaces the per-anatomy autoencoder with a single retrieval-conditioned refiner trained
+once on multi-organ data, and preserves the conservative behaviour of morphological post-processing on
+inputs that do not need correction.
+Foundation models in medical imaging.
+Recent foundation and generalist models have broadened
+anatomical coverage through diverse paradigms, including prompt-based segmentation (Ma et al., 2024;
+Wang et al., 2025b; Ma et al., 2025; Wong et al., 2024), large-scale supervised learning (Wasserthal et al.,
+3
+
+--- PAGE 4 [pdf_text] ---
+Published in Transactions on Machine Learning Research (10/2026)
+2023), few-shot segmentation (Butoi et al., 2023), and text-conditioned segmentation (Rokuss et al., 2026).
+While these methods demonstrate broad generalisation across anatomies and modalities, they are designed
+for forward segmentation prediction rather than post-hoc correction and refinement. RAM (Terris et al.,
+2026) extends the foundation-model paradigm to generic inverse imaging problems without task-specific
+training, but operates in pixel space and does not explicitly exploit anatomical context for segmentation
+correction.
+Retrieval-augmented learning in medical imaging.
+Retrieval-augmented learning (Lewis et al., 2020)
+has recently been explored in medical AI for report generation (Xia et al., 2025; Xiong et al., 2024; Hsu
+et al., 2025) and few-shot segmentation from retrieved annotated examples (Ahmed et al., 2026; Zhao et al.,
+2025). In these settings, retrieval provides external knowledge to improve prediction or support inference.
+In contrast, retrieval for direct segmentation refinement has received little attention.
+GRACE retrieves
+anatomically similar cases to provide inference-time context for correcting an existing segmentation.
+Latent-space exploration in medical imaging.
+Compact latent representations have become a standard paradigm for modelling anatomically plausible structures in medical imaging. Early formulations use
+variational autoencoders (VAEs) as shape priors, learning latent manifolds of plausible organ shapes for
+segmentation refinement and shape reconstruction (Painchaud et al., 2020; Larrazabal et al., 2020; Beetz
+et al., 2022). Vector-Quantised VAEs (Razavi et al., 2019) and multi-scale volumetric encoders (Pinaya et al.,
+2022; Fernandez et al., 2024) extended this framework to high-resolution 3D image and mask generation.
+Latent diffusion models (Rombach et al., 2022) and, more recently, rectified flow models (Lipman et al.,
+2023) enable efficient generative sampling directly in these compact latent spaces, making full-volume 3D
+synthesis computationally tractable (Guo et al., 2025; Wang et al., 2025a; Tang et al., 2025). Conditioning strategies have subsequently evolved from partial-noise editing, such as SDEdit (Meng et al., 2022), to
+retrieval-guided generation, where retrieved exemplars provide structural guidance during sampling (Molino
+et al., 2026). GRACE builds on this latter paradigm by performing class-filtered, shape-aware retrieval to
+guide segmentation refinement, and supports deterministic pixel-space, deterministic latent-space, and latent
+flow-based refiners within a unified framework.
+3
+Method
+3.1
+Problem formulation
+Let Y ∗∈{0, 1}D×H×W be a mask produced by an upstream segmentation model on image X, and let Y
+be the (unknown) ground-truth mask. The refinement problem is to produce ˆY ∗≈Y from (Y ∗, X) and a
+knowledge base K of previously verified cases. The framework decomposes this task into three components:
+1. A knowledge base K = {(ei, Yi, Xi, classi)}N
+i=1 that stores each verified case together with a multimodal
+embedding ei that supports semantic retrieval (Sec. 3.2).
+2. A retrieval step that maps the query (Y ∗, X) to a raw multimodal embedding e∗= P(Y ∗, X) and then
+to the indexed representation q∗= ϕψ(e∗), and returns a context set
+c =
+ {er1, . . . , erk}, Yr
+
+,
+where qi = ϕψ(ei) and {r1, . . . , rk} = NNk(q∗; {qi : classi = class∗}) are the top-k cases for the query’s
+target class class∗. In raw-space ablations, ϕψ is replaced by the identity map. Yr is the ground-truth
+mask of the top-ranked retrieved case.
+3. A refiner Rθ that maps the query and the retrieved context to a corrected mask,
+ˆY ∗= Rθ
+ Y ∗, X, Yr, {erj}k
+j=1
+
+.
+(1)
+The retrieval step supplies anatomy-specific information at inference time; Rθ is trained once on multi-organ
+data and is anatomy-agnostic at parameter level. Datasets containing anatomies represented in the training
+corpus can query the fixed knowledge base directly. When verified masks are available, disjoint support
+cases can instead be added to K without retraining Rθ; Sec. 4.4 evaluates this optional parameter-free index
+extension separately from held-out dataset transfer.
+4
+
+--- PAGE 5 [pdf_text] ---
+Published in Transactions on Machine Learning Research (10/2026)
+KB Embedding Space
+Similarity Graph (3-NN, cos >= 0.9)
+Brain Tumour
+Heart
+Liver
+Hippocampus
+Prostate
+Lung
+Pancreas
+Hepatic Vessel
+Spleen
+Colon
+Class-centroid dendrogram
+Figure 2: Semantic topology and latent anatomical hierarchy of the anatomy-aware knowledge
+base K. (Left) Similarity graph: A 3-nearest neighbour connectivity graph where edges denote a cosine
+similarity ≥0.9, illustrating strong intra-class cohesion. (Middle) Embedding space projected on a t-SNE
+vector space. (Right) Semantic hierarchical clustering: A dendrogram of class centroids computed via average
+linkage and cosine distance. The topological structure demonstrates that K intrinsically captures underlying
+anatomical relationships and modality-specific groupings (e.g., abdominal CT and neurological MR clusters).
+3.2
+Anatomy-aware knowledge base
+For each verified case, the binary mask is overlaid as a contour on each corresponding slice of the paired
+scan, aggregated in a 3D volume as suggested in Sellergren et al. (2025), and the composite is paired with a
+structured textual prompt:
+You are an expert radiologist.
+The highlighted region (red contours) represents:
+{class_name}.
+Describe its visual characteristics.
+The composite is processed by a frozen multimodal encoder P. Unless otherwise stated, we use MedGemma
+4B (Sellergren et al., 2025) to obtain raw embeddings ei ∈R2560. The main pipeline maps these embeddings
+to 256-dimensional shape-aware vectors using ϕψ (Sec. 3.3); the projected vectors are L2-normalised and
+indexed with FAISS (Douze et al., 2026). Raw-space indexing is used only in the corresponding ablations.
+FAISS is a similarity-search library.
+It keeps the normalised embeddings in a flat inner-product index.
+Because the vectors have unit length, the inner-product search returns the cosine nearest neighbours. The
+index makes the top-k search fast enough for use at inference. Figure 2 illustrates the resulting embedding
+topology via a k-nearest-neighbour connectivity graph and hierarchical clustering, revealing strong intrinsic
+modality alignment and an emergent anatomical hierarchy within the embedding space. Extending K with
+a verified support case requires only embedding and indexing that case, not retraining the refiner.
+Construction protocol.
+In the main experiments and the held-out-dataset evaluation, cases enter the
+knowledge base only from the training splits listed in Sec. 4.1; validation cases, test cases, and every case
+from the three held-out datasets in Sec. 4.3 are excluded. The leave-one-anatomy-out support experiment
+(Sec. 4.4) and the optional longitudinal-memory analysis (Appendix G) are explicitly identified extensions of
+this fixed-index protocol. Their indexed support cases are disjoint from the corresponding evaluation queries.
+Multi-class masks are decomposed into per-class binary instances, and each indexed instance is one entry.
+A same-class index is materialised at indexing time, avoiding class filtering over the full database during
+inference. No scored evaluation query is indexed as its own retrieval candidate. In the reported configuration,
+K contains N=3,913 per-class instances drawn from the training splits of the 15 training datasets (Table 12),
+out of the 11,900 non-empty instances of these splits (Appendix F).
+5
+
+--- PAGE 6 [pdf_text] ---
+Published in Transactions on Machine Learning Research (10/2026)
+3.3
+Shape-aware retrieval projector
+P denotes the frozen MedGemma encoder only. It maps a pair of composite image and prompt to a raw
+2560-dimensional embedding. The L2 normalisation, the projector ϕψ and the FAISS index are separate
+stages that operate on the output of P. Cosine similarity on the raw embeddings orders the neighbours
+by general multimodal appearance. The refiner uses a same-class mask as a spatial exemplar, so it needs
+neighbours with a similar shape. We fit a projector ϕψ : Rd →Rd′ on K so that cosine similarity in the
+projected space approximates shape-Dice between the underlying masks:
+Lϕ = 1
+|B|
+X
+(i,j)∈B
+
+⟨ϕψ(ei), ϕψ(ej)⟩−Dice
+ emi, emj
+2
+,
+(2)
+where em denotes a mask cropped to its bounding box and resampled to a shared 323 cube so that position
+and scale are removed and only shape is preserved. ϕψ is a 3-layer MLP (hidden width 512, output d′=256)
+trained for 20 epochs on uniformly-sampled node pairs from K. The projected vectors are L2-normalised,
+so the inner product in Eq. 2 is their cosine similarity. The projector is fitted after the raw knowledge-base
+embeddings have been constructed. Its normalised outputs replace the raw vectors as FAISS keys, leaving
+the refiner and its training unchanged.
+3.4
+Refiner interface
+The retrieved Yr enters Rθ as a spatial conditioning channel that supplies a shape prior, while the sequence
+{erj}k
+j=1 provides semantic context through cross-attention, whenever supported by the underlying architecture. This interface is compatible with both supervised feedforward networks trained on pixel-wise labels
+and conditional generative models that sample from p(Y | Y ∗, X, Yr, {erj}k
+j=1). The refiner may operate
+directly in pixel space or in a compact latent space obtained through a mask autoencoder. In the latter case,
+the retrieved Yr is projected through the same encoder. The latent refinement interface is independent of
+the particular autoencoder architecture; throughout this work, the latent variants use the frozen encoder of
+the MAISI VAE (Guo et al., 2025) together with a mask-tuned decoder. Any compatible mask autoencoder
+can be substituted without modifying the refinement procedure.
+These two factors, the refinement paradigm (deterministic or generative) and the representation (pixel or
+latent space), can be combined to instantiate different refinement architectures within the same retrieval
+framework. In our work, they give rise to three variants: a deterministic pixel-space network (GRACE-U), a
+deterministic latent autoencoder (GRACE-M), and a latent flow-matching model (GRACE-M-D). GRACEU is a 3D U-Net with three input channels: the corrupted mask, the image and the retrieved exemplar. It
+gives a foreground logit for each voxel in one forward pass. GRACE-M encodes the corrupted mask and the
+exemplar into a 4×243 latent with a frozen encoder. A small module fuses the two latents, and a mask-tuned
+decoder gives the refined mask. GRACE-M-D uses the same latent interface but integrates a learned velocity
+field with an ODE solver. Thus, several runs on one input give a set of plausible refinements. All three
+variants use the same retrieval context. Appendix A gives the full architectures.
+3.5
+Two-phase training and corruption schedule
+Training Rθ directly on corrupted masks produced by one specific upstream segmentor risks injection bias:
+the refiner overfits to the failure modes of that segmentor. To prevent this bias, we train the refiner on
+synthetic corruptions of the ground-truth masks. A corruption combines morphological erosion and dilation,
+elastic boundary deformation, boundary noise, false-positive blobs and axis-aligned slice dropout (Jebril
+et al., 2025). Three severity presets (default, mid, strong) define the synthetic-corruption experiments; a
+fourth training preset (mixed) samples uniformly across the three severities. Two more presets, very_strong
+and extreme, go beyond the range of the training severities. We use them only for evaluation, in the analyses
+of Sec. 4.5. Representative synthetic corruptions are shown in Fig. 5.
+Training has two phases. Phase 1 trains the refiner, and Phase 2 fits the retrieval projector ϕψ of Sec. 3.3.
+In Phase 1, we train the refiner from random initialisation for 100 epochs at 963 resolution. We use AdamW
+with a learning rate of 10−4, a cosine schedule, batch size 8, gradient clipping at 1.0 and mixed precision.
+6
+
+--- PAGE 7 [pdf_text] ---
+Published in Transactions on Machine Learning Research (10/2026)
+The loss combines Dice and cross-entropy against the clean ground truth. The mixed preset corrupts each
+input with probability 0.95, so a small fraction of clean inputs keeps the identity behaviour. The exemplar is
+set to zero with probability 0.10. Thus, the refiner stays usable when retrieval gives no result, and it cannot
+use the exemplar as a shortcut. The corruption changes for each sample and each epoch. In Phase 2, we fit
+ϕψ for 20 epochs on pairs of knowledge-base cases (Eq. 2). Phase 2 does not change the refiner.
+4
+Experiments
+4.1
+Experimental setup
+Datasets.
+The training corpus covers 15 public datasets across CT, MRI, and US and contains 3,866
+volumes over 38 anatomical structures across the abdomen, thorax, pelvis, brain, and cardiac chambers
+(Table 12 in Appendix F). Multi-class labels are converted to per-organ binary instances; for multi-channel
+Medical Segmentation Decathlon (MSD) (Antonelli et al., 2022) tasks the T2-weighted modality is used.
+Three datasets are excluded from both training and indexing and are used for held-out dataset-transfer evaluation: ProstateX (Armato III et al., 2018) (346 subjects, multiparametric prostate MRI), CHAOS (Kavur
+et al., 2021) (40 CT subjects, liver / kidneys / spleen; CHAOS also has MRI scans of these organs, which
+Sec. 4.4 uses), and LUMIERE (Suter et al., 2022) (91 GBM patients across 2–20 longitudinal visits each,
+599 timepoints).
+Metrics.
+We report Dice coefficient (DSC, ↑), 95th-percentile Hausdorff distance (HD95, ↓), and signed
+deltas over the raw upstream prediction. Unless a caption states otherwise, “±” denotes the sample standard
+deviation across cases. Figure 3 instead shows variability across anatomy–dataset pairs, and Table 6 reports
+runtime variability across repeated runs. HD95 is reported in millimetres for real-segmentor evaluations and
+in voxels for synthetic-corruption analyses.
+Upstream segmentors.
+Seven segmentors span three operating regimes.
+Weak: a MONAI (Cardoso
+et al., 2022) 3D U-Net trained for 30 epochs on 10% of each organ split (U-Net@30). Mid: MedSAM2 (Ma
+et al., 2025) and ScribblePrompt (Wong et al., 2024) used with an oracle bounding box derived from the
+ground truth on the highest-coverage axial slice, and SwinUNETR-BTCV (Hatamizadeh et al., 2022). ScribblePrompt and SwinUNETR-BTCV are used for the held-out dataset evaluation (Sec. 4.3). Strong: TotalSegmentator (Wasserthal et al., 2023) in fast mode on CT organs; a MONAI 3D U-Net trained for 150
+epochs on the full split (U-Net@150); a MONAI SegResNet trained for 150 epochs on the full split (SegResNet). This split characterises GRACE when the input carries little usable signal as well as when it is close
+to correct.
+What the refiner is trained on.
+We split each dataset case-wise into disjoint training and test parts.
+(i) For Table 1 and the synthetic analyses, one refiner trains on the training split, and we evaluate it on the
+test split. It sees other cases of the same datasets, but never the evaluated cases. (ii) For Table 2, we apply
+the same refiner to three datasets that are absent from training and from the index. (iii) For Table 3 (Block
+A), we retrain the refiner from scratch for each held-out anatomy. That anatomy is absent from training
+and from the index. At test time, only support cases enter the index, and they are disjoint from the queries.
+(iv) Block B of Table 3 applies the same protocol to a full modality. We rebuild the index for each protocol.
+Refiner baselines.
+Nine refiner variants are compared: (i) no refinement (raw upstream); (ii) morphological (binary closing then binary opening with a 3×3×3 structuring element); (iii) test-time augmentation
+(TTAug) with eight views and mean aggregation; (iv) PostDAE (Larrazabal et al., 2020); (v) RAM (Terris
+et al., 2026); (vi) a MONAI 3D U-Net refiner without retrieval (U-Net w/o RAG) that takes (Y ∗, X) as
+input; (vii) the same U-Net with the retrieved exemplar as a third input channel (GRACE-U); (viii) a latent autoencoder refiner that fuses the exemplar in the latent bottleneck before decoding (GRACE-M); (ix)
+the same latent refiner with flow-matching inference (GRACE-M-D), averaged over three ODE seeds. No
+baseline receives the target class as input. PostDAE uses the class implicitly, through one model for each
+anatomy. This is the strongest form of class conditioning. The morphological, TTAug and RAM baselines
+cannot use a label. U-Net w/o RAG receives only (Y ∗, X). GRACE uses the class to select the retrieval
+7
+
+--- PAGE 8 [pdf_text] ---
+Published in Transactions on Machine Learning Research (10/2026)
+Table 1: GRACE as a universal refiner across upstream operating regimes. Weak, mid, and strong upstream
+segmentors are evaluated using DSC (↑) and HD95 (↓). Raw upstream rows report absolute scores. Refinement methods report signed changes (∆) relative to the corresponding upstream prediction (mean ±
+standard deviation). † denotes statistical significance against the raw upstream (paired Wilcoxon, p < 0.05).
+Bold indicates the best refinement change per column; “–” denotes configurations that are not applicable.
+The latent flow-matching variant GRACE-M-D is reported alongside the two deterministic variants so that
+all three instantiations can be compared directly; its inference cost is about seven times higher (Table 6).
+Weak
+Mid
+Strong
+Refiner
+U-Net@30
+MedSAM2
+TotalSeg
+SegResNet
+U-Net@150
+Block A — DSC (↑)
+Raw upstream
+0.386
+0.727
+0.932
+0.793
+0.775
+Morphological
++0.005 ± 0.019
++0.003 ± 0.021
+−0.005 ± 0.011
+−0.002 ± 0.014
+−0.003 ± 0.015
+TTAug
++0.018 ± 0.024
+—
++0.002 ± 0.008
++0.007 ± 0.013
++0.008 ± 0.014
+PostDAE
+−0.108 ± 0.117
+−0.330 ± 0.140
+−0.487 ± 0.152
+−0.294 ± 0.148
+−0.221 ± 0.144
+RAM
++0.002 ± 0.003
++0.002 ± 0.002
++0.001 ± 0.003
++0.002 ± 0.002
++0.001 ± 0.003
+U-Net w/o RAG
++0.049 ± 0.076
++0.017 ± 0.038
+−0.006 ± 0.019
++0.009 ± 0.022
++0.011 ± 0.024
+GRACE-U
++0.353† ± 0.091
++0.061† ± 0.058
+0.000 ± 0.017
++0.014 ± 0.023
++0.021 ± 0.019
+GRACE-M
++0.342† ± 0.096
++0.083† ± 0.052
++0.008 ± 0.016
++0.024† ± 0.021
++0.019† ± 0.020
+GRACE-M-D
++0.336† ± 0.098
++0.078† ± 0.054
++0.006 ± 0.017
++0.021† ± 0.022
++0.017† ± 0.021
+Block B — HD95 (mm, ↓)
+Raw upstream
+21.3
+10.4
+4.1
+8.2
+9.4
+Morphological
+−0.4 ± 1.6
+−0.2 ± 1.1
++0.1 ± 0.6
+0.0 ± 0.9
+0.0 ± 1.0
+TTAug
+−0.7 ± 1.9
+—
+−0.1 ± 0.5
+−0.2 ± 0.8
+−0.3 ± 0.9
+PostDAE
++4.2 ± 4.6
++6.7 ± 5.4
++10.2 ± 6.1
++6.4 ± 5.6
++5.5 ± 5.4
+RAM
+0.0 ± 0.2
+0.0 ± 0.2
+0.0 ± 0.1
+0.0 ± 0.1
+0.0 ± 0.1
+U-Net w/o RAG
++1.6 ± 3.0
++2.4 ± 2.9
++2.9 ± 2.5
++2.1 ± 2.4
++1.9 ± 2.4
+GRACE-U
+−10.4† ± 5.0
+−2.7† ± 2.5
+−0.3 ± 0.8
+−0.9† ± 1.4
+−0.9† ± 1.5
+GRACE-M
+−9.8† ± 5.1
+−3.4† ± 2.6
+−0.5† ± 0.7
+−1.1† ± 1.5
+−1.0† ± 1.5
+GRACE-M-D
+−9.5† ± 5.2
+−3.1† ± 2.6
+−0.4 ± 0.8
+−1.0† ± 1.5
+−0.9† ± 1.5
+candidates. To separate the effect of the class from the effect of the exemplar, we also train U-Net w/o
+RAG with the class label. A one-hot embedding and FiLM inject the label, and no exemplar is given. The
+label improves only the weak inputs (+0.081 vs. +0.049 on U-Net@30) and does not change the mid and
+strong inputs (−0.002 on MedSAM2, −0.004 on TotalSegmentator). GRACE-U still gives a larger gain on
+weak inputs. Thus, the class label explains little of the advantage of GRACE. This baseline is different from
+the zeroed-exemplar condition of Sec. 4.5, which evaluates a trained GRACE model with an empty retrieval
+channel. Appendix A gives the details of the three GRACE variants. The U-Net w/o RAG and the three
+GRACE variants use the same corruption schedule (Sec. 3.5). Only the GRACE variants use the retrieval
+pipeline of Sec. 3.2.
+4.2
+GRACE as a universal refiner
+Table 1 reports DSC and HD95 on real upstream segmentor outputs; Fig. 3 summarises the evaluation under
+the three synthetic corruption severities. GRACE-M yields the largest DSC lift in three of the five upstream
+settings, with GRACE-U ahead on U-Net@30 and U-Net@150, and the three GRACE variants provide the
+three strongest HD95 reductions in every setting. Appendix D gives how often refinement decreases the DSC
+for each band of input DSC.
+The benefit of retrieval grows monotonically with corruption severity, and GRACE-U and GRACE-M reduce
+HD95 at every severity while retrieval-free refiners are less stable (PostDAE and U-Net w/o RAG both
+degrade under stronger corruption).
+The same pattern holds for real upstream segmentors in Table 1:
+strong-tier mean changes remain non-negative for all three variants and are much smaller than the weak-tier
+gains.
+8
+
+--- PAGE 9 [pdf_text] ---
+Published in Transactions on Machine Learning Research (10/2026)
+Default
+Mid
+Strong
+Corruption severity
+0.0
+0.2
+0.4
+0.6
+0.8
+1.0
+DSC 
+(a) Dice similarity coefficient
+Default
+Mid
+Strong
+Corruption severity
+0
+2
+4
+6
+8
+10
+12
+14
+16
+HD95 (voxels) 
+(b) 95th-percentile Hausdorff distance
+Raw upstream
+Morphological
+PostDAE
+RAM
+U-Net w/o RAG
+GRACE-U
+GRACE-M
+Figure 3: Refiner performance across corruption severities. Bars show mean DSC (a) and mean HD95
+(b) across seven anatomy–dataset pairs (Liver, Pancreas, Spleen from MSD; Liver, Pancreas, Spleen from
+AbdomenCT1K; Spleen from AMOS22); error bars show the sample standard deviation across those seven
+pair-level values. Seven refiners are compared per severity group: raw upstream (grey), morphological (dark
+grey), PostDAE (red), RAM (purple), U-Net w/o RAG (amber), GRACE-U (blue-green), and GRACE-M
+(yellow-green). TTAug requires repeated upstream inference and is therefore not defined for the precomputed
+synthetic-corruption inputs in this figure.
+PostDAE.
+PostDAE decreases the DSC on every tier. The largest loss is on TotalSegmentator (−0.487
+DSC, +10.2 mm HD95). PostDAE replaces the input with its reconstruction through a fixed latent prior.
+Thus, it projects each mask onto its learned manifold. On an almost correct input, this projection removes
+correct detail. This explains the largest loss on the strongest upstream. PostDAE was also designed for
+2D chest X-ray masks. We apply it slice by slice to 3D abdominal organs, and nothing keeps the slices
+consistent. This effect is largest on HD95. The row thus shows the effect of a single-anatomy 2D shape prior
+on volumetric multi-organ data. This is the gap that our work addresses.
+Comparison of the variants.
+The three variants achieve comparable aggregate performance but differ in
+their behaviour on severely degraded inputs. Consistent with Table 1, GRACE-M produces the larger mean
+lift on the mid and most of strong tiers, while all three variants have small non-negative mean changes on
+the strongest segmentor, TotalSegmentator. Mechanistically, GRACE-U is a single-pass feedforward network
+and produces more conservative corrections when little reliable signal is available; GRACE-M refines in a
+frozen latent space and can synthesise anatomically plausible completions guided by the retrieved exemplar.
+GRACE-M-D stays within 0.01 DSC of GRACE-M and needs about seven times more compute (Table 6).
+Its value is the uncertainty estimate for each sample, and it does not increase the accuracy.
+4.3
+Generalisation to held-out datasets
+We evaluate GRACE on previously unseen datasets using real upstream segmentors. Three held-out datasets
+are used: ProstateX, CHAOS, and LUMIERE. No case from these datasets is added to K for this evaluation:
+each query retrieves only from the fixed training-corpus index described in Sec. 3.2, and no model parameter is
+updated. We call this protocol held-out dataset transfer. The anatomies and modalities of these datasets also
+occur in other training datasets. Thus, the protocol measures transfer under dataset and acquisition shift,
+and it is not a zero-shot evaluation. Sec. 4.4 removes a full modality. When verified target-dataset masks are
+inserted into K instead, the protocol becomes a parameter-free index extension as in Sec. 4.4. Table 2 reports
+9
+
+--- PAGE 10 [pdf_text] ---
+Published in Transactions on Machine Learning Research (10/2026)
+Table 2: Held-out dataset transfer to three datasets. Raw upstream and refined DSC and HD95 (mm)
+for three upstream segmentors (one or two per dataset). No case from a held-out dataset is inserted into
+K; every query retrieves only from the fixed training-corpus index. ∆denotes refined −raw performance
+(positive is better for DSC, negative for HD95). Best refiner per row is shown in bold.
+Raw
++GRACE-U
++GRACE-M
+Dataset
+Segmentor
+DSC
+HD95
+∆DSC
+∆HD95
+∆DSC
+∆HD95
+ProstateX
+ScribblePrompt
+0.753 ± 0.078
+8.1 ± 2.6
++0.041 ± 0.034
+−2.4 ± 1.5
++0.036 ± 0.036
+−2.0 ± 1.6
+CHAOS
+TotalSeg (fast)
+0.921 ± 0.041
+3.2 ± 1.1
++0.006 ± 0.017
+−0.4 ± 0.6
++0.009 ± 0.019
+−0.5 ± 0.7
+SwinUNETR-BTCV
+0.874 ± 0.052
+4.7 ± 1.7
++0.019 ± 0.024
+−1.0 ± 0.9
++0.017 ± 0.025
+−0.9 ± 1.0
+LUMIERE
+ScribblePrompt
+0.716 ± 0.084
+11.5 ± 3.4
++0.062 ± 0.041
+−3.6 ± 1.9
++0.079 ± 0.044
+−4.2 ± 2.1
+Table 3: Transfer to a held-out anatomy or modality. In both blocks, we remove the held-out anatomy
+or modality from the training data and from the retrieval index, and we retrain the refiner from scratch.
+Block A: we add the stated number of verified support cases of the held-out organ to K and do not update
+the refiner. The support cases are disjoint from the queries. Block B: no case of the held-out modality enters
+the index, and one GRACE-U refiner is evaluated per modality. The control is the refiner trained with that
+modality, on the same queries. Shape ret. is the query–pool shape agreement without the modality, relative
+to the agreement with it. ∆is refined −input. “–” denotes configurations that are not applicable or not
+evaluated.
+Held-out
+Query
+Index
+Input DSC
+GRACE-U ∆DSC
+GRACE-M ∆DSC
+Control ∆
+Shape ret.
+Block A — Leave-one-anatomy-out (parameter-free index extension)
+Pancreas
+U-Net@30
++241
+0.013 ± 0.019
++0.164 ± 0.078
++0.181 ± 0.081
+–
+–
+Spleen
+U-Net@30
++273
+0.033 ± 0.025
++0.238 ± 0.091
++0.246 ± 0.088
+–
+–
+Liver
+U-Net@30
++302
+0.130 ± 0.056
++0.317 ± 0.094
++0.301 ± 0.096
+–
+–
+Prostate PZ
+U-Net@30
++118
+0.421 ± 0.113
++0.088 ± 0.061
++0.082 ± 0.064
+–
+–
+Mean
+0.149
++0.202
++0.203
+–
+–
+Block B — Leave-one-modality-out
+MRI
+CHAOS MRI liver
+713 CT livers
+0.515
++0.084
+–
++0.349
+73%
+US
+CAMUS cardiac
+CT + MRI
+0.438
+−0.202
+–
++0.334
+29%
+raw and refined DSC and HD95 for three upstream segmentors (one or two per dataset). Both GRACE
+variants improve DSC on every (segmentor, dataset) pair, and GRACE-U matches or exceeds GRACE-M
+on two scenarios, with GRACE-M ahead on the CHAOS × TotalSeg and LUMIERE × ScribblePrompt.
+The ordering is therefore dataset- and segmentor-dependent, unlike Table 1, where GRACE-M led in three
+of the five settings. A possible explanation is that the mask-tuned decoder of GRACE-M is fitted to the
+training-corpus mask distribution, so its advantage narrows under dataset shift, whereas the pixel-space
+GRACE-U is less tied to that distribution. Appendix G reports a separate longitudinal retrieval analysis on
+LUMIERE.
+4.4
+Transfer to a held-out anatomy or modality
+The held-out datasets of Sec. 4.3 have anatomies and modalities that also occur in the training corpus. This
+subsection removes a full anatomy or a full imaging modality. In both experiments, we remove the held-out
+data from the training data and from the retrieval index. Then we retrain the refiner from scratch. Table 3
+gives the results.
+Held-out anatomy.
+We evaluate whether GRACE can refine a previously unseen anatomical class without
+updating its parameters. For each anatomy a in {Liver, Spleen, Pancreas, Prostate PZ}, we retrain the refiner
+without a. At test time, we add verified support cases of a to K. Thus, the experiment is a parameter-free
+index extension. The refiner receives no gradient from a, but the index gives it examples of a. The support
+cases are disjoint from the evaluation queries. Both variants improve every held-out anatomy, with mean
+10
+
+--- PAGE 11 [pdf_text] ---
+Published in Transactions on Machine Learning Research (10/2026)
+Table 4: Retrieval-strategy assessment. All rows are evaluated on the strong synthetic-corruption preset.
+The first row is the corrupted input without refinement (baseline). The other three rows use the same trained
+GRACE-M refiner and differ only in the same-class mask provided as the spatial exemplar channel. The
+oracle row retrieves the ground-truth mask and provides an upper bound on the contribution of retrieval to
+refinement.
+Retrieval strategy
+DSC ↑
+HD95 (voxels) ↓
+Corrupted input (no refinement, baseline)
+0.660 ± 0.104
+10.42 ± 4.31
+Random same-class peer
+0.755 ± 0.087
+8.16 ± 3.62
+K-NN same-class peer (ours)
+0.815 ± 0.068
+6.71 ± 2.98
+Oracle (retrieve GT) [upper bound]
+0.881 ± 0.052
+4.94 ± 2.11
+gains of +0.202 DSC for GRACE-U and +0.203 for GRACE-M (Table 3, Block A). The inputs are weak,
+with a raw DSC from 0.013 to 0.421. Each organ needs 118 to 302 verified masks, and all four are solid
+organs or organ zones. The experiment shows that an index extension alone improves a held-out solid organ
+without a parameter update. It does not show zero-shot generalisation to unseen anatomies.
+Held-out modality.
+For each modality in {US, MRI, CT}, we remove all its datasets. No case of that
+modality enters the index at test time. Ultrasound is the clearest case. CAMUS has the same three cardiac
+structures as ACDC, so the anatomy stays almost constant.
+The imaging physics, the speckle and the
+sector geometry change. The MRI holdout is more difficult. Some MRI anatomies, such as the hippocampal
+subregions, do not occur in the CT and ultrasound data. Thus, the modality and part of the anatomy are
+both unseen.
+Refinement transfers from CT to MRI, but it loses most of its in-distribution gain (Table 3, Block B). An
+MRI-free GRACE-U refiner with an index of 713 CT livers increases the DSC of CHAOS MRI liver from
+0.515 to 0.599 (+0.084). On the same CHAOS MRI queries, the refiner trained with MRI gains +0.349.
+Refinement does not transfer to ultrasound. At an input DSC of 0.438, the US-free refiner decreases the
+DSC to 0.236. The refiner trained with ultrasound reaches 0.772. Retrieval still selects the correct structure
+for all 101 CAMUS queries. However, the shape agreement between a query and its retrieved pool drops to
+29% of the in-modality value for ultrasound. It stays at 83% for CT and 73% for MRI. We did not evaluate
+refinement for the CT holdout, so Table 3 reports only the MRI and US holdouts. Appendix C explains the
+low ultrasound value.
+Neither experiment shows zero-shot generalisation. We present transfer to unseen anatomies and modalities
+as an open research direction. An important question is the minimum number of support cases.
+4.5
+Retrieval analysis
+We first quantify the contribution of the retrieval strategy to refinement performance and then evaluate the
+retrieved neighbours independently of the refiner.
+Retrieval strategy.
+Table 4 evaluates the retrieval strategy with the trained GRACE-M refiner held
+fixed. The corrupted input without refinement is the baseline; a random same-class peer already recovers
+roughly 40% of the oracle gap, indicating that the anatomically conditioned prior is useful even before any
+similarity ranking. Selecting the shape-aware K-NN adds a further lift, and the oracle row upper-bounds
+the retrieval contribution. The gap between the random and K-NN rows measures the combined benefit
+of similarity-based ranking and the projected retrieval space over random same-class selection; it does not
+isolate the projector. The projector-versus-raw comparison in Table 5 isolates that contribution by holding
+the candidate set and ranking protocol fixed.
+Retrieval-module quality.
+Figure 4 characterises two aspects of retrieval: how the knowledge-base density and fan-out affect downstream refinement, and how the unfiltered embedding space groups anatomical
+classes. Figure 4 (left) reports the ∆DSC improvement obtained for different retrieval configurations, varying
+11
+
+--- PAGE 12 [pdf_text] ---
+Published in Transactions on Machine Learning Research (10/2026)
+1.0
+0.8
+0.6
+0.4
+0.2
+0.0
+1
+2
+3
+5
+7
+Retrieval fan-out k (no class filter)
+10
+Purity@k
+(b) Retrieval class purity vs k
+pancreas
+liver
+cancer
+spleen
+myocardium
+right_kidney
+duodenum
+right_adrenal
+aorta
+esophagus
+stomach
+IVC
+gallbladder
+left_adrenal
+left_kidney
+50
+30
+20
+10
+7
+5
+3
+2
+1
+0.1
+0.2
+0.3
+0.4
+0.5
+0.6
+0.7
+0.8
+0.9
+1.0
+Knowledge-base density d (fraction of training pool)
+Retrieval fan-out k (top-k neighbours)
+-0.03
+-0.02
+-0.02
+-0.01
+-0.01
++0.00
+-0.01
+-0.00
+-0.01
+-0.02
+-0.02
+-0.02
+-0.01
+-0.01
+-0.01
++0.00
++0.00
+-0.00
+-0.02
+-0.00
+-0.01
+-0.01
++0.00
+-0.00
+-0.01
+-0.00
+-0.00
+-0.01
++0.00
++0.01
++0.01
++0.00
++0.01
+-0.00
++0.01
++0.01
++0.02
++0.01
++0.01
++0.02
++0.03
++0.02
++0.02
++0.01
++0.02
++0.02
++0.03
++0.04
++0.05
++0.05
++0.03
++0.04
++0.03
++0.02
++0.02
++0.03
++0.05
++0.06
++0.06
++0.05
++0.05
++0.04
++0.03
++0.03
++0.05
++0.06
++0.08
++0.07
++0.08
++0.06
++0.04
++0.04
++0.04
++0.06
++0.08
++0.09
++0.10
++0.09
++0.08
++0.07
++0.05
++0.05
++0.06
++0.09
++0.10
++0.11
++0.11
++0.09
++0.07
+0.100
+0.075
+0.050
+0.025
+0.000
+plateau 
+0.025
+0.050
+0.075
+0.100
+DSC of GRACE vs KB density and neighbour count
+Mean DSC (refined raw)
+Figure 4: Retrieval-module quality. (a, left) Downstream ∆DSC when varying knowledge-base density
+(d) and retrieval fan-out (k). (b, right) Diagnostic class purity@k for the 15 most frequent classes when the
+usual same-class filter is disabled, one curve per class.
+the knowledge-base density (d) and the retrieval fan-out (k). At high density, performance forms a plateau
+around k=3–7; the main experiments use k=5 as a point on this empirical plateau. Figure 4 (right) deliberately disables the same-class filter and reports class purity@k as an embedding diagnostic. For a query
+of class c, purity@k is the fraction of its k nearest neighbours in the unfiltered index that also have class c.
+We average this fraction over all queries of class c: purity@k(c) =
+1
+|Qc|
+P
+q∈Qc
+1
+k |{j ∈NNk(q) : classj = c}|.
+A value of 1 means every retrieved neighbour already has the correct anatomy without any class filtering.
+It does not represent the main candidate pool, for which the per-class indexes of Sec. 3.2 enforce same-class
+retrieval by construction. The retrieval-encoder ablation is the exception to the main k=5 setting and uses
+k=3, as stated in Table 10 (Appendix E).
+Contribution of the exemplar.
+We set the retrieval channel of the trained model to zero and keep all
+other settings. This isolates the part of the gain that the exemplar gives. At the evaluation-only extreme
+severity, averaged over all structures, the exemplar gives 40% of the improvement, and the refiner alone
+gives the rest. On the four organs of Table 11, the share is from 39% (pancreas) to 62% (kidneys, spleen).
+In Appendix E, a mask-only encoder is close to MedGemma. Thus, the contribution comes mainly from
+the exemplar and less from the multimodal retrieval space. We therefore describe GRACE as exemplarconditioned refinement. The refiner uses the retrieved exemplar as a shape prior, and retrieval selects it from
+the 15 indexed datasets.
+Robustness to a wrong class query.
+In a fully automatic pipeline, the class label can be wrong. We
+keep the trained refiner and compare three query conditions on four organs at four severities. The conditions
+are the correct class, a random wrong class and no exemplar (Table 11). At the extreme preset, the input
+DSC is from 0.11 to 0.31. The correct class gives the largest gain on every organ. A wrong class gives 0.077
+to 0.151 DSC less. On the compact organs (liver, kidneys, spleen), a wrong-class exemplar still recovers 50 to
+72% of the correct-class gain over no exemplar. On the pancreas, which is small and variable, a wrong-class
+exemplar is slightly worse than no exemplar. Thus, the robustness to a wrong class depends on the shape of
+the target. The stabilisation of refinement under extreme class noise is an open question.
+4.6
+Ablation studies
+We quantify the contribution of the main design choices underlying GRACE through a series of controlled
+ablation studies. Specifically, we evaluate the shape-aware retrieval projector while keeping the remainder
+of the framework unchanged; the choice of retrieval encoder is reported in Appendix E and the comparison
+of refinement paradigms in Appendix A.
+12
+
+--- PAGE 13 [pdf_text] ---
+Published in Transactions on Machine Learning Research (10/2026)
+Table 5: Shape-aware retrieval projector. Performance on the strong synthetic-corruption preset using
+two embedding sources: MedGemma multimodal embeddings and a mask-domain baseline derived from the
+frozen VAE encoder. Base and full model denote two fixed GRACE-M-D refiner configurations (we report
+one variant for simplicity); within each column, only the encoder source and similarity space change. Shapeproj. denotes the learned shape-aware projection.
+Encoder source
+Similarity space
+Dim
+DSC (base)
+DSC (full model)
+∆full vs. raw cosine
+MedGemma-multimodal
+unprojected cosine (control)
+2560
+0.708 ± 0.082
+0.741 ± 0.076
+—
+MedGemma-multimodal
+shape-proj. (ours)
+256
+0.727 ± 0.079
+0.771 ± 0.072
++0.030
+Mask-domain (VAE + pool + PCA)
+unprojected cosine (control)
+256
+0.718 ± 0.084
+0.752 ± 0.075
+—
+Mask-domain (VAE + pool + PCA)
+shape-proj. (ours)
+256
+0.739 ± 0.078
+0.782 ± 0.071
++0.030
+Shape-aware retrieval projector.
+Table 5 evaluates the contribution of the projector ϕψ of Sec. 3.3
+across two embedding sources: the MedGemma multimodal embedding used throughout the experiments,
+and a mask-domain baseline obtained from the frozen VAE with adaptive pooling and PCA reduction (256).
+Within each checkpoint column, the refiner and retrieval protocol are fixed; paired rows for a given encoder
+source differ only in the similarity space used to rank candidates. On both the full-model and the base
+checkpoint, and for both encoder sources, the projector yields a comparable positive change in DSC over
+unprojected cosine (see Table 5). The benefit of shape-aware retrieval is therefore largely independent of
+the underlying encoder. On unseen query-candidate pairs from the validation split, the Pearson correlation
+between projected cosine similarity and true shape-Dice increases from 0.42 (raw MedGemma) to 0.71 after
+projection, confirming that the learned space reflects better anatomical similarity.
+4.7
+Qualitative overview
+Figure 5 illustrates representative refinements produced by GRACE across CT (Liver, Pancreas, Spleen) and
+MRI (Heart LA, Prostate PZ). For each case, one synthetic corruption and three real upstream segmentors
+(U-Net@150, MedSAM2, and TotalSegmentator or SegResNet) are shown together with the corresponding
+GRACE-U refinement, with DSC and HD95 overlaid. Three visual patterns recur across the five rows: on
+the weakest inputs, retrieval provides a strong anatomical prior and recovers organ topology even when the
+raw prediction contains no usable structure; on intermediate inputs, refinement sharpens boundaries and
+closes local defects; on strong inputs, refinement makes only minimal changes, consistent with the small
+deltas of Sec. 4.2.
+5
+Discussion and Conclusions
+Discussion.
+A central question motivating this work is whether retrieval-conditioned refinement can generalise beyond anatomy-specific correction models. Our experiments indicate that the greatest benefit of
+retrieval arises when the upstream segmentation is unreliable, precisely the regime in which manual correction is most costly in clinical practice (Galati et al., 2022), while already accurate predictions receive only
+minimal changes. The retrieved exemplar gives 40% of the gain at the most severe preset. The correct class
+already gives a strong shape prior, and the shape-aware projector adds a smaller gain in that class.
+When is refinement preferable to a strong segmentor?
+We see four settings. (i) No strong segmentor
+exists for the target. TotalSegmentator covers CT anatomy, but not cardiac chambers in ultrasound or most
+lesion classes. (ii) The upstream is a black box, for example a vendor model without access to weights
+or training data. GRACE needs only the output mask. (iii) A new anatomy must be supported without
+retraining (Sec. 4.4). (iv) Promptable models receive imperfect prompts. Our MedSAM2 and ScribblePrompt
+results use an oracle bounding box. With real prompts, their masks are probably worse and closer to the
+range where refinement helps. For this reason, we put them in the mid tier. For strong CT segmentors, we
+do not claim an improvement. GRACE keeps good masks almost unchanged on average, but it degrades
+some of them (Appendix D).
+13
+
+--- PAGE 14 [pdf_text] ---
+Published in Transactions on Machine Learning Research (10/2026)
+Pancreas (CT, MSD)
+Liver (CT, MSD)
+Heart LA (MRI, MSD)
+Spleen (CT, MSD)
+Prostate PZ (MRI, MSD)
+GT (clean)
+Arbitrary corr.
++ GRACE
+refined
+TotalSeg
++ GRACE
+refined
+DSC 0.59 HD95 5.5
+DSC 0.68 HD95 1.7
+DSC 0.51 HD95 3.7
+DSC 0.55 HD95 3.7
+DSC 0.50 HD95 3.7
+DSC 0.93 HD95 1.4
+DSC 0.84 HD95 1.4
+DSC 0.90 HD95 1.3
+DSC 0.80 HD95 2.0
+DSC 0.75 HD95 3.7
+DSC 0.93 HD95 1.7
+DSC 0.67 HD95 3.6
+DSC 0.70 HD95 7.0
+DSC 0.83 HD95 1.0
+DSC 0.76 HD95 1.4
+DSC 0.93 HD95 1.4
+DSC 0.81 HD95 3.2
+DSC 0.70 HD95 6.7
+DSC 0.84 HD95 1.4
+DSC 0.69 HD95 3.0
+DSC 0.86 HD95 3.7
+DSC 0.51 HD95 6.2
+DSC 0.66 HD95 8.1
+DSC 0.55 HD95 3.7
+DSC 0.73 HD95 1.4
+DSC 0.88 HD95 2.8
+DSC 0.88 HD95 2.6
+DSC 0.73 HD95 5.8
+DSC 0.80 HD95 2.0
+DSC 0.82 HD95 3.2
+DSC 0.96 HD95 1.0
+DSC 0.86 HD95 2.4
+DSC 0.77 HD95 5.8
+DSC 0.96 HD95 1.0
+DSC 0.95 HD95 1.0
+DSC 0.96 HD95 1.0
+DSC 0.90 HD95 2.0
+DSC 0.77 HD95 5.4
+DSC 0.94 HD95 1.0
+DSC 0.94 HD95 1.0
++ GRACE
+refined
++ GRACE
+refined 
+U-Net@150
+MedSAM2
+GT
+Arbitrary corruption / refined
+U-Net@150 / refined
+MedSAM2 / refined
+TotalSeg / refined
+Figure 5: Qualitative overview of GRACE refinements. Rows correspond to Liver, Pancreas, Spleen,
+Heart LA, and Prostate PZ. Columns show the ground truth; one representative synthetic corruption from the
+training schedule and its GRACE-U refinement; and three upstream segmentors (U-Net@150, MedSAM2,
+and TotalSegmentator, with SegResNet used where TotalSegmentator is unavailable) together with their
+corresponding GRACE-U refinements.
+Colours identify the source of each mask.
+DSC and HD95 with
+respect to the ground truth are overlaid on every panel.
+Limitations.
+The effectiveness of retrieval depends on the diversity of the knowledge base: anatomies or
+pathological presentations that are not represented in K provide weaker retrieval context, and the refiner
+then remains closer to the raw upstream prediction. Verified support cases can be added to K without
+updating the refiner, but genuinely novel morphologies may still require retraining. At the high end of input
+quality, 3.8% of the cases with an input DSC above 0.8 lose more than 0.05 DSC (Appendix D). A mechanism
+that skips refinement for a probably correct input is a logical next step. GRACE-M-D needs about seven
+times more compute than GRACE-M, and its results change with the ODE seed. Transfer to a held-out
+modality is partial on MRI and fails on ultrasound. The leave-one-anatomy-out setting needs 118 to 302
+verified masks of the held-out organ. We present both as open research directions.
+Conclusions.
+We introduced GRACE, a retrieval-conditioned framework that replaces anatomy-specific
+correctors with a single refiner guided by an anatomy-aware knowledge base. Across upstream segmentors
+and held-out datasets, it improved unreliable predictions while leaving accurate ones largely unchanged, and
+verified support cases extend the knowledge base without a parameter update.
+References
+Salma J Ahmed, Emad A Mohammed, and Azam Asilian Bidgoli. J-RAS: Mutual adaptation for medical
+image segmentation via contrastive retrieval-augmented joint optimization. Biomedical Signal Processing
+and Control, 127:111078, 2026. doi: 10.1016/j.bspc.2026.111078.
+14
+
+--- PAGE 15 [pdf_text] ---
+Published in Transactions on Machine Learning Research (10/2026)
+Michela Antonelli, Annika Reinke, Spyridon Bakas, Keyvan Farahani, Annette Kopp-Schneider, Bennett A
+Landman, Geert Litjens, Bjoern Menze, Olaf Ronneberger, Ronald M Summers, et al.
+The medical
+segmentation decathlon. Nature Communications, 13:4128, 2022.
+Samuel G Armato III, Henkjan Huisman, Karen Drukker, Lubomir Hadjiiski, Justin S Kirby, Nicholas
+Petrick, George Redmond, Maryellen L Giger, Kenny Cha, Artem Mamonov, et al. PROSTATEx challenges for computerized classification of prostate lesions from multiparametric magnetic resonance images.
+Journal of Medical Imaging, 5(4):044501, 2018.
+Benoît Audelan and Hervé Delingette. Unsupervised quality control of image segmentation based on Bayesian
+learning. In Medical Image Computing and Computer Assisted Intervention (MICCAI), 2019.
+Bobby Azad, Reza Azad, Sania Eskandari, Afshin Bozorgpour, Amirhossein Kazerouni, Islem Rekik, and
+Dorit Merhof. Foundational models in medical imaging: A comprehensive survey and future vision. arXiv
+preprint arXiv:2310.18689, 2023.
+Marcel Beetz, Jorge Corral Acero, Abhirup Banerjee, Ingo Eitel, Ernesto Zacur, Torben Lange, Thomas Stiermaier, Ruben Evertz, Sören J. Backhaus, Holger Thiele, Alfonso Bueno-Orovio, Pablo Lamata, Andreas
+Schuster, and Vicente Grau. Interpretable cardiac anatomy modeling using variational mesh autoencoders.
+Frontiers in Cardiovascular Medicine, 9:983868, 2022. doi: 10.3389/fcvm.2022.983868.
+Olivier Bernard, Alain Lalande, Clement Zotti, Frederick Cervenansky, et al.
+Deep learning techniques
+for automatic MRI cardiac multi-structures segmentation and diagnosis: is the problem solved?
+IEEE
+Transactions on Medical Imaging, 37(11):2514–2525, 2018.
+Victor Ion Butoi, Jose Javier Gonzalez Ortiz, Tianyu Ma, Mert R Sabuncu, John Guttag, and Adrian V
+Dalca. UniverSeg: Universal medical image segmentation. In Proceedings of the IEEE/CVF International
+Conference on Computer Vision, pp. 6830–6839, 2023.
+M. Jorge Cardoso, Wenqi Li, Richard Brown, Nic Ma, Eric Kerfoot, Yiheng Wang, Benjamin Murrey,
+Andriy Myronenko, Can Zhao, Dong Yang, et al. MONAI: An open-source framework for deep learning
+in healthcare. arXiv preprint arXiv:2211.02701, 2022.
+Matthijs Douze, Alexandr Guzhva, Chengqi Deng, Jeff Johnson, Gergely Szilvasy, Pierre-Emmanuel Mazaré,
+Maria Lomeli, Lucas Hosseini, and Hervé Jégou. The Faiss library. IEEE Transactions on Big Data, 12
+(2):346–361, 2026. doi: 10.1109/TBDATA.2025.3618474.
+Idris Dulau, Benoit Recur, Catherine Helmer, Cécile Delcourt, and Marie Beurton-Aimar.
+Connectedcomponents-based post-processing for retinal vessels deep-learning segmentation. In IEEE 13th International Conference on Pattern Recognition Systems (ICPRS), pp. 1–7, 2023.
+Virginia Fernandez, Walter Hugo Lopez Pinaya, Pedro Borges, Mark S Graham, Petru-Daniel Tudosiu, Tom
+Vercauteren, and M Jorge Cardoso. Generating multi-pathological and multi-modal images and labels for
+brain MRI. Medical Image Analysis, pp. 103278, 2024. doi: 10.1016/j.media.2024.103278.
+Joris Fournel, Axel Bartoli, David Bendahan, Maxime Guye, Monique Bernard, Elisa Rauseo, Mohammed Y
+Khanji, Steffen E Petersen, Alexis Jacquier, and Badih Ghattas. Medical image segmentation automatic
+quality control: A multi-dimensional approach. Medical Image Analysis, 2021.
+Francesco Galati and Maria A. Zuluaga. Efficient model monitoring for quality control in cardiac image
+segmentation. In Functional Imaging and Modeling of the Heart (FIMH 2021), volume 12738, pp. 101–
+111, 2021.
+Francesco Galati, Sébastien Ourselin, and Maria A Zuluaga. From accuracy to reliability and robustness in
+cardiac magnetic resonance image segmentation: a review. Applied Sciences, 12(8):3936, 2022.
+Pengfei Guo, Can Zhao, Dong Yang, Ziyue Xu, Vishwesh Nath, Yucheng Tang, Benjamin Simon, Mason
+Belue, Stephanie Harmon, Baris Turkbey, et al. MAISI: Medical AI for synthetic imaging. In IEEE/CVF
+Winter Conference on Applications of Computer Vision (WACV), pp. 4430–4441. IEEE, 2025.
+15
+
+--- PAGE 16 [pdf_text] ---
+Published in Transactions on Machine Learning Research (10/2026)
+Ali Hatamizadeh, Vishwesh Nath, Yucheng Tang, Dong Yang, Holger R Roth, and Daguang Xu.
+Swin
+UNETR: Swin transformers for semantic segmentation of brain tumors in MRI images. In Brainlesion:
+Glioma, Multiple Sclerosis, Stroke and Traumatic Brain Injuries (BrainLes 2021), volume 12962 of Lecture
+Notes in Computer Science, pp. 272–284, 2022.
+Hsin-Ling Hsu, Cong-Tinh Dao, Luning Wang, Zitao Shuai, Thao Nguyen Minh Phan, Jun-En Ding, ChunChieh Liao, Pengfei Hu, Xiaoxue Han, Chih-Ho Hsu, et al. MedPlan: a two-stage RAG-based system for
+personalized medical plan generation. In Proceedings of the 63rd Annual Meeting of the Association for
+Computational Linguistics (Volume 6: Industry Track), pp. 1072–1082, 2025.
+Xiaoling Hu, Fuxin Li, Dimitris Samaras, and Chao Chen. Topology-preserving deep image segmentation.
+In Advances in Neural Information Processing Systems, volume 32, 2019.
+Fabian Isensee, Paul F Jaeger, Simon A A Kohl, Jens Petersen, and Klaus H Maier-Hein. nnU-Net: a
+self-configuring method for deep learning-based biomedical image segmentation. Nature Methods, 18(2):
+203–211, 2021.
+Hana Jebril, Thomas Pinetz, and Hrvoje Bogunović. Shape prior for quality assessment in OCTA via denoising autoencoders at the segmentation level. IEEE Access, 2025. doi: 10.1109/ACCESS.2025.3625745.
+Yuanfeng Ji, Haotian Bai, Chongjian Ge, Jie Yang, Ye Zhu, Ruimao Zhang, Zhen Li, Lingyan Zhang, Wanling
+Ma, Xiang Wan, et al. AMOS: A large-scale abdominal multi-organ benchmark for versatile medical image
+segmentation. In Advances in Neural Information Processing Systems, volume 35, pp. 36722–36732, 2022.
+Neerav Karani, Ertunc Erdil, Krishna Chaitanya, and Ender Konukoglu. Test-time adaptable neural networks
+for robust medical image segmentation. Medical Image Analysis, 68:101907, 2021.
+A. Emre Kavur, N. Sinem Gezer, Mustafa Barış, Sinem Aslan, Pierre-Henri Conze, Vladimir Groza, Duc Duy
+Pham, Soumick Chatterjee, Philipp Ernst, Savaş Özkan, Bora Baydar, Dmitry Lachinov, Shuo Han, Josef
+Pauli, Fabian Isensee, Matthias Perkonigg, Rachana Sathish, Ronnie Rajan, Debdoot Sheet, Gurbandurdy
+Dovletov, Oliver Speck, Andreas Nürnberger, Klaus H. Maier-Hein, Gözde Bozdağı Akar, Gözde Ünal,
+Oğuz Dicle, and M. Alper Selver.
+CHAOS challenge: combined (CT-MR) healthy abdominal organ
+segmentation. Medical Image Analysis, 69:101950, 2021.
+Agostina J Larrazabal, César Martínez, Ben Glocker, and Enzo Ferrante. Post-DAE: anatomically plausible
+segmentation via post-processing with denoising autoencoders. IEEE Transactions on Medical Imaging,
+39(12):3813–3820, 2020.
+Sarah Leclerc, Erik Smistad, João Pedrosa, Andreas Østvik, Frederic Cervenansky, Florian Espinosa, Torvald Espeland, Erik Andreas Rye Berg, Pierre-Marc Jodoin, Thomas Grenier, et al. Deep learning for
+segmentation using an open large-scale dataset in 2D echocardiography. IEEE Transactions on Medical
+Imaging, 38(9):2198–2210, 2019.
+Patrick Lewis, Ethan Perez, Aleksandra Piktus, Fabio Petroni, Vladimir Karpukhin, Naman Goyal, Heinrich
+Küttler, Mike Lewis, Wen-tau Yih, Tim Rocktäschel, et al. Retrieval-augmented generation for knowledgeintensive NLP tasks. In Advances in Neural Information Processing Systems, volume 33, pp. 9459–9474,
+2020.
+Liu Li, Qiang Ma, Cheng Ouyang, Johannes C Paetzold, Daniel Rueckert, and Bernhard Kainz. Topology
+optimization in medical image segmentation with fast χ Euler characteristic.
+IEEE Transactions on
+Medical Imaging, 2025. doi: 10.1109/TMI.2025.3589495.
+Qiao Lin, Xin Chen, Chao Chen, and Jonathan M Garibaldi. A novel quality control algorithm for medical
+image segmentation based on fuzzy uncertainty. IEEE Transactions on Fuzzy Systems, 31(8):2532–2544,
+2023. doi: 10.1109/TFUZZ.2022.3228332.
+Yaron Lipman, Ricky T. Q. Chen, Heli Ben-Hamu, Maximilian Nickel, and Matt Le. Flow matching for
+generative modeling. In International Conference on Learning Representations (ICLR), 2023.
+16
+
+--- PAGE 17 [pdf_text] ---
+Published in Transactions on Machine Learning Research (10/2026)
+Fengze Liu, Yingda Xia, Dong Yang, Alan L Yuille, and Daguang Xu. An alarm system for segmentation
+algorithm based on shape model. In Proceedings of the IEEE/CVF International Conference on Computer
+Vision, 2019.
+Jun Ma, Yao Zhang, Song Gu, Cheng Zhu, Cheng Ge, Yichi Zhang, Xingle An, Congcong Wang, Qiyuan
+Wang, Xin Liu, Shucheng Cao, Qi Zhang, Shangqing Liu, Yunpeng Wang, Yuhui Li, Jian He, and Xiaoping
+Yang.
+AbdomenCT-1K: Is abdominal organ segmentation a solved problem?
+IEEE Transactions on
+Pattern Analysis and Machine Intelligence, 44(10):6695–6714, 2022. doi: 10.1109/TPAMI.2021.3100536.
+Jun Ma, Zongxin Yang, Sumin Kim, Bihui Chen, Mohammed Baharoon, Adibvafa Fallahpour, Reza Asakereh, Hongwei Lyu, and Bo Wang. MedSAM2: Segment anything in 3D medical images and videos. arXiv
+preprint arXiv:2504.03600, 2025.
+Jun Ma, Yuting He, Feifei Li, Lin Han, Chenyu You, and Bo Wang. Segment anything in medical images.
+Nature Communications, 15(1):654, 2024. doi: 10.1038/s41467-024-44824-z.
+Vincenzo Marcianò, Hava Chaptoukaev, Virginia Fernandez, M Jorge Cardoso, Michela Antonelli, Sébastien
+Ourselin, and Maria A Zuluaga. Diffusion-based quality control of medical image segmentations across
+organs. IEEE Transactions on Medical Imaging, 45(10):5072–5083, 2026. doi: 10.1109/TMI.2026.3714697.
+Chenlin Meng, Yutong He, Yang Song, Jiaming Song, Jiajun Wu, Jun-Yan Zhu, and Stefano Ermon. SDEdit:
+Guided image synthesis and editing with stochastic differential equations. In International Conference on
+Learning Representations (ICLR), 2022.
+Daniele Molino, Camillo Maria Caruso, Paolo Soda, and Valerio Guarrasi. Retrieval-augmented anatomical
+guidance for text-to-CT generation. In Medical Image Computing and Computer Assisted Intervention
+(MICCAI), pp. 450–460, 2026. doi: 10.1007/978-3-032-38189-7_43.
+Ozan Oktay, Enzo Ferrante, Konstantinos Kamnitsas, Mattias Heinrich, Wenjia Bai, Jose Caballero, Stuart A
+Cook, Antonio de Marvao, Timothy Dawes, Declan P O’Regan, et al. Anatomically constrained neural
+networks (ACNNs): Application to cardiac image enhancement and segmentation. IEEE Transactions on
+Medical Imaging, 37(2):384–395, 2018.
+Maxime Oquab, Timothée Darcet, Théo Moutakanni, Huy Vo, Marc Szafraniec, Vasil Khalidov, Pierre
+Fernandez, Daniel Haziza, Francisco Massa, Alaaeldin El-Nouby, et al. DINOv2: Learning robust visual
+features without supervision. Transactions on Machine Learning Research, 2024.
+Nathan Painchaud, Youssef Skandarani, Thierry Judge, Olivier Bernard, Alain Lalande, and Pierre-Marc
+Jodoin. Cardiac segmentation with strong anatomical guarantees. IEEE Transactions on Medical Imaging,
+2020.
+Walter H. L. Pinaya, Petru-Daniel Tudosiu, Jessica Dafflon, Pedro F Da Costa, Virginia Fernandez,
+Parashkev Nachev, Sebastien Ourselin, and M Jorge Cardoso.
+Brain imaging generation with latent
+diffusion models. In Deep Generative Models (DGM4MICCAI), MICCAI Workshop, 2022.
+Peijie Qiu, Satrajit Chakrabarty, Phuc Nguyen, Soumyendu Sekhar Ghosh, and Aristeidis Sotiras. QCResUNet: Joint subject-level and voxel-level prediction of segmentation quality. In International Conference
+on Medical Image Computing and Computer-Assisted Intervention (MICCAI), 2023.
+Ali Razavi, Aaron van den Oord, and Oriol Vinyals. Generating diverse high-fidelity images with VQ-VAE-2.
+In Advances in Neural Information Processing Systems, volume 32, 2019.
+Robert Robinson, Ozan Oktay, Wenjia Bai, Vanya V. Valindria, Mihir M. Sanghvi, Nay Aung, José M.
+Paiva, Filip Zemrak, Kenneth Fung, Elena Lukaschuk, Aaron M. Lee, Valentina Carapella, Young Jin
+Kim, Bernhard Kainz, Stefan K. Piechnik, Stefan Neubauer, Steffen E. Petersen, Chris Page, Daniel
+Rueckert, and Ben Glocker. Real-time prediction of segmentation quality. In Medical Image Computing
+and Computer Assisted Intervention – MICCAI 2018, 2018.
+17
+
+--- PAGE 18 [pdf_text] ---
+Published in Transactions on Machine Learning Research (10/2026)
+Robert Robinson, Vanya V. Valindria, Wenjia Bai, Ozan Oktay, Bernhard Kainz, Hideaki Suzuki, Mihir M.
+Sanghvi, Nay Aung, José Miguel Paiva, Filip Zemrak, Kenneth Fung, Elena Lukaschuk, Aaron M. Lee,
+Valentina Carapella, Young Jin Kim, Stefan K. Piechnik, Stefan Neubauer, Steffen E. Petersen, Chris
+Page, Paul M. Matthews, Daniel Rueckert, and Ben Glocker. Automated quality control in image segmentation: application to the UK Biobank cardiovascular magnetic resonance imaging study. Journal of
+Cardiovascular Magnetic Resonance, 21:18, 2019. doi: 10.1186/s12968-019-0523-x.
+Maximilian Rokuss, Moritz Langenberg, Yannick Kirchhoff, Fabian Isensee, Benjamin Hamm, Constantin
+Ulrich, Sebastian Regnery, Lukas Bauer, Efthimios Katsigiannopulos, Tobias Norajitra, et al. VoxTell:
+Free-text promptable universal 3D medical image segmentation. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR), 2026.
+Robin Rombach, Andreas Blattmann, Dominik Lorenz, Patrick Esser, and Björn Ommer. High-resolution
+image synthesis with latent diffusion models. In Proceedings of the IEEE/CVF Conference on Computer
+Vision and Pattern Recognition (CVPR), pp. 10684–10695, 2022. doi: 10.1109/CVPR52688.2022.01042.
+Andrew Sellergren, Sahar Kazemzadeh, Tiam Jaroensri, Atilla Kiraly, Madeleine Traverse, Timo Kohlberger,
+Shawn Xu, Fayaz Jamil, Cían Hughes, Charles Lau, et al. MedGemma technical report. arXiv preprint
+arXiv:2507.05201, 2025.
+Yannick Suter, Urspeter Knecht, Waldo Valenzuela, Michelle Notter, Ekkehard Hewer, Philippe Schucht,
+Roland Wiest, and Mauricio Reyes. The LUMIERE dataset: Longitudinal glioblastoma MRI with expert
+RANO evaluation. Scientific Data, 9(1):768, 2022.
+Wenwu Tang, Khaled Seyam, and Bin Yang. Towards 3D semantic image synthesis for medical imaging.
+arXiv preprint arXiv:2507.00206, 2025.
+Matthieu Terris, Samuel Hurault, Maxime Song, and Julián Tachella.
+Reconstruct anything model: a
+lightweight general model for computational imaging. In International Conference on Learning Representations (ICLR), 2026.
+Vanya V Valindria, Ioannis Lavdas, Wenjia Bai, Konstantinos Kamnitsas, Eric O Aboagye, Andrea G Rockall, Daniel Rueckert, and Ben Glocker. Reverse classification accuracy: predicting segmentation performance in the absence of ground truth. IEEE Transactions on Medical Imaging, 36(8):1597–1606, 2017.
+Haoshen Wang, Zhentao Liu, Kaicong Sun, Xiaodong Wang, Dinggang Shen, and Zhiming Cui. 3D MedDiffusion: A 3D medical latent diffusion model for controllable and high-quality medical image generation.
+IEEE Transactions on Medical Imaging, 44(12):4960–4972, 2025a. doi: 10.1109/TMI.2025.3585372.
+Haoyu Wang, Sizheng Guo, Jin Ye, Zhongying Deng, Junlong Cheng, Tianbin Li, Jianpin Chen, Yanzhou Su,
+Ziyan Huang, Yiqing Shen, et al. SAM-Med3D: a vision foundation model for general-purpose segmentation
+on volumetric medical images. IEEE Transactions on Neural Networks and Learning Systems, 2025b.
+Shuo Wang, Giacomo Tarroni, Chen Qin, Yuanhan Mo, Chengliang Dai, Chen Chen, Ben Glocker, Yike
+Guo, Daniel Rueckert, and Wenjia Bai. Deep generative model-based quality control for cardiac MRI
+segmentation. In Medical Image Computing and Computer Assisted Intervention (MICCAI), 2020.
+Jakob Wasserthal, Hanns-Christian Breit, Manfred T Meyer, Maurice Pradella, Daniel Hinck, Alexander W
+Sauter, Tobias Heye, Daniel T Boll, Joshy Cyriac, Shan Yang, et al. TotalSegmentator: robust segmentation of 104 anatomic structures in CT images. Radiology: Artificial Intelligence, 5(5):e230024, 2023.
+Hallee E Wong, Marianne Rakic, John Guttag, and Adrian V Dalca. ScribblePrompt: fast and flexible
+interactive segmentation for any biomedical image. In European Conference on Computer Vision (ECCV),
+volume 15098, pp. 3–19, 2024.
+Peng Xia, Kangyu Zhu, Haoran Li, Tianze Wang, Weijia Shi, Sheng Wang, Linjun Zhang, James Zou, and
+Huaxiu Yao. MMed-RAG: Versatile multimodal RAG system for medical vision language models. In
+International Conference on Learning Representations (ICLR), 2025.
+18
+
+--- PAGE 19 [pdf_text] ---
+Published in Transactions on Machine Learning Research (10/2026)
+Guangzhi Xiong, Qiao Jin, Zhiyong Lu, and Aidong Zhang. Benchmarking retrieval-augmented generation
+for medicine. In Findings of the Association for Computational Linguistics: ACL 2024, pp. 6233–6251,
+2024.
+Yuhui Yuan, Jingyi Xie, Xilin Chen, and Jingdong Wang. SegFix: Model-agnostic boundary refinement for
+segmentation. In European Conference on Computer Vision (ECCV), pp. 489–506. Springer, 2020.
+Sheng Zhang, Yanbo Xu, Naoto Usuyama, Hanwen Xu, Jaspreet Bagga, Robert Tinn, Sam Preston, Rajesh
+Rao, Mu Wei, Naveen Valluri, et al. A multimodal biomedical foundation model trained from fifteen
+million image–text pairs. NEJM AI, 2(1), 2025. doi: 10.1056/AIoa2400640.
+Lin Zhao, Xiao Chen, Eric Z Chen, Yikang Liu, Terrence Chen, and Shanhui Sun. Retrieval-augmented
+few-shot medical image segmentation with foundation models. IEEE Transactions on Neural Networks
+and Learning Systems, 36(10), 2025.
+19
+
+--- PAGE 20 [pdf_text] ---
+Published in Transactions on Machine Learning Research (10/2026)
+Appendix Overview
+Appendix A compares the three refiner paradigms (deterministic pixel-space, deterministic latent autoencoder, and latent flow-matching) as instantiations of the refiner interface. It reports the mechanistic reasoning
+behind the empirical ordering in Sec. 4.2, as well as the associated computational costs of each variant. Appendix B reports the architectural ablation of the latent RAG refiner behind the design choices in Sec. 3.4.
+Appendix C explains the ultrasound result of the leave-one-modality-out experiment. Appendix D gives the
+case-level failure analysis. Appendix E gives the retrieval-encoder comparison and the per-organ class-query
+results. Appendix F summarises the dataset scope, per-dataset case and class counts, and the aggregate
+number of non-empty binary-mask instances. Finally, Appendix G reports an emergent temporal-memory
+property of the retrieval pipeline on the LUMIERE dataset.
+A
+Refiner paradigms: deterministic, latent autoencoder, latent flow-matching
+The refiner interface (Sec. 3.4) admits three concrete instantiations. They are evaluated with the same data,
+corruption schedule, and retrieval pipeline, but differ in network architecture, refinement representation (pixel
+or latent), training objective, and inference procedure (deterministic forward pass or generative sampling).
+The first instantiation, GRACE-U, is a supervised 3D U-Net trained on pixel-wise labels that consumes
+the corrupted mask, the image, and the retrieved exemplar as channel-concatenated inputs and returns a
+per-voxel foreground logit. It uses one forward pass with no latent codec or sampler. Its single-pass design
+makes it the fastest variant and empirically produces the more conservative behaviour described in Sec. 4.2.
+Consistent with Table 1, GRACE-M produces the larger mean DSC gains on the mid tier and on two of the
+three strong segmentors, whereas GRACE-U leads on the weak tier and on U-Net@150; all three variants
+have small non-negative mean changes on the strong tier.
+The second instantiation, GRACE-M, moves the refinement into the mask latent space. A frozen encoder
+maps the corrupted mask and the retrieved exemplar into a compact 4×243 latent. A small fusion module
+(concat, FiLM, or cross-attention) combines the two latents, while a mask-tuned decoder returns the refined
+mask. Since the decoded output is drawn from the learned mask manifold, this paradigm can produce a
+plausible completion even when the input carries almost no signal. The reported latent variants use a frozen
+MAISI encoder together with a decoder fine-tuned on the binary-mask distribution (Appendix B).
+The third instantiation, GRACE-M-D, replaces the deterministic latent decode with an ODE integration
+of a learned velocity field conditioned on the retrieved exemplar, following flow matching (Lipman et al.,
+2023) for latent generative models. Inference becomes stochastic in the choice of initial noise, so a batch of
+runs on the same input yields a family of plausible refinements; averaging or selecting among them supports
+the sample-level uncertainty estimates that neither deterministic paradigm provides.
+On the aggregate
+benchmark in Table 6, its 30-step aggregate DSC closely matches the deterministic GRACE-M decode
+while inference is roughly seven times slower; its practical value therefore lies in downstream workflows that
+consume uncertainty rather than in additional aggregate DSC.
+These architectural differences are reflected in the empirical behaviour observed across experiments. Table 1
+supports regime-wise comparisons for the three variants: GRACE-M has the larger mean lift on the mid and
+most of the strong tiers, while all three variants have small non-negative mean changes on the top performing
+model (TotalSegmentator). On the aggregate benchmark of Table 6, averaged over three ODE seeds, the
+30-step GRACE-M-D stays within 0.01 DSC of GRACE-M.
+Inference runtime and computational cost.
+Table 6 reports wall-clock inference time per case and
+mean DSC for the three refiner paradigms. Measurements were obtained on a single NVIDIA A100 with
+batch size one using ten representative cases (one per MSD organ) from a stratified 10% hold-out. Each
+benchmark run covers those ten cases; runtime means and sample standard deviations are computed across
+five repeated runs, with GPU synchronisation before each measurement. GRACE-U runs sub-second per case
+using one forward pass, and GRACE-M adds a single deterministic latent decode. GRACE-M-D requires
+several seconds at the 30-step operating point because of iterative ODE integration (see Table 6). All three
+20
+
+--- PAGE 21 [pdf_text] ---
+Published in Transactions on Machine Learning Research (10/2026)
+Table 6: Performance versus inference runtime. Wall-clock time per case (mean ± sample standard
+deviation across five benchmark runs, each covering ten organs) and DSC (mean ± sample standard deviation
+across cases) under the strong synthetic-corruption preset. PostDAE requires 10 separately trained models
+(one per anatomy). The number of function evaluations (NFE) is also reported.
+Method
+NFE
+Time / case (s)
+DSC ↑
+GRACE-U (feedforward)
+1
+0.31 ± 0.02
+0.803 ± 0.071
+GRACE-M (deterministic latent)
+1
+0.58 ± 0.03
+0.815 ± 0.068
+GRACE-M-D (FM, 10 steps)
+10
+1.4 ± 0.1
+0.788 ± 0.073
+GRACE-M-D (FM, 20 steps)
+20
+2.8 ± 0.1
+0.801 ± 0.070
+GRACE-M-D (FM, 30 steps)
+30
+4.2 ± 0.1
+0.810 ± 0.069
+GRACE-M-D (FM, 50 steps)
+50
+7.0 ± 0.2
+0.813 ± 0.068
+PostDAE†
+1
+0.16 ± 0.11
+0.422 ± 0.132
+RAM‡
+1
+10.7 ± 0.1
+0.582 ± 0.108
+†Slice-by-slice 2-D processing; 10 anatomy-specific models.
+‡Slice-by-slice 2-D processing; single shared model.
+variants share the same retrieval pipeline, allowing deployments to switch between refiners without modifying
+the surrounding retrieval infrastructure.
+B
+Architectural ablations of the latent RAG refiner
+The refiner interface of Sec. 3.4 admits several concrete instantiations. This appendix reports the empirical
+characterisation that motivates the choices adopted in the main paper. Three design axes are examined in
+controlled comparisons: (i) how the retrieved exemplar Yr enters the refiner (fusion module); (ii) whether
+inference uses the deterministic GRACE-M decode or the GRACE-M-D flow-matching trajectory; and (iii)
+the training loss, exemplar selection, and velocity-network width for GRACE-M-D. Settings outside the axis
+under study are held fixed within each comparison. The same fusion-module ablation is repeated on the
+pixel-space variant GRACE-U for completeness.
+Fusion module for RAG.
+Three interfaces for injecting the retrieved exemplar into the refiner are
+compared. The concat module stacks the encoded corrupted latent and the encoded exemplar latent along
+the channel axis and applies a 1×1×1 convolution with identity initialisation so the refiner recovers the
+corrupted-only forward pass at step zero. The FiLM module pools the encoded exemplar over the spatial
+dimensions, passes it through a small MLP that emits per-channel scale and shift, and applies them to the
+corrupted latent. The cross-attention module is a single-head projected attention layer with the corrupted
+latent tokens as queries and the encoded exemplar tokens as keys and values. The pixel-space ablation
+applies the corresponding conditioning operations to U-Net feature maps. Table 7 reports refined DSC for
+both refiner variants. Concat gives the highest score for each variant and is retained as the default for its
+accuracy, parameter economy, and interpretability. Additionally, Table 8 reports controlled combinations of
+training changes for GRACE-M-D: the auxiliary Dice loss and the K-NN exemplar each improve the common
+baseline, their combination improves it further, and widening the velocity network produces the highest score
+at roughly twice the parameter count.
+Decoder handling.
+All reported latent variants use the frozen MAISI encoder with a decoder fine-tuned
+on the binary-mask distribution; no frozen-decoder comparison is included in the reported ablations.
+Inference procedure.
+On the aggregate benchmark in Table 6, the 30-step flow-matching procedure
+reaches 0.810 DSC versus 0.815 for the deterministic GRACE-M latent decode and is about seven times
+slower. The deterministic procedure is therefore used for the reported GRACE-M numbers.
+C
+Leave-one-modality-out: retrieval on ultrasound
+21
+
+--- PAGE 22 [pdf_text] ---
+Published in Transactions on Machine Learning Research (10/2026)
+Table 7: Fusion-module ablation. Refined DSC (mean ± sample standard deviation across cases) for the
+three exemplar-fusion interfaces, evaluated on both refiner variants under the strong synthetic-corruption
+preset. All rows share the training data, corruption schedule, and retrieval pipeline; only the module that
+injects the retrieved exemplar changes. Concat gives the highest displayed score for both variants and is
+retained as the default.
+Fusion module
+GRACE-U DSC ↑
+GRACE-M DSC ↑
+Concat (default)
+0.803 ± 0.071
+0.815 ± 0.068
+FiLM
+0.786 ± 0.074
+0.797 ± 0.072
+Cross-attention
+0.750 ± 0.086
+0.799 ± 0.071
+Table 8: Training ablation for GRACE-M-D. Rows compare controlled combinations against a common
+baseline on the strong synthetic-corruption preset; ∆DSC is measured relative to that baseline. Params
+report only the U-Net velocity network.
+Configuration
+DSC ↑
+∆DSC
+Params (M)
+Baseline
+0.706 ± 0.082
+0.000 ± 0.000
+53.2
+Dice-aux only (w=0.5, 60-ep warmup)
+0.721 ± 0.079
++0.015 ± 0.021
+53.2
+K-NN exemplar only
+0.717 ± 0.081
++0.011 ± 0.020
+53.2
+Dice-aux + K-NN exemplar
+0.732 ± 0.076
++0.026 ± 0.024
+53.2
+Both + wider U-Net (×2 channels)
+0.744 ± 0.073
++0.038 ± 0.026
+118.6
+Table 9: Case-level failure analysis. Evaluated cases grouped by the DSC of their input mask. A case
+is harmed when refinement lowers its DSC by more than the stated margin; case counts in brackets. Mean
+∆DSC is the mean change of DSC within each band.
+Input DSC
+n
+Mean ∆DSC
+Harmed (> 0.01 drop)
+Harmed (> 0.05 drop)
+< 0.2
+214
++0.271
+1.4% (3)
+0.5% (1)
+0.2 to 0.5
+187
++0.168
+3.7% (7)
+1.1% (2)
+0.5 to 0.8
+243
++0.061
+6.6% (16)
+1.2% (3)
+> 0.8
+156
++0.007
+11.5% (18)
+3.8% (6)
+This appendix explains the ultrasound result of Table 3 (Block B). Class routing does not cause the ultrasound
+failure: all 101 CAMUS queries retrieve the correct cardiac structure. The shape agreement between a query
+and its retrieved pool decreases. The low ultrasound ratio has a specific cause. CAMUS is 2D+time, so its
+third axis is the cardiac cycle. ACDC and MSD Heart are spatial volumes. The CAMUS long-axis views
+(2CH, 4CH) also retrieve short-axis support cases. The shape agreement per structure follows the view
+dependence of the structure: myocardium 0.125, left atrium 0.239, LV cavity 0.433. We think that shape
+complexity is an important factor in retrieval. Thus, the ultrasound row does not measure the modality
+alone.
+D
+Case-level failure analysis
+A mean change does not show how often refinement degrades a mask. Table 1 gives the mean ∆DSC and
+its standard deviation for each upstream tier. Table 9 groups the cases by input DSC and gives how often
+GRACE decreases the DSC. Over all 800 cases, 5.5% (44) lose more than 0.01 DSC and 1.5% (12) lose more
+than 0.05. The 5th percentile of ∆DSC therefore lies between −0.05 and −0.01. For inputs below 0.5 DSC,
+fewer than 5% of the cases lose more than 0.01, so the 5th percentile is above −0.01.
+Below an input DSC of 0.8, harm is rare. At most 6.6% of cases lose more than 0.01 DSC, and at most 1.2%
+lose more than 0.05. Above 0.8, the rate increases to 11.5%, and 3.8% of cases lose more than 0.05. A good
+22
+
+--- PAGE 23 [pdf_text] ---
+Published in Transactions on Machine Learning Research (10/2026)
+Table 10: Retrieval encoder ablation.
+Performance on the strong synthetic-corruption preset with
+different retrieval encoders while keeping the GRACE-M refiner, knowledge-base size, and corruption schedule
+fixed. The mask-domain variants construct retrieval embeddings from the frozen MAISI VAE encoder: the
+first uses adaptive pooling alone, the second adds PCA reduction, and the third replaces PCA with a learned
+two-layer MLP. This comparison assesses how far anatomical shape alone can approach multimodal retrieval.
+“Encoder dim.” reports the dimensionality emitted by the listed encoder or reduction, rather than the 256dimensional shape-aware index used by the main pipeline. Unlike the main experiments (k = 5), all rows in
+this ablation use top-k retrieval with k = 3 and spatial-exemplar conditioning.
+KB encoder
+Encoder dim.
+DSC (strong synthetic preset) ↑
+HD95 ↓
+DINOv2 (natural)
+1024
+0.746 ± 0.081
+8.44 ± 3.42
+BiomedCLIP
+512
+0.789 ± 0.074
+7.32 ± 3.10
+MedSigLIP
+1152
+0.796 ± 0.072
+7.05 ± 2.98
+MedGemma multimodal (main encoder)
+2560
+0.812 ± 0.069
+6.78 ± 2.86
+MAISI-pure (raw)
+864
+0.764 ± 0.078
+7.94 ± 3.25
+MAISI-pure →PCA-256
+256
+0.779 ± 0.075
+7.51 ± 3.14
+MAISI-pure, self-projector (2-layer MLP)
+256
+0.800 ± 0.072
+7.02 ± 2.94
+Table 11: Robustness to the class query. Mean DSC gain over the input at the evaluation-only extreme
+preset, with the trained refiner held fixed. Correct class is the protocol used everywhere else in the paper.
+Random wrong class retrieves the exemplar from a randomly chosen other class.
+No exemplar sets the
+retrieval channel to zero. The exemplar share is (correct class −no exemplar) / correct class.
+Organ
+Input DSC
+Correct class
+Random wrong class
+No exemplar
+Exemplar share
+Liver
+0.183
++0.512
++0.361
++0.208
+59%
+Kidneys
+0.110
++0.449
++0.372
++0.171
+62%
+Spleen
+0.201
++0.430
++0.338
++0.163
+62%
+Pancreas
+0.308
++0.194
++0.101
++0.119
+39%
+input has few errors to correct, and the shape prior can remove correct detail. On strong upstreams, the
+harm rate is more informative than the mean.
+E
+Retrieval encoder choice
+Retrieval encoder.
+Table 10 evaluates the impact of the retrieval encoder while keeping the refiner and
+the knowledge-base size fixed. We compare two families of retrieval embeddings: four pretrained foundation
+encoders (DINOv2 (Oquab et al., 2024), BiomedCLIP (Zhang et al., 2025), MedSigLIP (Sellergren et al.,
+2025), and MedGemma) and three mask-domain variants derived from a frozen MAISI (Guo et al., 2025) VAE
+encoder. The three mask-domain variants use (i) pooled latent features directly, (ii) pooled features followed
+by PCA reduction, and (iii) a learned two-layer self-projector trained on the same latent representation.
+Among foundation encoders, MedGemma achieves the best performance, followed closely by the remaining
+medical encoders, whereas DINOv2 consistently trails them. The strongest mask-domain variant closely
+approaches MedGemma despite relying solely on anatomical shape information, suggesting that shape alone
+carries a strong retrieval signal.
+Class query.
+Table 11 gives the per-organ results of the class-query study of Sec. 4.5 at the extreme preset.
+F
+Datasets and instance counts
+Table 12 enumerates the full dataset scope, listing per-dataset modality, case count, class count, and the
+anatomical structures covered for both the training corpus and the three held-out datasets. Decomposing
+the multi-class training labels into per-organ binaries and discarding empty class–volume pairs yields 11,900
+23
+
+--- PAGE 24 [pdf_text] ---
+Published in Transactions on Machine Learning Research (10/2026)
+Table 12: Dataset scope. GRACE is trained on 15 public datasets spanning CT, MRI and ultrasound,
+covering 38 anatomical structures across the abdomen, thorax, pelvis, brain and cardiac chambers. Three
+further datasets are held out entirely from training. For the held-out dataset-transfer evaluation in Sec. 4.3,
+none of their cases is inserted into K; the optional longitudinal-memory analysis is reported separately in
+Appendix G. The columns report dataset, modality, case count, class count, and covered anatomy. After
+decomposing the multi-class labels, the training splits contain 11,900 non-empty binary-mask instances, of
+which K indexes N=3,913.
+Dataset
+Modality
+Cases
+Classes
+Notes
+Training corpus
+Task01_BrainTumour
+MRI
+484
+3
+edema, non-enhancing tumour, enhancing tumour
+Task02_Heart
+MRI
+20
+1
+left atrium
+Task03_Liver
+CT
+117
+2
+liver, cancer
+Task04_Hippocampus
+MRI
+260
+2
+anterior, posterior
+Task05_Prostate
+MRI
+28
+2
+PZ, TZ
+Task06_Lung
+CT
+56
+1
+tumour
+Task07_Pancreas
+CT
+252
+2
+pancreas, cancer
+Task08_HepaticVessel
+CT
+303
+2
+vessel, tumour
+Task09_Spleen
+CT
+36
+1
+spleen
+Task10_Colon
+CT
+113
+1
+cancer
+AbdomenCT1K (Ma et al., 2022)
+CT
+577
+4
+liver, kidneys, spleen, pancreas
+AMOS22_CT (Ji et al., 2022)
+CT
+200
+15
+15 abdominal organs
+AMOS22_MR (Ji et al., 2022)
+MRI
+40
+15
+15 abdominal organs
+ACDC (Bernard et al., 2018)
+MRI
+480
+3
+RV, myocardium, LV
+CAMUS (Leclerc et al., 2019)
+US
+900
+3
+LV cavity, myocardium, LA
+Training total
+CT/MRI/US
+3,866
+57
+38 unique structures; 5 regions
+Held-out datasets (not indexed in the held-out transfer protocol)
+ProstateX
+MRI
+346
+1
+prostate (multiparametric)
+CHAOS
+CT/MRI
+40
+4
+liver, left kidney, right kidney, spleen
+LUMIERE
+MRI
+91
+1
+GBM tumour; 599 longitudinal timepoints
+Held-out total
+CT/MRI
+477
+non-empty 3-D binary-mask instances over 38 structures in total, of which the knowledge base of the reported
+configuration indexes N=3,913. As stated in Sec. 3.2, the held-out-dataset evaluation indexes only trainingsplit cases; the optional longitudinal-memory analysis in Appendix G is reported separately.
+24
+
+--- PAGE 25 [pdf_text] ---
+Published in Transactions on Machine Learning Research (10/2026)
+G
+Retrieval as implicit temporal memory
+2
+Visit 1
+Visit 2
+Visit 3
+3
+21
+23
+1
+1
+3
+cos=0.975
+cos=0.996
+cos=0.972
+cos=0.991
+cos=0.968
+cos=0.989
+cos=0.980
+cos=0.976
+cos=0.979
+Top-k retrieved
+Query visit
+Visit 1
+Visit 1
+Visit 2
+Brain Tumour (MR)
+Heart (MR)
+Liver (CT)
+Hippocampus (MR)
+Prostate (MR)
+Lung (CT)
+Pancreas (CT)
+Hepatic Vessel (CT)
+Spleen (CT)
+Colon (CT)
+Figure 6: Emergent patient-specific retrieval (LUMIERE). Each row corresponds to one visit as prior
+scans are added to K. Left: UMAP of training-pool embeddings with three patient visits (⋆). Right: top-3
+retrieved neighbours (gold rings) and similarity scores.
+An emergent behaviour of the retrieval pipeline appears on the longitudinal LUMIERE dataset when the
+temporal-memory workflow is enabled: as a patient’s visits are embedded into K, later refinements retrieve
+the patient’s own prior scans instead of cross-patient atlases (Fig. 6). At the first visit, retrieved neighbours
+are tumour examples from other patients in the training pool; once the patient’s first scan is indexed, it
+becomes the highest-ranked retrieval at the next visit; by the third visit, prior visits dominate the top-k
+list. No temporal supervision is used: retrieval is driven by similarity in the embedding space. This optional
+workflow is separate from Table 2, whose held-out-dataset protocol uses the fixed training-only index and
+therefore excludes every LUMIERE case from the candidate pool. On the subset of LUMIERE with at least
+one prior visit (n=508 timepoints), enabling same-patient retrieval yields an additional DSC lift of +0.021 on
+the ScribblePrompt upstream, on top of the fixed-index score of the corresponding row of Table 2; whether
+this lift is admissible depends on the clinical workflow (a longitudinal QC pass at visit t that already trusts
+the visit-(t−1) mask, versus a per-visit review pipeline that does not) and is reported separately rather
+than folded into the headline number. The mechanism acts as an implicit temporal memory and supports
+longitudinal workflows without dedicated temporal architectures.
+25

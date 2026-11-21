@@ -1,0 +1,44 @@
+{
+  "total_benchmark_questions": 75,
+  "total_questions_tested": 75,
+  "clinical_in_domain_questions": 45,
+  "out_of_domain_questions": 22,
+  "insufficient_evidence_questions": 8,
+  "recall_at_1_percent": 86.7,
+  "recall_at_3_percent": 88.9,
+  "recall_at_5_percent": 93.3,
+  "mrr": 0.888,
+  "ndcg_at_5": 0.899,
+  "paper_citation_accuracy_percent": 86.7,
+  "page_level_citation_accuracy_percent": 71.1,
+  "evidence_support_rate_percent": 82.2,
+  "numerical_claim_accuracy_percent": 100.0,
+  "out_of_domain_refusal_precision": 100.0,
+  "out_of_domain_refusal_recall": 100.0,
+  "insufficient_evidence_detection_rate": 100.0,
+  "zero_fabricated_citations": true,
+  "metrics": {
+    "recall_at_1": 86.7,
+    "recall_at_3": 88.9,
+    "recall_at_5": 93.3,
+    "mrr": 0.888,
+    "ndcg_at_5": 0.899,
+    "paper_citation_accuracy": 86.7,
+    "page_level_citation_accuracy": 71.1,
+    "claim_evidence_support_rate": 82.2,
+    "numerical_claim_accuracy": 100.0,
+    "ood_refusal_precision": 100.0,
+    "ood_refusal_recall": 100.0,
+    "insufficient_detection_rate": 100.0
+  },
+  "ood_evaluation": {
+    "total": 22,
+    "correctly_refused": 22,
+    "false_accepts": 0
+  },
+  "insufficient_evaluation": {
+    "total": 8,
+    "correctly_refused": 8,
+    "false_accepts": 0
+  }
+}

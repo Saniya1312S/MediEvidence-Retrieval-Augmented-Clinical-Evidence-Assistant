@@ -1,0 +1,1052 @@
+[
+  {
+    "id": "Q01",
+    "question": "How are digital twins used in personalized medicine development?",
+    "paper_id": "MED-DT-001",
+    "current_expected_page": 2,
+    "top_matching_pages": [
+      [
+        7,
+        5
+      ],
+      [
+        8,
+        5
+      ],
+      [
+        13,
+        5
+      ],
+      [
+        16,
+        5
+      ]
+    ],
+    "exp_page_preview": "often follow a generalized \u201cone-size-\ufb01ts-all\u201d approach, which fails to account for interindividual variability (6). In contrast, the use of DTs enables a shift toward precision care by creating indivi"
+  },
+  {
+    "id": "Q02",
+    "question": "What is the primary objective of LeViT-UNet++ in medical image segmentation?",
+    "paper_id": "MED-IMG-002",
+    "current_expected_page": 1,
+    "top_matching_pages": [
+      [
+        1,
+        4
+      ],
+      [
+        4,
+        4
+      ],
+      [
+        7,
+        4
+      ],
+      [
+        13,
+        4
+      ]
+    ],
+    "exp_page_preview": "LeViT-UNet++: Towards Balanced Fine-Grained Details and Context for Efficient  Medical Image Segmentation  #Guoping Xu 1,2, Jinling Zhu 1, Liuyue Li 3  1Hubei Key Laboratory of Intelligent Robot, Scho"
+  },
+  {
+    "id": "Q03",
+    "question": "How does retrieval-augmented correction support medical image segmentation?",
+    "paper_id": "MED-IMG-001",
+    "current_expected_page": 1,
+    "top_matching_pages": [
+      [
+        2,
+        6
+      ],
+      [
+        4,
+        6
+      ],
+      [
+        1,
+        5
+      ],
+      [
+        14,
+        5
+      ]
+    ],
+    "exp_page_preview": "Published in Transactions on Machine Learning Research (10/2026) Retrieval-Augmented Correction for Generalist Medical Image Segmentation Vincenzo Marcian\u00f2 vincenzo.marciano@eurecom.fr EURECOM Sorbonn"
+  },
+  {
+    "id": "Q04",
+    "question": "What role does agentic robotics play in remote patient monitoring?",
+    "paper_id": "MED-DHM-001",
+    "current_expected_page": 2,
+    "top_matching_pages": [
+      [
+        1,
+        5
+      ],
+      [
+        3,
+        5
+      ],
+      [
+        29,
+        5
+      ],
+      [
+        5,
+        4
+      ]
+    ],
+    "exp_page_preview": "2 1. INTRODUCTION  Global aging and the expansion of care beyond institutional settings are creating sustained demand  for technologies that can support independent living while reducing the burden on"
+  },
+  {
+    "id": "Q05",
+    "question": "What clinical outcomes are reported for digitally supported transitional care pathways for older adults?",
+    "paper_id": "MED-DHM-002",
+    "current_expected_page": 1,
+    "top_matching_pages": [
+      [
+        1,
+        9
+      ],
+      [
+        2,
+        8
+      ],
+      [
+        15,
+        8
+      ],
+      [
+        16,
+        8
+      ]
+    ],
+    "exp_page_preview": "1    Digitally Supported Transitional Care Pathways for Older Adults: A Multi-Site Co- Design Study  Camilla Gabrielsen1, Roberta Bevilacqua2, Lorena Rossi2, Eleonora Bonifazi2, Margherita Osimani2, O"
+  },
+  {
+    "id": "Q06",
+    "question": "How is a Body Area Network designed for smart IoMT elderly healthcare monitoring?",
+    "paper_id": "MED-DHM-004",
+    "current_expected_page": 1,
+    "top_matching_pages": [
+      [
+        1,
+        9
+      ],
+      [
+        2,
+        6
+      ],
+      [
+        3,
+        6
+      ],
+      [
+        4,
+        4
+      ]
+    ],
+    "exp_page_preview": "2025 IEEE International Conference on Biomedical Engineering, Computer and Information Technology for Health (BECITHCON) 29-30 November 2025, Eastern University, Dhaka, Bangladesh A Novel Approach for"
+  },
+  {
+    "id": "Q07",
+    "question": "What is the HAPI-EP framework for digital twins in cardiac electrophysiology?",
+    "paper_id": "MED-DT-004",
+    "current_expected_page": 1,
+    "top_matching_pages": [
+      [
+        2,
+        6
+      ],
+      [
+        3,
+        6
+      ],
+      [
+        1,
+        5
+      ],
+      [
+        36,
+        5
+      ]
+    ],
+    "exp_page_preview": "Graphical Abstract HAPI-EP: Towards Hybrid, Adaptive, and Predictive Digital Twins of Cardiac Electrophysiology Sumeet Vadhavkar, Xiajun Jiang, Yubo Ye, Maryam Toloubidokhti, Linwei Wang arXiv:2606.15"
+  },
+  {
+    "id": "Q08",
+    "question": "How does PocketTSLM deploy language models for wearable time-series modeling on smart devices?",
+    "paper_id": "MED-IOT-001",
+    "current_expected_page": 1,
+    "top_matching_pages": [
+      [
+        1,
+        8
+      ],
+      [
+        2,
+        8
+      ],
+      [
+        3,
+        8
+      ],
+      [
+        4,
+        8
+      ]
+    ],
+    "exp_page_preview": "October 14, 2026 PocketTSLM: Deploying an On-Device Soft-Prompt Time-Series Language Model for Privacy-Preserving Smartphone Reasoning Max Rosenblattl 1, Nikhil Krishnaswamy1, Leon Nissen 1, Manuel Mi"
+  },
+  {
+    "id": "Q09",
+    "question": "How do RAG-enhanced LLMs support interactive explainability in clinical decision support?",
+    "paper_id": "MED-CDS-001",
+    "current_expected_page": 1,
+    "top_matching_pages": [
+      [
+        1,
+        8
+      ],
+      [
+        3,
+        8
+      ],
+      [
+        13,
+        8
+      ],
+      [
+        7,
+        7
+      ]
+    ],
+    "exp_page_preview": "RAG-Enhanced LLMs for Interactive Explainability in Clinical Decision Support Systems\u22c6 Lorenzo Mannocci1 (\u0000)[0000\u22120002\u22125556\u22123746], Francesca Naretto2[0000\u22120003\u22121301\u22127787], Lucia Passaro2[0000\u22120003\u2212493"
+  },
+  {
+    "id": "Q10",
+    "question": "How does an operation-aware multimodal CDSS predict ICU discharge risks?",
+    "paper_id": "MED-CDS-002",
+    "current_expected_page": 1,
+    "top_matching_pages": [
+      [
+        1,
+        5
+      ],
+      [
+        2,
+        5
+      ],
+      [
+        4,
+        5
+      ],
+      [
+        5,
+        5
+      ]
+    ],
+    "exp_page_preview": "Operation-aware Multimodal Clinical Decision Support System for ICU Discharge Risk Assessment Guoqing Zhang,1 Rafik Hadfi,1 Takayuki Ito1 1Graduate School of Informatics, Kyoto University, Kyoto, Japa"
+  },
+  {
+    "id": "Q11",
+    "question": "In contrast, the use of DTs enables a shift toward precision care by creating individualized virtual models that can simulate responses to specific therapies",
+    "paper_id": "MED-DT-001",
+    "current_expected_page": 2,
+    "top_matching_pages": [
+      [
+        2,
+        14
+      ],
+      [
+        11,
+        10
+      ],
+      [
+        7,
+        9
+      ],
+      [
+        8,
+        9
+      ]
+    ],
+    "exp_page_preview": "often follow a generalized \u201cone-size-\ufb01ts-all\u201d approach, which fails to account for interindividual variability (6). In contrast, the use of DTs enables a shift toward precision care by creating indivi"
+  },
+  {
+    "id": "Q12",
+    "question": "Efficient medical image segmentation is essential for clinical applications requiring rapid and accurate delineation of anatomical structures",
+    "paper_id": "MED-IMG-002",
+    "current_expected_page": 1,
+    "top_matching_pages": [
+      [
+        2,
+        12
+      ],
+      [
+        1,
+        11
+      ],
+      [
+        3,
+        9
+      ],
+      [
+        20,
+        7
+      ]
+    ],
+    "exp_page_preview": "LeViT-UNet++: Towards Balanced Fine-Grained Details and Context for Efficient  Medical Image Segmentation  #Guoping Xu 1,2, Jinling Zhu 1, Liuyue Li 3  1Hubei Key Laboratory of Intelligent Robot, Scho"
+  },
+  {
+    "id": "Q13",
+    "question": "Global aging and the expansion of care beyond institutional settings are creating sustained demand for remote care technologies",
+    "paper_id": "MED-DHM-001",
+    "current_expected_page": 2,
+    "top_matching_pages": [
+      [
+        2,
+        13
+      ],
+      [
+        3,
+        6
+      ],
+      [
+        9,
+        6
+      ],
+      [
+        1,
+        5
+      ]
+    ],
+    "exp_page_preview": "2 1. INTRODUCTION  Global aging and the expansion of care beyond institutional settings are creating sustained demand  for technologies that can support independent living while reducing the burden on"
+  },
+  {
+    "id": "Q14",
+    "question": "Deploying an On-Device Soft-Prompt Time-Series Language Model for Privacy-Preserving Smart Healthcare Wearables",
+    "paper_id": "MED-IOT-001",
+    "current_expected_page": 1,
+    "top_matching_pages": [
+      [
+        1,
+        10
+      ],
+      [
+        3,
+        7
+      ],
+      [
+        4,
+        7
+      ],
+      [
+        2,
+        6
+      ]
+    ],
+    "exp_page_preview": "October 14, 2026 PocketTSLM: Deploying an On-Device Soft-Prompt Time-Series Language Model for Privacy-Preserving Smartphone Reasoning Max Rosenblattl 1, Nikhil Krishnaswamy1, Leon Nissen 1, Manuel Mi"
+  },
+  {
+    "id": "Q15",
+    "question": "Interactive Explainability in Clinical Decision Support Systems",
+    "paper_id": "MED-CDS-001",
+    "current_expected_page": 1,
+    "top_matching_pages": [
+      [
+        1,
+        6
+      ],
+      [
+        13,
+        6
+      ],
+      [
+        3,
+        5
+      ],
+      [
+        11,
+        5
+      ]
+    ],
+    "exp_page_preview": "RAG-Enhanced LLMs for Interactive Explainability in Clinical Decision Support Systems\u22c6 Lorenzo Mannocci1 (\u0000)[0000\u22120002\u22125556\u22123746], Francesca Naretto2[0000\u22120003\u22121301\u22127787], Lucia Passaro2[0000\u22120003\u2212493"
+  },
+  {
+    "id": "Q16",
+    "question": "In what manner do computer-generated patient simulations help tailor healthcare interventions to specific individuals?",
+    "paper_id": "MED-DT-001",
+    "current_expected_page": 2,
+    "top_matching_pages": [
+      [
+        2,
+        6
+      ],
+      [
+        11,
+        6
+      ],
+      [
+        14,
+        6
+      ],
+      [
+        16,
+        6
+      ]
+    ],
+    "exp_page_preview": "often follow a generalized \u201cone-size-\ufb01ts-all\u201d approach, which fails to account for interindividual variability (6). In contrast, the use of DTs enables a shift toward precision care by creating indivi"
+  },
+  {
+    "id": "Q17",
+    "question": "What vision transformer architectures achieve high precision contour tracing in radiological scans?",
+    "paper_id": "MED-IMG-002",
+    "current_expected_page": 1,
+    "top_matching_pages": [
+      [
+        2,
+        4
+      ],
+      [
+        3,
+        4
+      ],
+      [
+        15,
+        4
+      ],
+      [
+        16,
+        4
+      ]
+    ],
+    "exp_page_preview": "LeViT-UNet++: Towards Balanced Fine-Grained Details and Context for Efficient  Medical Image Segmentation  #Guoping Xu 1,2, Jinling Zhu 1, Liuyue Li 3  1Hubei Key Laboratory of Intelligent Robot, Scho"
+  },
+  {
+    "id": "Q18",
+    "question": "How do physical autonomous robotic devices assist elderly individuals outside the clinical environment?",
+    "paper_id": "MED-DHM-001",
+    "current_expected_page": 2,
+    "top_matching_pages": [
+      [
+        3,
+        7
+      ],
+      [
+        17,
+        6
+      ],
+      [
+        20,
+        6
+      ],
+      [
+        26,
+        6
+      ]
+    ],
+    "exp_page_preview": "2 1. INTRODUCTION  Global aging and the expansion of care beyond institutional settings are creating sustained demand  for technologies that can support independent living while reducing the burden on"
+  },
+  {
+    "id": "Q19",
+    "question": "How can compact sequence models run locally on personal smart accessories without leaking sensitive medical telemetry?",
+    "paper_id": "MED-IOT-001",
+    "current_expected_page": 1,
+    "top_matching_pages": [
+      [
+        3,
+        6
+      ],
+      [
+        1,
+        5
+      ],
+      [
+        2,
+        5
+      ],
+      [
+        4,
+        4
+      ]
+    ],
+    "exp_page_preview": "October 14, 2026 PocketTSLM: Deploying an On-Device Soft-Prompt Time-Series Language Model for Privacy-Preserving Smartphone Reasoning Max Rosenblattl 1, Nikhil Krishnaswamy1, Leon Nissen 1, Manuel Mi"
+  },
+  {
+    "id": "Q20",
+    "question": "How can retrieval-grounded generative models clarify diagnostic recommendations for attending physicians?",
+    "paper_id": "MED-CDS-001",
+    "current_expected_page": 1,
+    "top_matching_pages": [
+      [
+        2,
+        3
+      ],
+      [
+        1,
+        2
+      ],
+      [
+        3,
+        2
+      ],
+      [
+        5,
+        2
+      ]
+    ],
+    "exp_page_preview": "RAG-Enhanced LLMs for Interactive Explainability in Clinical Decision Support Systems\u22c6 Lorenzo Mannocci1 (\u0000)[0000\u22120002\u22125556\u22123746], Francesca Naretto2[0000\u22120003\u22121301\u22127787], Lucia Passaro2[0000\u22120003\u2212493"
+  },
+  {
+    "id": "Q21",
+    "question": "What is the total page count and chunk count of the primary publication by Saratkar et al. (2025)?",
+    "paper_id": "MED-DT-001",
+    "current_expected_page": 1,
+    "top_matching_pages": [
+      [
+        1,
+        3
+      ],
+      [
+        2,
+        3
+      ],
+      [
+        5,
+        3
+      ],
+      [
+        10,
+        3
+      ]
+    ],
+    "exp_page_preview": "EDITED BY Antonella Carbonaro, University of Bologna, Italy REVIEWED BY Ingrid Vasiliu Feltes, University of Miami, United States Lingala Thirupathi, Sreenidhi Institute of Science and Technology, Ind"
+  },
+  {
+    "id": "Q22",
+    "question": "What is the size and dataset scale of the CODE-II electrocardiogram corpus for telehealth?",
+    "paper_id": "MED-DHM-005",
+    "current_expected_page": 1,
+    "top_matching_pages": [
+      [
+        1,
+        6
+      ],
+      [
+        12,
+        5
+      ],
+      [
+        13,
+        5
+      ],
+      [
+        21,
+        5
+      ]
+    ],
+    "exp_page_preview": "CODE-II: A large-scale dataset for artificial intelligence in ECG analysis Petrus E. O. G. B. Abreu\u2217\u2020, Gabriela M. M. Paix\u02dcao\u2020, Jiawei Li\u2021, Paulo R. Gomes\u2020, Peter W. Macfarlane\u00a7, Ana C. S. Oliveira\u2020, "
+  },
+  {
+    "id": "Q23",
+    "question": "How does visual autoregressive modeling reduce radiation noise in low-dose CT denoising in DeVAR?",
+    "paper_id": "MED-IMG-006",
+    "current_expected_page": 1,
+    "top_matching_pages": [
+      [
+        1,
+        9
+      ],
+      [
+        3,
+        7
+      ],
+      [
+        5,
+        7
+      ],
+      [
+        7,
+        7
+      ]
+    ],
+    "exp_page_preview": "DeVAR: Low-Dose CT Denoising via Visual Autoregressive Modeling Xizhuo Zhang1\u2217, Yannian Gu1\u2217, Zhongzhen Huang1, Shaoting Zhang1,2\u2020, and Xiaofan Zhang1,3\u2020 1 Shanghai Jiao Tong University, China 2 Sense"
+  },
+  {
+    "id": "Q24",
+    "question": "How many body sensor nodes are typically deployed in the IoMT BAN architecture for home health?",
+    "paper_id": "MED-DHM-004",
+    "current_expected_page": 1,
+    "top_matching_pages": [
+      [
+        1,
+        6
+      ],
+      [
+        2,
+        6
+      ],
+      [
+        3,
+        4
+      ],
+      [
+        4,
+        3
+      ]
+    ],
+    "exp_page_preview": "2025 IEEE International Conference on Biomedical Engineering, Computer and Information Technology for Health (BECITHCON) 29-30 November 2025, Eastern University, Dhaka, Bangladesh A Novel Approach for"
+  },
+  {
+    "id": "Q25",
+    "question": "How does MedJev benchmark zero-shot system-one decision making across medical cohorts?",
+    "paper_id": "MED-CDS-005",
+    "current_expected_page": 1,
+    "top_matching_pages": [
+      [
+        1,
+        9
+      ],
+      [
+        2,
+        8
+      ],
+      [
+        3,
+        8
+      ],
+      [
+        4,
+        8
+      ]
+    ],
+    "exp_page_preview": "MedJev: Evaluating Zero-Shot System-One Decision Making in Medicine Simon A. Lee1, Jiahang Sha1, Moonseong Jeong1, Yunbei Pan1 and Jeffrey N. Chiang1,2 1UCLA Computational Medicine, 2UCLA Neurosurgery"
+  },
+  {
+    "id": "Q26",
+    "question": "How does bidirectional temporal consistency handle sparse scribble annotations in video segmentation?",
+    "paper_id": "MED-IMG-003",
+    "current_expected_page": 1,
+    "top_matching_pages": [
+      [
+        1,
+        7
+      ],
+      [
+        2,
+        7
+      ],
+      [
+        6,
+        6
+      ],
+      [
+        7,
+        6
+      ]
+    ],
+    "exp_page_preview": "Scribble Once, Segment the Sequence: Bidirectional Temporal Consistency for Weakly Supervised Segmentation in Echocardiography Sequences Vincent Li Weixin University of Oxford vincent.li@reuben.ox.ac."
+  },
+  {
+    "id": "Q27",
+    "question": "How does Fisher-Guided representation learning prevent catastrophic forgetting in medical classification?",
+    "paper_id": "MED-IMG-004",
+    "current_expected_page": 1,
+    "top_matching_pages": [
+      [
+        4,
+        7
+      ],
+      [
+        1,
+        6
+      ],
+      [
+        2,
+        6
+      ],
+      [
+        3,
+        6
+      ]
+    ],
+    "exp_page_preview": "FGCARL: Fisher-Guided Continuously Adaptive Representation Learning for Medical Image Segmentation Xiaobing Yua,c,\u2217, Jin Yangb,\u2217, Peijie Qiua, Weiwei Maa and Xiaofeng Liuc aMallinckrodt Institute of R"
+  },
+  {
+    "id": "Q28",
+    "question": "How does knowledge distillation compress electrodermal activity (EDA) denoising models for wearable IoT?",
+    "paper_id": "MED-IOT-004",
+    "current_expected_page": 1,
+    "top_matching_pages": [
+      [
+        1,
+        8
+      ],
+      [
+        2,
+        7
+      ],
+      [
+        12,
+        7
+      ],
+      [
+        6,
+        5
+      ]
+    ],
+    "exp_page_preview": "1  This work has been submitted to IEEE for possible publication. Copyright may be transferred without notice.    Memory-Efficient EDA Denoising via Knowledge  Distillation for Wearable IoT Under Seve"
+  },
+  {
+    "id": "Q29",
+    "question": "What mathematical modeling approaches are utilized in digital twins for coronary artery disease?",
+    "paper_id": "MED-DT-005",
+    "current_expected_page": 1,
+    "top_matching_pages": [
+      [
+        1,
+        7
+      ],
+      [
+        14,
+        6
+      ],
+      [
+        2,
+        5
+      ],
+      [
+        7,
+        5
+      ]
+    ],
+    "exp_page_preview": "Digital Twins in Coronary Artery Disease: A Mathematical Roadmap Alessandro Veneziani\u22171, Annalisa Quaini\u20202, Marco Tezzele\u20211, Omer San\u00a73, and Traian Iliescu\u00b64 1Emory University, 400 Dowman Drive NE, At"
+  },
+  {
+    "id": "Q30",
+    "question": "How does a guideline-derived decision graph structure clinical recommendations in radiology CDSS?",
+    "paper_id": "MED-CDS-003",
+    "current_expected_page": 1,
+    "top_matching_pages": [
+      [
+        1,
+        7
+      ],
+      [
+        3,
+        5
+      ],
+      [
+        2,
+        4
+      ],
+      [
+        4,
+        4
+      ]
+    ],
+    "exp_page_preview": "RADIOLOGY GUIDELINE-DERIVED DECISION GRAPH FOR EFFICIENT CLINICAL DECISION SUPPORT Xuewen Zhou, Zhen Chen\u2020 Department of Data Science and Artificial Intelligence, The Hong Kong Polytechnic University "
+  },
+  {
+    "id": "Q31",
+    "question": "What clinical horizons and regulatory hurdles are documented in digital mental health interventions?",
+    "paper_id": "MED-DHM-003",
+    "current_expected_page": 1,
+    "top_matching_pages": [
+      [
+        14,
+        6
+      ],
+      [
+        15,
+        6
+      ],
+      [
+        1,
+        5
+      ],
+      [
+        2,
+        5
+      ]
+    ],
+    "exp_page_preview": "A SCOPING REVIEW OF AI-DRIVEN DIGITAL INTERVENTIONS IN MENTAL HEALTH CARE: MAPPING APPLICATIONS ACROSS SCREENING, SUPPORT, MONITORING, PREVENTION, AND CLINICAL EDUCATION Yang Ni School of Internationa"
+  },
+  {
+    "id": "Q32",
+    "question": "What limitations exist when comparing vision foundation model adaptation against task-specific segmentation?",
+    "paper_id": "MED-IMG-005",
+    "current_expected_page": 1,
+    "top_matching_pages": [
+      [
+        1,
+        8
+      ],
+      [
+        3,
+        8
+      ],
+      [
+        5,
+        8
+      ],
+      [
+        33,
+        8
+      ]
+    ],
+    "exp_page_preview": "Medical Image Segmentation: Foundation Model Adaptation versus Task-Specific Training Emre Kutlusana, Yongmin Lia,\u2217 aDepartment of Computer Science, Brunel University of London, Uxbridge, UB8 3PH, Uni"
+  },
+  {
+    "id": "Q33",
+    "question": "What state-admission governance challenges are addressed by TwinGuard-Lite in critical medical twins?",
+    "paper_id": "MED-DT-006",
+    "current_expected_page": 1,
+    "top_matching_pages": [
+      [
+        1,
+        4
+      ],
+      [
+        6,
+        4
+      ],
+      [
+        5,
+        2
+      ],
+      [
+        2,
+        1
+      ]
+    ],
+    "exp_page_preview": "\u00a9 2026 IEEE. Personal use of this material is permitted. Permission from IEEE must be obtained for all other uses, in any current or future media, including reprinting/republishing this material for a"
+  },
+  {
+    "id": "Q34",
+    "question": "What differential evidence challenges occur when reasoning across discriminative clinical decisions?",
+    "paper_id": "MED-CDS-006",
+    "current_expected_page": 1,
+    "top_matching_pages": [
+      [
+        1,
+        7
+      ],
+      [
+        2,
+        7
+      ],
+      [
+        5,
+        7
+      ],
+      [
+        14,
+        7
+      ]
+    ],
+    "exp_page_preview": "Decisions by Discrimination: Differential Evidence for Medical Reasoning Yunpeng Xiao1, Yuzhang Xie1, Junhao Huang1, Carl Yang1, Xiao Hu2, Kai Shu1 1Department of Computer Science, Emory University, 2"
+  },
+  {
+    "id": "Q35",
+    "question": "How do digital twins and remote wearable sensors work together to enable personalized patient tracking?",
+    "paper_id": "MED-DT-001",
+    "current_expected_page": 2,
+    "top_matching_pages": [
+      [
+        14,
+        9
+      ],
+      [
+        19,
+        9
+      ],
+      [
+        7,
+        8
+      ],
+      [
+        12,
+        8
+      ]
+    ],
+    "exp_page_preview": "often follow a generalized \u201cone-size-\ufb01ts-all\u201d approach, which fails to account for interindividual variability (6). In contrast, the use of DTs enables a shift toward precision care by creating indivi"
+  },
+  {
+    "id": "Q36",
+    "question": "How does deep neural segmentation compare with on-device wearable analytics in digital healthcare?",
+    "paper_id": "MED-IMG-002",
+    "current_expected_page": 1,
+    "top_matching_pages": [
+      [
+        5,
+        5
+      ],
+      [
+        6,
+        4
+      ],
+      [
+        22,
+        4
+      ],
+      [
+        23,
+        4
+      ]
+    ],
+    "exp_page_preview": "LeViT-UNet++: Towards Balanced Fine-Grained Details and Context for Efficient  Medical Image Segmentation  #Guoping Xu 1,2, Jinling Zhu 1, Liuyue Li 3  1Hubei Key Laboratory of Intelligent Robot, Scho"
+  },
+  {
+    "id": "Q37",
+    "question": "What are the common explainability techniques used in LLM-based CDSS and radiology decision graphs?",
+    "paper_id": "MED-CDS-001",
+    "current_expected_page": 1,
+    "top_matching_pages": [
+      [
+        1,
+        4
+      ],
+      [
+        2,
+        4
+      ],
+      [
+        3,
+        4
+      ],
+      [
+        5,
+        4
+      ]
+    ],
+    "exp_page_preview": "RAG-Enhanced LLMs for Interactive Explainability in Clinical Decision Support Systems\u22c6 Lorenzo Mannocci1 (\u0000)[0000\u22120002\u22125556\u22123746], Francesca Naretto2[0000\u22120003\u22121301\u22127787], Lucia Passaro2[0000\u22120003\u2212493"
+  },
+  {
+    "id": "Q38",
+    "question": "How do IoT body area networks integrate with cloud and edge systems for elderly healthcare?",
+    "paper_id": "MED-DHM-004",
+    "current_expected_page": 1,
+    "top_matching_pages": [
+      [
+        1,
+        8
+      ],
+      [
+        2,
+        4
+      ],
+      [
+        4,
+        4
+      ],
+      [
+        3,
+        3
+      ]
+    ],
+    "exp_page_preview": "2025 IEEE International Conference on Biomedical Engineering, Computer and Information Technology for Health (BECITHCON) 29-30 November 2025, Eastern University, Dhaka, Bangladesh A Novel Approach for"
+  },
+  {
+    "id": "Q39",
+    "question": "What specific personalized oncology modeling methods are detailed in MED-DT-001?",
+    "paper_id": "MED-DT-001",
+    "current_expected_page": 2,
+    "top_matching_pages": [
+      [
+        12,
+        3
+      ],
+      [
+        13,
+        3
+      ],
+      [
+        16,
+        3
+      ],
+      [
+        19,
+        3
+      ]
+    ],
+    "exp_page_preview": "often follow a generalized \u201cone-size-\ufb01ts-all\u201d approach, which fails to account for interindividual variability (6). In contrast, the use of DTs enables a shift toward precision care by creating indivi"
+  },
+  {
+    "id": "Q40",
+    "question": "What is the hybrid predictive ensemble architecture proposed in MED-IOT-003 for disease prognosis?",
+    "paper_id": "MED-IOT-003",
+    "current_expected_page": 1,
+    "top_matching_pages": [
+      [
+        1,
+        6
+      ],
+      [
+        2,
+        5
+      ],
+      [
+        3,
+        5
+      ],
+      [
+        7,
+        5
+      ]
+    ],
+    "exp_page_preview": "A Hybrid Predictive Ensemble of Machine Learning and Deep Neural Networks for Early Cardiovascular Disease Risk Assessment Balaji Venkateswaran Independent Researcher, Chennai, India Balaji.Venkateswa"
+  },
+  {
+    "id": "Q41",
+    "question": "How does DocTalk enhance medical knowledge retrieval in paper MED-CDS-004?",
+    "paper_id": "MED-CDS-004",
+    "current_expected_page": 1,
+    "top_matching_pages": [
+      [
+        1,
+        4
+      ],
+      [
+        4,
+        4
+      ],
+      [
+        15,
+        4
+      ],
+      [
+        16,
+        4
+      ]
+    ],
+    "exp_page_preview": "DocTalk: Enhancing Medical Knowledge Retrieval via Fine-tuned Large  Language Models with Chain-of-Thought Reasoning for Robust Clinical  Decision Support  Asad Gohar, Md Ariful Islam Mozumder, Moon-I"
+  },
+  {
+    "id": "Q42",
+    "question": "How does smart edge and cloud integration work for IoMT in MED-IOT-005?",
+    "paper_id": "MED-IOT-005",
+    "current_expected_page": 1,
+    "top_matching_pages": [
+      [
+        1,
+        5
+      ],
+      [
+        2,
+        5
+      ],
+      [
+        8,
+        5
+      ],
+      [
+        3,
+        4
+      ]
+    ],
+    "exp_page_preview": "SmartEdge: Smart Healthcare End-to-End  Integrated Edge and Cloud Computing System for  Diabetes Prediction Enabled by Ensemble Machine  Learning    Alain Hennebelle   Independent Researcher in Inform"
+  }
+]

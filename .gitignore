@@ -1,0 +1,49 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+
+# Environment variables & secrets
+.env
+.env.local
+*.env
+
+# Local Qdrant vector database storage (rebuild via: python ingest_pipeline.py)
+data/qdrant_storage/
+
+# Temporary / Scratch debug scripts
+check_*.py
+scratch_*.py
+test_salience_rerank.py
+test_refusal_and_salience.py
+test_candidate_pages.py
+test_ligature_norm.py
+test_salient_words.py
+diagnose_ranking.py
+inspect_ce.py
+print_audit.py
+find_numerical_facts.py
+list_papers_summary.py
+sample_paper_passages.py
+dashboard_live.png
+audit_ground_truth_pages.py
+run_manual_audit.py
+run_rag_audit.py
+create_benchmark_50.py
+evaluate_benchmark.py
+verify_build.py
+
+# IDE and OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Log files
+*.log

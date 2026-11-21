@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediEvidence — AI in Digital Healthcare Research Assistant</title>
+    <meta name="description" content="MediEvidence: An AI-powered research assistant using RAG to search 30 digital healthcare research papers and generate answers with paper-level and page-level citations.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Top Navigation Bar -->
+    <nav class="topnav" id="topnav">
+        <div class="nav-inner">
+            <a class="nav-brand" href="#home">
+                <span class="brand-icon">🧬</span>
+                <span class="brand-text">MediEvidence</span>
+            </a>
+            <button class="nav-hamburger" id="navHamburger" aria-label="Toggle menu">☰</button>
+            <div class="nav-links" id="navLinks">
+                <a href="#home" class="nav-link active" data-section="home">Home</a>
+                <a href="#about" class="nav-link" data-section="about">About</a>
+                <a href="#papers" class="nav-link" data-section="papers">Research Papers</a>
+                <a href="#ask" class="nav-link" data-section="ask">Ask MediEvidence</a>
+                <a href="#rag" class="nav-link" data-section="rag">RAG Architecture</a>
+                <a href="#evaluation" class="nav-link" data-section="evaluation">Evaluation</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ==================== HOME SECTION ==================== -->
+    <section id="home" class="section-home">
+        <div class="hero-bg">
+            <div class="hero-orb hero-orb-1"></div>
+            <div class="hero-orb hero-orb-2"></div>
+            <div class="hero-grid"></div>
+        </div>
+        <div class="container hero-container">
+            <div class="hero-badge-row">
+                <span class="hero-badge">
+                    <span class="live-dot"></span>
+                    AI in Digital Healthcare Research · 30-Paper Corpus · 2022–2026
+                </span>
+            </div>
+            <h1 class="hero-title">
+                MediEvidence
+                <span class="hero-subtitle-heading">Clinical Evidence Assistant</span>
+            </h1>
+            <p class="hero-tagline">"Find the research evidence you remember, even when you forget which paper contains it."</p>
+            <p class="hero-desc">
+                MediEvidence is an AI-powered research assistant that uses Retrieval-Augmented Generation (RAG) to search digital healthcare research papers, retrieve relevant evidence, and generate answers with <strong>paper-level and page-level citations</strong>.
+            </p>
+            <div class="hero-cta-row">
+                <a href="#papers" class="btn-primary" onclick="scrollToSection('papers')">📚 Explore 30 Research Papers</a>
+                <a href="#ask" class="btn-outline" onclick="scrollToSection('ask')">🔍 Ask MediEvidence</a>
+            </div>
+
+            <!-- Live Stats Row -->
+            <div class="stats-row" id="statsRow">
+                <div class="stat-box" onclick="scrollToSection('papers')" title="Click to view papers">
+                    <div class="stat-num" id="stat-papers">30</div>
+                    <div class="stat-lbl">Research Papers</div>
+                </div>
+                <div class="stat-box" onclick="scrollToSection('papers')" title="Click to explore chunks">
+                    <div class="stat-num" id="stat-chunks">570</div>
+                    <div class="stat-lbl">Indexed Chunks</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-num" id="stat-pages">570</div>
+                    <div class="stat-lbl">PDF Pages Extracted</div>
+                </div>
+                <div class="stat-box" onclick="scrollToSection('papers')" title="Click to filter by category">
+                    <div class="stat-num">5</div>
+                    <div class="stat-lbl">Research Categories</div>
+                </div>
+                <div class="stat-box" onclick="scrollToSection('evaluation')" title="Click to view evaluation">
+                    <div class="stat-num">100%</div>
+                    <div class="stat-lbl">Extraction Success</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sample Questions -->
+        <div class="container">
+            <div class="sample-qs-section">
+                <div class="sample-qs-label">💡 Click a research question to get an evidence-grounded answer:</div>
+                <div class="sample-qs-grid">
+                    <button class="sample-q-pill" onclick="askQuestion('How are digital twins used in personalized medicine?')">🧬 Digital twins in personalized medicine</button>
+                    <button class="sample-q-pill" onclick="askQuestion('What are the applications of AI in medical image diagnosis?')">🩻 AI in medical image diagnosis</button>
+                    <button class="sample-q-pill" onclick="askQuestion('How can wearable devices support remote patient monitoring?')">⌚ Wearable devices for patient monitoring</button>
+                    <button class="sample-q-pill" onclick="askQuestion('What role does predictive analytics play in healthcare?')">📊 Predictive analytics in healthcare</button>
+                    <button class="sample-q-pill" onclick="askQuestion('How is AI used in clinical decision support systems?')">🏥 AI in clinical decision support</button>
+                    <button class="sample-q-pill" onclick="askQuestion('What are the limitations of AI in digital healthcare?')">⚠️ Limitations of AI in healthcare</button>
+                    <button class="sample-q-pill" onclick="askQuestion('How does IoT contribute to patient monitoring?')">📡 IoT in patient monitoring</button>
+                    <button class="sample-q-pill" onclick="askQuestion('What privacy challenges exist in AI-driven healthcare?')">🔒 Privacy in AI healthcare</button>
+                    <button class="sample-q-pill sample-q-ood" onclick="askQuestion('What is the best recipe for chocolate cake?')">🛑 Cake recipe (out-of-domain test)</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- How It Works Preview -->
+        <div class="container">
+            <div class="how-it-works">
+                <div class="hiw-header">
+                    <span class="section-tag">How MediEvidence Works</span>
+                    <h2>From Question to Verified Evidence</h2>
+                </div>
+                <div class="hiw-flow">
+                    <div class="hiw-step">
+                        <div class="hiw-icon">❓</div>
+                        <div class="hiw-step-label">Your Question</div>
+                    </div>
+                    <div class="hiw-arrow">→</div>
+                    <div class="hiw-step">
+                        <div class="hiw-icon">🧠</div>
+                        <div class="hiw-step-label">Dense + Sparse Retrieval</div>
+                    </div>
+                    <div class="hiw-arrow">→</div>
+                    <div class="hiw-step">
+                        <div class="hiw-icon">🎯</div>
+                        <div class="hiw-step-label">Neural Reranking</div>
+                    </div>
+                    <div class="hiw-arrow">→</div>
+                    <div class="hiw-step">
+                        <div class="hiw-icon">📋</div>
+                        <div class="hiw-step-label">Cited Answer</div>
+                    </div>
+                    <div class="hiw-arrow">→</div>
+                    <div class="hiw-step">
+                        <div class="hiw-icon">✅</div>
+                        <div class="hiw-step-label">PDF Verification</div>
+                    </div>
+                </div>
+                <div style="text-align:center;margin-top:28px;">
+                    <a href="#rag" class="btn-outline" onclick="scrollToSection('rag')">View Full Architecture →</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Category Overview -->
+        <div class="container">
+            <div class="cat-overview">
+                <div class="section-tag" style="text-align:center;">Research Categories</div>
+                <h2 style="text-align:center;margin-bottom:28px;">5 Specialized Digital Healthcare Domains</h2>
+                <div class="cat-cards-grid">
+                    <div class="cat-card cat-imaging" onclick="filterAndGoToPapers('AI in Medical Diagnosis and Medical Imaging')">
+                        <div class="cat-card-icon">🩻</div>
+                        <div class="cat-card-name">Medical Imaging &amp; AI</div>
+                        <div class="cat-card-count">6 Papers</div>
+                    </div>
+                    <div class="cat-card cat-monitoring" onclick="filterAndGoToPapers('Digital Health and Remote Patient Monitoring')">
+                        <div class="cat-card-icon">📡</div>
+                        <div class="cat-card-name">Digital Health &amp; RPM</div>
+                        <div class="cat-card-count">6 Papers</div>
+                    </div>
+                    <div class="cat-card cat-twins" onclick="filterAndGoToPapers('Digital Twins and Personalized Medicine')">
+                        <div class="cat-card-icon">🧬</div>
+                        <div class="cat-card-name">Digital Twins &amp; Personalized Medicine</div>
+                        <div class="cat-card-count">6 Papers</div>
+                    </div>
+                    <div class="cat-card cat-iot" onclick="filterAndGoToPapers('Healthcare Wearables, IoT and Predictive Analytics')">
+                        <div class="cat-card-icon">⌚</div>
+                        <div class="cat-card-name">Wearables, IoT &amp; Analytics</div>
+                        <div class="cat-card-count">6 Papers</div>
+                    </div>
+                    <div class="cat-card cat-cds" onclick="filterAndGoToPapers('AI-Based Clinical Decision Support Systems')">
+                        <div class="cat-card-icon">🏥</div>
+                        <div class="cat-card-name">Clinical Decision Support</div>
+                        <div class="cat-card-count">6 Papers</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== ABOUT SECTION ==================== -->
+    <section id="about" class="section-about section-block">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">About the Project</span>
+                <h2>MediEvidence: Complete Project Architecture</h2>
+                <p>A domain-specific AI assistant built for evidence-grounded research discovery in digital healthcare.</p>
+            </div>
+
+            <!-- Project Overview -->
+            <div class="about-overview-grid">
+                <div class="about-card">
+                    <div class="about-card-icon">🔬</div>
+                    <h3>What is MediEvidence?</h3>
+                    <p>MediEvidence is a Retrieval-Augmented Generation (RAG) system that enables researchers to ask natural-language questions about a curated corpus of 30 peer-reviewed digital healthcare research papers and receive evidence-grounded answers with exact page-level citations.</p>
+                </div>
+                <div class="about-card">
+                    <div class="about-card-icon">🎯</div>
+                    <h3>Problem Statement</h3>
+                    <p>Researchers frequently remember a concept, finding, or statistic from a paper but forget which paper contains it. Manually searching through 30+ PDFs is time-consuming. MediEvidence addresses this through semantic retrieval, hybrid search, and citation synthesis.</p>
+                </div>
+                <div class="about-card">
+                    <div class="about-card-icon">✅</div>
+                    <h3>Core Objectives</h3>
+                    <ul class="about-list">
+                        <li>Semantic natural-language question answering</li>
+                        <li>Dual-path dense + sparse retrieval</li>
+                        <li>Cross-encoder neural reranking</li>
+                        <li>Page-level evidence citations</li>
+                        <li>Zero-hallucination out-of-domain refusal</li>
+                        <li>100% source-traceable answers</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Complete RAG Pipeline -->
+            <div class="rag-pipeline-about">
+                <div class="section-header">
+                    <span class="section-tag">Complete RAG Pipeline</span>
+                    <h2>End-to-End Architecture — 9 Stages</h2>
+                </div>
+                <div class="pipeline-stages">
+                    <div class="pstage" onclick="toggleStageDetail('stage1')">
+                        <div class="pstage-header">
+                            <span class="pstage-num">01</span>
+                            <div class="pstage-title">
+                                <h4>Research Paper Collection</h4>
+                                <span class="pstage-tech">30 PDFs · 5 Categories · 2022–2026</span>
+                            </div>
+                            <span class="pstage-status status-done">✓ Implemented</span>
+                            <span class="pstage-toggle">▼</span>
+                        </div>
+                        <div class="pstage-detail" id="stage1">
+                            <strong>Input:</strong> Research queries and manual curation<br>
+                            <strong>Output:</strong> 30 open-access PDFs across 5 healthcare AI sub-domains<br>
+                            <strong>Details:</strong> Papers curated from arXiv, Frontiers in Digital Health, and peer-reviewed conferences covering Medical Imaging AI, Digital Health &amp; RPM, Digital Twins, Healthcare IoT/Wearables, and Clinical Decision Support Systems. Each paper has a unique ID (e.g. MED-DT-001), DOI link, and license metadata.
+                        </div>
+                    </div>
+                    <div class="pstage-connector"></div>
+
+                    <div class="pstage" onclick="toggleStageDetail('stage2')">
+                        <div class="pstage-header">
+                            <span class="pstage-num">02</span>
+                            <div class="pstage-title">
+                                <h4>PDF Extraction &amp; OCR</h4>
+                                <span class="pstage-tech">PyMuPDF (fitz) · Selective Tesseract OCR</span>
+                            </div>
+                            <span class="pstage-status status-done">✓ Implemented</span>
+                            <span class="pstage-toggle">▼</span>
+                        </div>
+                        <div class="pstage-detail" id="stage2">
+                            <strong>Input:</strong> 30 PDF files<br>
+                            <strong>Output:</strong> 570 extracted page texts with page metadata<br>
+                            <strong>Details:</strong> PyMuPDF extracts digital text with 100% success rate (570/570 pages). Selective Tesseract OCR is configured as fallback for scanned pages (0 OCR pages in this corpus). Each extracted page preserves: paper_id, original_page index, section_heading (if detectable), char_count, word_count. Stored in <code>data/extracted_text/</code>.
+                        </div>
+                    </div>
+                    <div class="pstage-connector"></div>
+
+                    <div class="pstage" onclick="toggleStageDetail('stage3')">
+                        <div class="pstage-header">
+                            <span class="pstage-num">03</span>
+                            <div class="pstage-title">
+                                <h4>Semantic Chunking</h4>
+                                <span class="pstage-tech">550-char chunks · 100-char overlap · Page-aware</span>
+                            </div>
+                            <span class="pstage-status status-done">✓ Implemented</span>
+                            <span class="pstage-toggle">▼</span>
+                        </div>
+                        <div class="pstage-detail" id="stage3">
+                            <strong>Input:</strong> 570 extracted page texts<br>
+                            <strong>Output:</strong> 570 research-aware text chunks with full metadata<br>
+                            <strong>Chunk size:</strong> 550 characters (target)<br>
+                            <strong>Chunk overlap:</strong> 100 characters<br>
+                            <strong>Unit:</strong> Characters (not tokens)<br>
+                            <strong>Avg chunks per paper:</strong> 19 chunks<br>
+                            <strong>Metadata per chunk:</strong> chunk_id, paper_id, paper_title, authors, doi, original_page, section_heading, char_count, word_count, text_content<br>
+                            <strong>Storage:</strong> <code>data/metadata/chunk_metadata.csv</code>
+                        </div>
+                    </div>
+                    <div class="pstage-connector"></div>
+
+                    <div class="pstage" onclick="toggleStageDetail('stage4')">
+                        <div class="pstage-header">
+                            <span class="pstage-num">04</span>
+                            <div class="pstage-title">
+                                <h4>Dense Embedding Generation</h4>
+                                <span class="pstage-tech">all-MiniLM-L6-v2 · 384-dimensional vectors</span>
+                            </div>
+                            <span class="pstage-status status-done">✓ Implemented</span>
+                            <span class="pstage-toggle">▼</span>
+                        </div>
+                        <div class="pstage-detail" id="stage4">
+                            <strong>Model:</strong> sentence-transformers/all-MiniLM-L6-v2<br>
+                            <strong>Embedding dimensions:</strong> 384<br>
+                            <strong>Normalization:</strong> L2-normalized unit vectors for cosine similarity<br>
+                            <strong>Mode:</strong> Offline (HF_HUB_OFFLINE=1, cached weights)<br>
+                            <strong>Output:</strong> 570 dense vectors stored in Qdrant collection
+                        </div>
+                    </div>
+                    <div class="pstage-connector"></div>
+
+                    <div class="pstage" onclick="toggleStageDetail('stage5')">
+                        <div class="pstage-header">
+                            <span class="pstage-num">05</span>
+                            <div class="pstage-title">
+                                <h4>Qdrant Vector Database</h4>
+                                <span class="pstage-tech">Qdrant Local Disk · HNSW · Collection: medievidence_papers</span>
+                            </div>
+                            <span class="pstage-status status-done">✓ Implemented</span>
+                            <span class="pstage-toggle">▼</span>
+                        </div>
+                        <div class="pstage-detail" id="stage5">
+                            <strong>Database:</strong> Qdrant v1.x (local embedded disk storage)<br>
+                            <strong>Collection:</strong> <code>medievidence_papers</code><br>
+                            <strong>Index type:</strong> HNSW (Hierarchical Navigable Small World)<br>
+                            <strong>Similarity metric:</strong> Cosine<br>
+                            <strong>Indexed records:</strong> 570 chunks<br>
+                            <strong>Storage path:</strong> <code>data/qdrant_storage/</code><br>
+                            <strong>Payload:</strong> Full chunk metadata stored alongside each vector
+                        </div>
+                    </div>
+                    <div class="pstage-connector"></div>
+
+                    <div class="pstage" onclick="toggleStageDetail('stage6')">
+                        <div class="pstage-header">
+                            <span class="pstage-num">06</span>
+                            <div class="pstage-title">
+                                <h4>Hybrid Retrieval (Dense + BM25 → RRF)</h4>
+                                <span class="pstage-tech">Qdrant HNSW + BM25Okapi → Reciprocal Rank Fusion k=60</span>
+                            </div>
+                            <span class="pstage-status status-done">✓ Implemented</span>
+                            <span class="pstage-toggle">▼</span>
+                        </div>
+                        <div class="pstage-detail" id="stage6">
+                            <strong>Dense path:</strong> Query encoded with all-MiniLM-L6-v2 → Qdrant cosine ANN search → top-K candidates<br>
+                            <strong>Sparse path:</strong> BM25Okapi (k1=1.5, b=0.75) inverted index over all chunk tokens → lexical ranking<br>
+                            <strong>Fusion:</strong> Reciprocal Rank Fusion (RRF) with k=60 combines both ranked lists into a single unified ranking<br>
+                            <strong>Output:</strong> Top-12 fused candidates passed to reranker
+                        </div>
+                    </div>
+                    <div class="pstage-connector"></div>
+
+                    <div class="pstage" onclick="toggleStageDetail('stage7')">
+                        <div class="pstage-header">
+                            <span class="pstage-num">07</span>
+                            <div class="pstage-title">
+                                <h4>Cross-Encoder Neural Reranking</h4>
+                                <span class="pstage-tech">ms-marco-MiniLM-L-6-v2 · Joint Attention Scoring</span>
+                            </div>
+                            <span class="pstage-status status-done">✓ Implemented</span>
+                            <span class="pstage-toggle">▼</span>
+                        </div>
+                        <div class="pstage-detail" id="stage7">
+                            <strong>Model:</strong> cross-encoder/ms-marco-MiniLM-L-6-v2<br>
+                            <strong>Input:</strong> (query, passage) pairs from top-12 RRF candidates<br>
+                            <strong>Mechanism:</strong> Joint cross-attention computes relevance score for each pair simultaneously, eliminating false-positive vector neighbors<br>
+                            <strong>Output:</strong> Top-K passages re-sorted by cross-encoder relevance score
+                        </div>
+                    </div>
+                    <div class="pstage-connector"></div>
+
+                    <div class="pstage" onclick="toggleStageDetail('stage8')">
+                        <div class="pstage-header">
+                            <span class="pstage-num">08</span>
+                            <div class="pstage-title">
+                                <h4>Answer Synthesis &amp; Guardrails</h4>
+                                <span class="pstage-tech">Evidence-grounded · Zero-hallucination · Page citations</span>
+                            </div>
+                            <span class="pstage-status status-done">✓ Implemented</span>
+                            <span class="pstage-toggle">▼</span>
+                        </div>
+                        <div class="pstage-detail" id="stage8">
+                            <strong>Method:</strong> Extractive synthesis from top-K reranked passages (no LLM hallucination)<br>
+                            <strong>Guardrail 1:</strong> Whole-word regex domain keyword boundary check<br>
+                            <strong>Guardrail 2:</strong> Calibrated cosine confidence threshold (default: 0.35)<br>
+                            <strong>Citation format:</strong> [Paper Title (Year), Page X]<br>
+                            <strong>Out-of-domain:</strong> 100% refusal — no fabricated answers<br>
+                            <strong>PICO evidence:</strong> Structured Population/Intervention/Comparison/Outcome breakdown
+                        </div>
+                    </div>
+                    <div class="pstage-connector"></div>
+
+                    <div class="pstage" onclick="toggleStageDetail('stage9')">
+                        <div class="pstage-header">
+                            <span class="pstage-num">09</span>
+                            <div class="pstage-title">
+                                <h4>Evidence Verification &amp; Citations</h4>
+                                <span class="pstage-tech">Paper ID · Page Number · DOI · Source Link</span>
+                            </div>
+                            <span class="pstage-status status-done">✓ Implemented</span>
+                            <span class="pstage-toggle">▼</span>
+                        </div>
+                        <div class="pstage-detail" id="stage9">
+                            <strong>Each citation contains:</strong> paper_id, full title, authors, year, doi, original_page index, source_url<br>
+                            <strong>Verification:</strong> User can open original PDF via DOI link and navigate to cited page<br>
+                            <strong>Traceability:</strong> Every chunk preserves its exact source page metadata throughout the pipeline
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chunking Hierarchy -->
+            <div class="chunking-section">
+                <div class="section-header">
+                    <span class="section-tag">Document Hierarchy</span>
+                    <h2>Micro · Mini · Document: Chunking Explained</h2>
+                </div>
+                <div class="chunking-hierarchy">
+                    <div class="chunk-level chunk-macro">
+                        <div class="chunk-level-label">📚 Document Level (Large)</div>
+                        <div class="chunk-level-desc">Complete research paper → Multiple sections → Full PDF</div>
+                        <div class="chunk-level-detail">30 research papers, avg ~19 pages each, organized into 5 categories</div>
+                    </div>
+                    <div class="chunk-arrow">↓</div>
+                    <div class="chunk-level chunk-mini">
+                        <div class="chunk-level-label">📄 Mini Level (Page/Chunk)</div>
+                        <div class="chunk-level-desc">Individual chunks — the searchable unit</div>
+                        <div class="chunk-level-detail">
+                            <strong>Chunk size:</strong> 550 characters · <strong>Overlap:</strong> 100 characters<br>
+                            <strong>Unit:</strong> Characters (not tokens) · <strong>Total chunks:</strong> 570<br>
+                            Each chunk preserves: paper_id, original_page, section_heading, doi
+                        </div>
+                    </div>
+                    <div class="chunk-arrow">↓</div>
+                    <div class="chunk-level chunk-micro">
+                        <div class="chunk-level-label">🔤 Micro Level (Passage)</div>
+                        <div class="chunk-level-desc">Semantic text passage — the retrieved evidence</div>
+                        <div class="chunk-level-detail">Individual meaningful clinical or technical sentences embedded into 384-dim vector space. The overlap (100 chars) ensures context continuity across chunk boundaries.</div>
+                    </div>
+                </div>
+
+                <!-- Real chunk example -->
+                <div class="chunk-example-box">
+                    <div class="chunk-example-label">📎 Real Indexed Chunk Example</div>
+                    <div class="chunk-example-meta">
+                        <span class="pill pill-id">MED-DT-001_p004_c001</span>
+                        <span class="pill pill-paper">Digital Twin for Personalized Medicine Development</span>
+                        <span class="pill pill-page">📄 Original PDF Page 4</span>
+                        <span class="pill pill-chars">≈ 550 chars</span>
+                    </div>
+                    <div class="chunk-example-text" id="realChunkExample">
+                        <em>Loading real chunk from indexed collection...</em>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tech Stack -->
+            <div class="tech-stack-section">
+                <div class="section-header">
+                    <span class="section-tag">Technology Stack</span>
+                    <h2>Actual Implementation Technologies</h2>
+                </div>
+                <div class="tech-cards-grid">
+                    <div class="tech-card">
+                        <div class="tech-icon">🐍</div>
+                        <div class="tech-name">Python 3.10+</div>
+                        <div class="tech-role">Runtime</div>
+                    </div>
+                    <div class="tech-card">
+                        <div class="tech-icon">⚡</div>
+                        <div class="tech-name">FastAPI + Uvicorn</div>
+                        <div class="tech-role">REST API backend</div>
+                    </div>
+                    <div class="tech-card">
+                        <div class="tech-icon">📄</div>
+                        <div class="tech-name">PyMuPDF (fitz)</div>
+                        <div class="tech-role">PDF extraction</div>
+                    </div>
+                    <div class="tech-card">
+                        <div class="tech-icon">🧠</div>
+                        <div class="tech-name">SentenceTransformers</div>
+                        <div class="tech-role">Dense embeddings</div>
+                    </div>
+                    <div class="tech-card">
+                        <div class="tech-icon">🔎</div>
+                        <div class="tech-name">all-MiniLM-L6-v2</div>
+                        <div class="tech-role">384-dim embedding model</div>
+                    </div>
+                    <div class="tech-card">
+                        <div class="tech-icon">📑</div>
+                        <div class="tech-name">BM25Okapi (rank_bm25)</div>
+                        <div class="tech-role">Sparse lexical retrieval</div>
+                    </div>
+                    <div class="tech-card">
+                        <div class="tech-icon">🗄️</div>
+                        <div class="tech-name">Qdrant</div>
+                        <div class="tech-role">Vector database (local disk)</div>
+                    </div>
+                    <div class="tech-card">
+                        <div class="tech-icon">🎯</div>
+                        <div class="tech-name">ms-marco-MiniLM-L-6-v2</div>
+                        <div class="tech-role">Cross-encoder reranker</div>
+                    </div>
+                    <div class="tech-card">
+                        <div class="tech-icon">🌐</div>
+                        <div class="tech-name">HTML5 / CSS3 / JS</div>
+                        <div class="tech-role">Frontend dashboard</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Future Scope -->
+            <div class="future-scope-section">
+                <div class="future-badge">🚀 Future Scope — Not Yet Implemented</div>
+                <h3>Automated Multi-PDF Research Ingestion Pipeline</h3>
+                <p>Currently MediEvidence operates on a verified, pre-indexed 30-paper benchmark corpus. The planned next milestone is an automated multi-tenant ingestion service that allows researchers to upload their own PDFs:</p>
+                <div class="future-flow">
+                    <div class="future-step">📤 Multi-PDF<br>Drag &amp; Drop</div>
+                    <div class="future-arrow">→</div>
+                    <div class="future-step">✅ File<br>Validation</div>
+                    <div class="future-arrow">→</div>
+                    <div class="future-step">🔄 Duplicate<br>Detection</div>
+                    <div class="future-arrow">→</div>
+                    <div class="future-step">📄 PDF<br>Extraction</div>
+                    <div class="future-arrow">→</div>
+                    <div class="future-step">🔍 OCR<br>Fallback</div>
+                    <div class="future-arrow">→</div>
+                    <div class="future-step">✂️ Semantic<br>Chunking</div>
+                    <div class="future-arrow">→</div>
+                    <div class="future-step">🧠 Embedding<br>Generation</div>
+                    <div class="future-arrow">→</div>
+                    <div class="future-step">🗄️ Qdrant<br>Indexing</div>
+                    <div class="future-arrow">→</div>
+                    <div class="future-step">📚 Catalog<br>Update</div>
+                </div>
+                <div class="future-details-grid">
+                    <div class="future-detail-item">🗂️ <strong>Batch PDF uploads</strong> — React/Vue drag-and-drop supporting multiple files</div>
+                    <div class="future-detail-item">🔄 <strong>Incremental indexing</strong> — Zero-downtime Qdrant collection hot-reload</div>
+                    <div class="future-detail-item">🌊 <strong>Celery + Redis queue</strong> — Async OCR processing isolation</div>
+                    <div class="future-detail-item">🧩 <strong>ColPali / Nougat OCR</strong> — Vision-language models for complex tables</div>
+                    <div class="future-detail-item">📊 <strong>Progress dashboard</strong> — Real-time per-document ingestion status</div>
+                    <div class="future-detail-item">🗑️ <strong>Document deletion</strong> — Remove paper + all its chunks + re-index</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== RESEARCH PAPERS SECTION ==================== -->
+    <section id="papers" class="section-papers section-block">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Research Dataset</span>
+                <h2>Curated 30-Paper Digital Health Corpus</h2>
+                <p>Peer-reviewed and open-access research papers published 2022–2026 across 5 specialized AI healthcare sub-domains.</p>
+            </div>
+
+            <!-- Featured Paper -->
+            <div class="featured-paper-card">
+                <div class="featured-paper-badge">⭐ Featured Publication — Primary Author Research</div>
+                <div class="featured-paper-id">MED-DT-001</div>
+                <h3>Digital Twin for Personalized Medicine Development</h3>
+                <div class="featured-paper-meta">
+                    <span><strong>Authors:</strong> Saniya Y. Saratkar et al.</span>
+                    <span><strong>Journal:</strong> Frontiers in Digital Health · August 7, 2025</span>
+                    <span><strong>Pages:</strong> 23 pages · 23 indexed chunks</span>
+                    <span><strong>Category:</strong> Digital Twins &amp; Personalized Medicine</span>
+                </div>
+                <div class="featured-paper-actions">
+                    <a href="https://doi.org/10.3389/fdgth.2025.1583466" target="_blank" rel="noopener" class="btn-primary">🔗 DOI: 10.3389/fdgth.2025.1583466 ↗</a>
+                    <a href="https://www.frontiersin.org/journals/digital-health/articles/10.3389/fdgth.2025.1583466/full" target="_blank" rel="noopener" class="btn-outline">📄 Full Article ↗</a>
+                    <button class="btn-inspect" onclick="openPaperDetail('MED-DT-001')">🔍 Inspect Paper &amp; Chunks</button>
+                </div>
+            </div>
+
+            <!-- Search & Filters -->
+            <div class="papers-controls">
+                <div class="search-box">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="paperSearch" class="search-input" placeholder="Search by title, author, paper ID, or DOI...">
+                </div>
+                <select id="catFilter" class="filter-select">
+                    <option value="">All Categories (30 papers)</option>
+                    <option value="AI in Medical Diagnosis and Medical Imaging">1. AI in Medical Imaging (6)</option>
+                    <option value="Digital Health and Remote Patient Monitoring">2. Digital Health &amp; RPM (6)</option>
+                    <option value="Digital Twins and Personalized Medicine">3. Digital Twins (6)</option>
+                    <option value="Healthcare Wearables, IoT and Predictive Analytics">4. Wearables &amp; IoT (6)</option>
+                    <option value="AI-Based Clinical Decision Support Systems">5. Clinical Decision Support (6)</option>
+                </select>
+                <select id="yearFilter" class="filter-select">
+                    <option value="">All Years</option>
+                    <option value="2026">2026</option>
+                    <option value="2025">2025</option>
+                    <option value="2024">2024</option>
+                    <option value="2023">2023</option>
+                </select>
+                <select id="sortBy" class="filter-select">
+                    <option value="default">Sort: Default</option>
+                    <option value="title">Sort: Title A–Z</option>
+                    <option value="year-desc">Sort: Year (Newest)</option>
+                    <option value="year-asc">Sort: Year (Oldest)</option>
+                    <option value="chunks-desc">Sort: Most Chunks</option>
+                </select>
+            </div>
+            <div id="papersCountInfo" class="papers-count-info">Showing 30 of 30 research papers</div>
+
+            <!-- Papers Table -->
+            <div class="table-responsive">
+                <table class="data-table" id="papersTable">
+                    <thead>
+                        <tr>
+                            <th>Paper ID</th>
+                            <th>Title &amp; Journal</th>
+                            <th>Authors</th>
+                            <th>Year</th>
+                            <th>Category</th>
+                            <th>Pages</th>
+                            <th>Chunks</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="papersTableBody">
+                        <tr><td colspan="8" style="text-align:center;padding:40px;color:#9ca3af;">Loading 30 research papers...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== ASK MEDIEVIDENCE ==================== -->
+    <section id="ask" class="section-ask section-block">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Interactive Research Assistant</span>
+                <h2>Ask MediEvidence</h2>
+                <p>Query the indexed 30-paper corpus with hybrid RAG retrieval and get grounded answers with exact page citations.</p>
+            </div>
+
+            <div class="ask-layout">
+                <div class="ask-panel">
+                    <!-- Mode Tabs -->
+                    <div class="mode-tabs">
+                        <button class="mode-tab active" id="modeAllBtn" onclick="setQueryMode('all')">🌐 Search All Papers</button>
+                        <button class="mode-tab" id="modeSingleBtn" onclick="setQueryMode('single')">📄 Specific Paper</button>
+                    </div>
+
+                    <!-- Paper selector (shown in single mode) -->
+                    <div id="paperSelectorRow" style="display:none;margin-bottom:16px;">
+                        <label class="input-label">Select a research paper:</label>
+                        <select id="paperSelectorDropdown" class="filter-select" style="width:100%;">
+                            <option value="">— Choose a paper —</option>
+                        </select>
+                    </div>
+
+                    <!-- Query Input -->
+                    <div class="query-input-group">
+                        <textarea id="queryInput" class="query-textarea" rows="3" placeholder="Enter a clinical or research question... e.g. 'How are digital twins used in cardiac care?'"></textarea>
+                        <button class="btn-primary query-submit-btn" id="querySubmitBtn" onclick="executeQuery()">
+                            🔍 Retrieve Evidence
+                        </button>
+                    </div>
+
+                    <!-- Loading State -->
+                    <div id="queryLoading" class="query-loading" style="display:none;">
+                        <div class="loading-steps-list" id="loadingStepsList"></div>
+                    </div>
+
+                    <!-- Result -->
+                    <div id="queryResult" class="query-result"></div>
+                </div>
+
+                <!-- Sample Questions Sidebar -->
+                <div class="ask-sidebar">
+                    <div class="sidebar-title">💡 Sample Questions</div>
+                    <div class="sidebar-qs">
+                        <button class="sidebar-q" onclick="setAndRun('How are digital twins used in personalized medicine?')">How are digital twins used in personalized medicine?</button>
+                        <button class="sidebar-q" onclick="setAndRun('What are the applications of AI in medical image diagnosis?')">AI applications in medical image diagnosis</button>
+                        <button class="sidebar-q" onclick="setAndRun('How can wearable devices support remote patient monitoring?')">Wearable devices for remote patient monitoring</button>
+                        <button class="sidebar-q" onclick="setAndRun('What role does predictive analytics play in healthcare?')">Predictive analytics in healthcare</button>
+                        <button class="sidebar-q" onclick="setAndRun('How is AI used in clinical decision support systems?')">AI in clinical decision support systems</button>
+                        <button class="sidebar-q" onclick="setAndRun('What are the limitations of AI in digital healthcare?')">Limitations of AI in digital healthcare</button>
+                        <button class="sidebar-q" onclick="setAndRun('How does IoT contribute to patient monitoring?')">IoT contribution to patient monitoring</button>
+                        <button class="sidebar-q" onclick="setAndRun('How does the HAPI-EP framework model cardiac electrophysiology?')">HAPI-EP cardiac electrophysiology</button>
+                        <button class="sidebar-q sidebar-q-ood" onclick="setAndRun('What is the best recipe for chocolate cake?')">🛑 Cake recipe (out-of-domain)</button>
+                        <button class="sidebar-q sidebar-q-ood" onclick="setAndRun('How do I fix a car engine gasket?')">🛑 Car repair (out-of-domain)</button>
+                    </div>
+                    <div class="sidebar-info">
+                        <div class="sidebar-info-item">🧠 Dense: all-MiniLM-L6-v2</div>
+                        <div class="sidebar-info-item">📑 Sparse: BM25Okapi</div>
+                        <div class="sidebar-info-item">🔄 Fusion: RRF k=60</div>
+                        <div class="sidebar-info-item">🎯 Reranker: ms-marco-MiniLM-L-6-v2</div>
+                        <div class="sidebar-info-item">🛡️ Guardrail: Domain boundary</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Evidence Inspector (shows after query) -->
+            <div id="evidenceInspector" style="display:none;" class="evidence-inspector">
+                <div class="evidence-inspector-header">
+                    <h4>🔬 Multi-Stage Retrieval Score Inspector</h4>
+                    <span style="font-size:0.82rem;color:#9ca3af;">Dense Cosine · BM25 · Cross-Encoder — scores indicate retrieval relevance, not factual certainty</span>
+                </div>
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Paper</th>
+                                <th>Page</th>
+                                <th>Dense Score</th>
+                                <th>BM25 Score</th>
+                                <th>Rerank Score</th>
+                                <th>Section</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inspectorTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Chunk Explorer -->
+            <div class="chunk-explorer-section">
+                <div class="chunk-explorer-header">
+                    <h4>📑 Indexed Chunk Explorer (570 chunks across 30 papers)</h4>
+                    <div class="chunk-search-box">
+                        <input type="text" id="chunkSearch" class="search-input" placeholder="Search within all 570 chunks..." style="max-width:400px;">
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Chunk ID</th>
+                                <th>Paper ID</th>
+                                <th>Title</th>
+                                <th>Page</th>
+                                <th>Section</th>
+                                <th>Length</th>
+                                <th>Text Preview</th>
+                            </tr>
+                        </thead>
+                        <tbody id="chunksTableBody">
+                            <tr><td colspan="7" style="text-align:center;padding:30px;color:#9ca3af;">Loading chunks...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="chunk-pagination">
+                    <span id="chunkPageInfo" class="page-info">Page 1 of 38 (570 chunks)</span>
+                    <div>
+                        <button class="btn-inspect" id="prevChunkBtn" onclick="changeChunkPage(-1)">← Previous</button>
+                        <button class="btn-inspect" id="nextChunkBtn" onclick="changeChunkPage(1)">Next →</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== RAG ARCHITECTURE SECTION ==================== -->
+    <section id="rag" class="section-rag section-block">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">System Architecture</span>
+                <h2>RAG Architecture — Detailed Technical View</h2>
+                <p>Two connected pipelines: Offline document ingestion and Online query execution.</p>
+            </div>
+
+            <div class="rag-two-pipelines">
+                <!-- Offline Pipeline -->
+                <div class="rag-pipeline-box">
+                    <div class="rag-pipeline-title">📥 Offline: Document Ingestion Pipeline</div>
+                    <div class="rag-nodes">
+                        <div class="rag-node rag-input">
+                            <div class="rag-node-icon">📄</div>
+                            <div class="rag-node-text">30 Research PDFs</div>
+                            <div class="rag-node-sub">data/papers/</div>
+                        </div>
+                        <div class="rag-node-arrow">↓</div>
+                        <div class="rag-node rag-process">
+                            <div class="rag-node-icon">🔍</div>
+                            <div class="rag-node-text">PyMuPDF Extraction</div>
+                            <div class="rag-node-sub">570 pages · 100% success</div>
+                        </div>
+                        <div class="rag-node-arrow">↓</div>
+                        <div class="rag-node rag-process">
+                            <div class="rag-node-icon">✂️</div>
+                            <div class="rag-node-text">Semantic Chunking</div>
+                            <div class="rag-node-sub">550-char · 100-char overlap</div>
+                        </div>
+                        <div class="rag-node-arrow">↓</div>
+                        <div class="rag-node rag-process">
+                            <div class="rag-node-icon">🧠</div>
+                            <div class="rag-node-text">Dense Embedding</div>
+                            <div class="rag-node-sub">all-MiniLM-L6-v2 · 384d</div>
+                        </div>
+                        <div class="rag-node-arrow">↓</div>
+                        <div class="rag-node rag-db">
+                            <div class="rag-node-icon">🗄️</div>
+                            <div class="rag-node-text">Qdrant Vector DB</div>
+                            <div class="rag-node-sub">570 indexed chunks · HNSW</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Online Pipeline -->
+                <div class="rag-pipeline-box">
+                    <div class="rag-pipeline-title">🔎 Online: Query Execution Pipeline</div>
+                    <div class="rag-nodes">
+                        <div class="rag-node rag-query">
+                            <div class="rag-node-icon">❓</div>
+                            <div class="rag-node-text">User Research Query</div>
+                            <div class="rag-node-sub">Natural language question</div>
+                        </div>
+                        <div class="rag-node-arrow">↓</div>
+                        <div class="rag-nodes-dual">
+                            <div class="rag-node rag-process rag-dense">
+                                <div class="rag-node-icon">🧠</div>
+                                <div class="rag-node-text">Dense Retrieval</div>
+                                <div class="rag-node-sub">Qdrant HNSW cosine</div>
+                            </div>
+                            <div class="rag-node rag-process rag-sparse">
+                                <div class="rag-node-icon">📑</div>
+                                <div class="rag-node-text">Sparse Retrieval</div>
+                                <div class="rag-node-sub">BM25Okapi k1=1.5 b=0.75</div>
+                            </div>
+                        </div>
+                        <div class="rag-node-arrow">↓</div>
+                        <div class="rag-node rag-fusion">
+                            <div class="rag-node-icon">🔄</div>
+                            <div class="rag-node-text">Reciprocal Rank Fusion</div>
+                            <div class="rag-node-sub">RRF k=60 · Top-12 candidates</div>
+                        </div>
+                        <div class="rag-node-arrow">↓</div>
+                        <div class="rag-node rag-rerank">
+                            <div class="rag-node-icon">🎯</div>
+                            <div class="rag-node-text">Cross-Encoder Reranking</div>
+                            <div class="rag-node-sub">ms-marco-MiniLM-L-6-v2</div>
+                        </div>
+                        <div class="rag-node-arrow">↓</div>
+                        <div class="rag-node rag-guard">
+                            <div class="rag-node-icon">🛡️</div>
+                            <div class="rag-node-text">Guardrail + Synthesis</div>
+                            <div class="rag-node-sub">Domain check · Citation build</div>
+                        </div>
+                        <div class="rag-node-arrow">↓</div>
+                        <div class="rag-node rag-output">
+                            <div class="rag-node-icon">📋</div>
+                            <div class="rag-node-text">Cited Answer</div>
+                            <div class="rag-node-sub">[Paper, Page X] citations</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Component Details -->
+            <div class="rag-components-grid">
+                <div class="rag-comp-card">
+                    <div class="rag-comp-title">📄 ingest_pipeline.py</div>
+                    <div class="rag-comp-desc">PDF loading, PyMuPDF extraction, selective OCR, chunking (550 chars, 100 overlap), metadata generation, Qdrant indexing.</div>
+                    <div class="rag-comp-status status-done">✓ Implemented</div>
+                </div>
+                <div class="rag-comp-card">
+                    <div class="rag-comp-title">🔎 rag_engine.py</div>
+                    <div class="rag-comp-desc">MediEvidenceRAG singleton: BM25 index, Qdrant client, SentenceTransformer, CrossEncoder, hybrid_retrieve(), RRF fusion, guardrail logic.</div>
+                    <div class="rag-comp-status status-done">✓ Implemented</div>
+                </div>
+                <div class="rag-comp-card">
+                    <div class="rag-comp-title">⚡ api/routes.py</div>
+                    <div class="rag-comp-desc">FastAPI REST endpoints: /api/health, /api/stats, /api/papers, /api/papers/{id}, /api/chunks, /api/query, /api/evaluate</div>
+                    <div class="rag-comp-status status-done">✓ Implemented</div>
+                </div>
+                <div class="rag-comp-card">
+                    <div class="rag-comp-title">📊 evaluate_rag.py</div>
+                    <div class="rag-comp-desc">30-question benchmark evaluation: Recall@1/3/5, MRR, nDCG@5, citation accuracy, out-of-domain refusal accuracy.</div>
+                    <div class="rag-comp-status status-done">✓ Implemented</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== EVALUATION SECTION ==================== -->
+    <section id="evaluation" class="section-eval section-block">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Rigorous Benchmarking</span>
+                <h2>Evaluation &amp; Groundedness Metrics</h2>
+                <p>Evaluated on 50 comprehensive benchmark questions across 10 categories (42 clinical + 4 out-of-domain + 4 insufficient-evidence) with actual measured results.</p>
+            </div>
+
+            <div class="eval-grid" id="evalGrid">
+                <!-- Populated from actual evaluation_summary.json via JS -->
+            </div>
+
+            <div class="eval-methodology">
+                <h4>📋 Evaluation Methodology</h4>
+                <div class="eval-method-grid">
+                    <div class="eval-method-item">
+                        <strong>Recall@1</strong><br>
+                        Target ground-truth paper is the #1 retrieved candidate across domain questions.
+                    </div>
+                    <div class="eval-method-item">
+                        <strong>MRR (Mean Reciprocal Rank)</strong><br>
+                        Average reciprocal position of the first relevant paper across all queries.
+                    </div>
+                    <div class="eval-method-item">
+                        <strong>nDCG@5</strong><br>
+                        Normalized Discounted Cumulative Gain measuring position-weighted retrieval quality in top-5.
+                    </div>
+                    <div class="eval-method-item">
+                        <strong>Out-of-Domain Refusal</strong><br>
+                        Percentage of non-medical queries correctly refused with no fabricated answer generated.
+                    </div>
+                    <div class="eval-method-item">
+                        <strong>Citation Accuracy</strong><br>
+                        Every generated assertion links directly to a verified paper_id and original_page metadata entry.
+                    </div>
+                    <div class="eval-method-item">
+                        <strong>Sample Size</strong><br>
+                        50 total questions: 42 clinical domain questions across 8 categories + 4 out-of-domain refusal tests + 4 insufficient-evidence boundary tests.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Evaluation Questions -->
+            <div class="eval-questions-section">
+                <h4>📝 Benchmark Question Inventory (50 Questions)</h4>
+                <div id="evalQuestionsContainer">
+                    <p style="color:#9ca3af;">Loading evaluation questions...</p>
+                </div>
+            </div>
+
+            <!-- Failure Analysis Dashboard -->
+            <div class="eval-failures-section" style="margin-top: 40px;">
+                <div class="section-header" style="text-align: left; margin-bottom: 20px;">
+                    <span class="section-tag" style="background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3);">Failure Analysis &amp; Quality Gate</span>
+                    <h3>Automated Failure Analysis Dashboard</h3>
+                    <p style="color: #9ca3af; font-size: 0.95rem;">Transparent logging of edge-case retrieval mismatches, false refusals, and applied RAG engine algorithmic fixes.</p>
+                </div>
+                <div id="failuresTableContainer">
+                    <p style="color:#9ca3af;">Loading failure analysis...</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== PAPER DETAIL MODAL ==================== -->
+    <div id="paperModal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closePaperModal()">✕</button>
+            <div id="modalBody"></div>
+        </div>
+    </div>
+
+    <!-- ==================== PDF VIEWER MODAL ==================== -->
+    <div id="pdfModal" class="modal-overlay">
+        <div class="modal-content pdf-modal-content" style="max-width: 95vw; width: 1100px; height: 90vh; display: flex; flex-direction: column;">
+            <div class="pdf-modal-header" style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                <div style="display: flex; align-items: center; gap: 12px; overflow: hidden;">
+                    <span class="paper-id-badge" id="pdfModalPaperId">MED-DT-001</span>
+                    <span style="font-weight: 600; color: #f0f4ff; font-size: 0.95rem; white-space: nowrap; text-overflow: ellipsis; overflow: hidden;" id="pdfModalTitle">Paper Title</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px; flex-shrink: 0;">
+                    <div style="display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.06); padding: 4px 10px; border-radius: 6px;">
+                        <button class="btn-inspect" style="padding: 3px 8px;" onclick="changePdfPage(-1)">◀ Prev</button>
+                        <span style="font-size: 0.85rem; color: #14b8a6; font-weight: 700;" id="pdfPageIndicator">Page 1</span>
+                        <button class="btn-inspect" style="padding: 3px 8px;" onclick="changePdfPage(1)">Next ▶</button>
+                    </div>
+                    <a id="pdfOpenNewTabBtn" href="#" target="_blank" rel="noopener" class="btn-inspect" style="padding: 5px 12px;">↗ New Tab</a>
+                    <button class="modal-close" onclick="closePdfModal()" style="position: static; font-size: 1.2rem;">✕</button>
+                </div>
+            </div>
+            <div style="flex: 1; margin-top: 10px; border-radius: 8px; overflow: hidden; background: #1e293b;">
+                <iframe id="pdfViewerFrame" src="" style="width: 100%; height: 100%; border: none;"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== FOOTER ==================== -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-brand">🧬 MediEvidence — AI in Digital Healthcare Research Assistant</div>
+            <div class="footer-desc">
+                An academic RAG research platform. Not a medical diagnostic device. All answers are grounded in cited peer-reviewed research literature.<br>
+                <strong>Author Paper:</strong> Saniya Y. Saratkar et al. — Frontiers in Digital Health, 2025 · DOI: 10.3389/fdgth.2025.1583466
+            </div>
+            <div class="footer-stack">
+                <span>FastAPI</span> · <span>Qdrant</span> · <span>SentenceTransformers</span> · <span>BM25Okapi</span> · <span>CrossEncoder</span> · <span>PyMuPDF</span>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

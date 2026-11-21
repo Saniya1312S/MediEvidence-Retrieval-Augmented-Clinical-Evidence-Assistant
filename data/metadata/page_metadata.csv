@@ -1,0 +1,571 @@
+paper_id,paper_title,authors,publication_year,original_pdf_page,extraction_method,extraction_quality,character_count,word_count,section_heading
+MED-IMG-001,Retrieval-Augmented Correction for Generalist Medical Image Segmentation,"Vincenzo Marciano, Xiaoming Zhang, et al.",2026,1,pdf_text,success,2698,374,Main Body
+MED-IMG-001,Retrieval-Augmented Correction for Generalist Medical Image Segmentation,"Vincenzo Marciano, Xiaoming Zhang, et al.",2026,2,pdf_text,success,5076,687,Introduction
+MED-IMG-001,Retrieval-Augmented Correction for Generalist Medical Image Segmentation,"Vincenzo Marciano, Xiaoming Zhang, et al.",2026,3,pdf_text,success,3601,527,Main Body
+MED-IMG-001,Retrieval-Augmented Correction for Generalist Medical Image Segmentation,"Vincenzo Marciano, Xiaoming Zhang, et al.",2026,4,pdf_text,success,4210,624,Main Body
+MED-IMG-001,Retrieval-Augmented Correction for Generalist Medical Image Segmentation,"Vincenzo Marciano, Xiaoming Zhang, et al.",2026,5,pdf_text,success,3351,472,Main Body
+MED-IMG-001,Retrieval-Augmented Correction for Generalist Medical Image Segmentation,"Vincenzo Marciano, Xiaoming Zhang, et al.",2026,6,pdf_text,success,4470,695,Main Body
+MED-IMG-001,Retrieval-Augmented Correction for Generalist Medical Image Segmentation,"Vincenzo Marciano, Xiaoming Zhang, et al.",2026,7,pdf_text,success,4566,725,Experiments
+MED-IMG-001,Retrieval-Augmented Correction for Generalist Medical Image Segmentation,"Vincenzo Marciano, Xiaoming Zhang, et al.",2026,8,pdf_text,success,3906,687,Main Body
+MED-IMG-001,Retrieval-Augmented Correction for Generalist Medical Image Segmentation,"Vincenzo Marciano, Xiaoming Zhang, et al.",2026,9,pdf_text,success,3317,500,Main Body
+MED-IMG-001,Retrieval-Augmented Correction for Generalist Medical Image Segmentation,"Vincenzo Marciano, Xiaoming Zhang, et al.",2026,10,pdf_text,success,3900,660,Main Body
+MED-IMG-001,Retrieval-Augmented Correction for Generalist Medical Image Segmentation,"Vincenzo Marciano, Xiaoming Zhang, et al.",2026,11,pdf_text,success,4024,633,Main Body
+MED-IMG-001,Retrieval-Augmented Correction for Generalist Medical Image Segmentation,"Vincenzo Marciano, Xiaoming Zhang, et al.",2026,12,pdf_text,success,4289,705,Main Body
+MED-IMG-001,Retrieval-Augmented Correction for Generalist Medical Image Segmentation,"Vincenzo Marciano, Xiaoming Zhang, et al.",2026,13,pdf_text,success,4252,630,Main Body
+MED-IMG-001,Retrieval-Augmented Correction for Generalist Medical Image Segmentation,"Vincenzo Marciano, Xiaoming Zhang, et al.",2026,14,pdf_text,success,3223,524,Main Body
+MED-IMG-001,Retrieval-Augmented Correction for Generalist Medical Image Segmentation,"Vincenzo Marciano, Xiaoming Zhang, et al.",2026,15,pdf_text,success,4029,528,Main Body
+MED-IMG-001,Retrieval-Augmented Correction for Generalist Medical Image Segmentation,"Vincenzo Marciano, Xiaoming Zhang, et al.",2026,16,pdf_text,success,3963,534,Main Body
+MED-IMG-001,Retrieval-Augmented Correction for Generalist Medical Image Segmentation,"Vincenzo Marciano, Xiaoming Zhang, et al.",2026,17,pdf_text,success,3887,515,Main Body
+MED-IMG-001,Retrieval-Augmented Correction for Generalist Medical Image Segmentation,"Vincenzo Marciano, Xiaoming Zhang, et al.",2026,18,pdf_text,success,4105,542,Main Body
+MED-IMG-001,Retrieval-Augmented Correction for Generalist Medical Image Segmentation,"Vincenzo Marciano, Xiaoming Zhang, et al.",2026,19,pdf_text,success,969,133,Main Body
+MED-IMG-001,Retrieval-Augmented Correction for Generalist Medical Image Segmentation,"Vincenzo Marciano, Xiaoming Zhang, et al.",2026,20,pdf_text,success,4688,680,Main Body
+MED-IMG-001,Retrieval-Augmented Correction for Generalist Medical Image Segmentation,"Vincenzo Marciano, Xiaoming Zhang, et al.",2026,21,pdf_text,success,3700,550,Main Body
+MED-IMG-001,Retrieval-Augmented Correction for Generalist Medical Image Segmentation,"Vincenzo Marciano, Xiaoming Zhang, et al.",2026,22,pdf_text,success,3191,545,Main Body
+MED-IMG-001,Retrieval-Augmented Correction for Generalist Medical Image Segmentation,"Vincenzo Marciano, Xiaoming Zhang, et al.",2026,23,pdf_text,success,3555,536,Main Body
+MED-IMG-001,Retrieval-Augmented Correction for Generalist Medical Image Segmentation,"Vincenzo Marciano, Xiaoming Zhang, et al.",2026,24,pdf_text,success,2112,317,Main Body
+MED-IMG-001,Retrieval-Augmented Correction for Generalist Medical Image Segmentation,"Vincenzo Marciano, Xiaoming Zhang, et al.",2026,25,pdf_text,success,2146,328,Main Body
+MED-IMG-002,LeViT-UNet++: Towards Balanced Fine-Grained Details and Context for Medical Image Segmentation,"Guoping Xu, Jinling Zhu, et al.",2026,1,pdf_text,success,2897,344,Main Body
+MED-IMG-002,LeViT-UNet++: Towards Balanced Fine-Grained Details and Context for Medical Image Segmentation,"Guoping Xu, Jinling Zhu, et al.",2026,2,pdf_text,success,2730,320,1. Introduction
+MED-IMG-002,LeViT-UNet++: Towards Balanced Fine-Grained Details and Context for Medical Image Segmentation,"Guoping Xu, Jinling Zhu, et al.",2026,3,pdf_text,success,3648,437,Main Body
+MED-IMG-002,LeViT-UNet++: Towards Balanced Fine-Grained Details and Context for Medical Image Segmentation,"Guoping Xu, Jinling Zhu, et al.",2026,4,pdf_text,success,3220,381,Main Body
+MED-IMG-002,LeViT-UNet++: Towards Balanced Fine-Grained Details and Context for Medical Image Segmentation,"Guoping Xu, Jinling Zhu, et al.",2026,5,pdf_text,success,3268,399,2. Related Work
+MED-IMG-002,LeViT-UNet++: Towards Balanced Fine-Grained Details and Context for Medical Image Segmentation,"Guoping Xu, Jinling Zhu, et al.",2026,6,pdf_text,success,3554,423,Main Body
+MED-IMG-002,LeViT-UNet++: Towards Balanced Fine-Grained Details and Context for Medical Image Segmentation,"Guoping Xu, Jinling Zhu, et al.",2026,7,pdf_text,success,1436,172,Main Body
+MED-IMG-002,LeViT-UNet++: Towards Balanced Fine-Grained Details and Context for Medical Image Segmentation,"Guoping Xu, Jinling Zhu, et al.",2026,8,pdf_text,success,2928,381,Main Body
+MED-IMG-002,LeViT-UNet++: Towards Balanced Fine-Grained Details and Context for Medical Image Segmentation,"Guoping Xu, Jinling Zhu, et al.",2026,9,pdf_text,success,2304,290,Main Body
+MED-IMG-002,LeViT-UNet++: Towards Balanced Fine-Grained Details and Context for Medical Image Segmentation,"Guoping Xu, Jinling Zhu, et al.",2026,10,pdf_text,success,2369,306,𝑋𝐿𝐿= 1
+MED-IMG-002,LeViT-UNet++: Towards Balanced Fine-Grained Details and Context for Medical Image Segmentation,"Guoping Xu, Jinling Zhu, et al.",2026,11,pdf_text,success,2953,368,"𝑌= 𝑃𝑊𝑐𝑜𝑛𝑣(1×1)(𝐶𝑜𝑛𝑐𝑎𝑡(𝐹𝐿, 𝐹𝐻))"
+MED-IMG-002,LeViT-UNet++: Towards Balanced Fine-Grained Details and Context for Medical Image Segmentation,"Guoping Xu, Jinling Zhu, et al.",2026,12,pdf_text,success,2834,401,(2) ACDC
+MED-IMG-002,LeViT-UNet++: Towards Balanced Fine-Grained Details and Context for Medical Image Segmentation,"Guoping Xu, Jinling Zhu, et al.",2026,13,pdf_text,success,3198,479,Main Body
+MED-IMG-002,LeViT-UNet++: Towards Balanced Fine-Grained Details and Context for Medical Image Segmentation,"Guoping Xu, Jinling Zhu, et al.",2026,14,pdf_text,success,2421,344,Main Body
+MED-IMG-002,LeViT-UNet++: Towards Balanced Fine-Grained Details and Context for Medical Image Segmentation,"Guoping Xu, Jinling Zhu, et al.",2026,15,pdf_text,success,2656,379,N w k
+MED-IMG-002,LeViT-UNet++: Towards Balanced Fine-Grained Details and Context for Medical Image Segmentation,"Guoping Xu, Jinling Zhu, et al.",2026,16,pdf_text,success,2995,435,Main Body
+MED-IMG-002,LeViT-UNet++: Towards Balanced Fine-Grained Details and Context for Medical Image Segmentation,"Guoping Xu, Jinling Zhu, et al.",2026,17,pdf_text,success,2415,362,N w k
+MED-IMG-002,LeViT-UNet++: Towards Balanced Fine-Grained Details and Context for Medical Image Segmentation,"Guoping Xu, Jinling Zhu, et al.",2026,18,pdf_text,success,2671,384,Main Body
+MED-IMG-002,LeViT-UNet++: Towards Balanced Fine-Grained Details and Context for Medical Image Segmentation,"Guoping Xu, Jinling Zhu, et al.",2026,19,pdf_text,success,227,34,Main Body
+MED-IMG-002,LeViT-UNet++: Towards Balanced Fine-Grained Details and Context for Medical Image Segmentation,"Guoping Xu, Jinling Zhu, et al.",2026,20,pdf_text,success,3581,421,5. Discussion
+MED-IMG-002,LeViT-UNet++: Towards Balanced Fine-Grained Details and Context for Medical Image Segmentation,"Guoping Xu, Jinling Zhu, et al.",2026,21,pdf_text,success,2864,363,Main Body
+MED-IMG-002,LeViT-UNet++: Towards Balanced Fine-Grained Details and Context for Medical Image Segmentation,"Guoping Xu, Jinling Zhu, et al.",2026,22,pdf_text,success,3138,459,Main Body
+MED-IMG-002,LeViT-UNet++: Towards Balanced Fine-Grained Details and Context for Medical Image Segmentation,"Guoping Xu, Jinling Zhu, et al.",2026,23,pdf_text,success,3118,450,Main Body
+MED-IMG-002,LeViT-UNet++: Towards Balanced Fine-Grained Details and Context for Medical Image Segmentation,"Guoping Xu, Jinling Zhu, et al.",2026,24,pdf_text,success,2624,378,Main Body
+MED-IMG-003,"Scribble Once, Segment the Sequence: Bidirectional Temporal Consistency for Weakly Supervised Medical Segmentation","Vincent Li Weixin, Chen Jingkun, et al.",2026,1,pdf_text,success,4124,523,Main Body
+MED-IMG-003,"Scribble Once, Segment the Sequence: Bidirectional Temporal Consistency for Weakly Supervised Medical Segmentation","Vincent Li Weixin, Chen Jingkun, et al.",2026,2,pdf_text,success,5455,677,Main Body
+MED-IMG-003,"Scribble Once, Segment the Sequence: Bidirectional Temporal Consistency for Weakly Supervised Medical Segmentation","Vincent Li Weixin, Chen Jingkun, et al.",2026,3,pdf_text,success,4874,749,3. Methodology
+MED-IMG-003,"Scribble Once, Segment the Sequence: Bidirectional Temporal Consistency for Weakly Supervised Medical Segmentation","Vincent Li Weixin, Chen Jingkun, et al.",2026,4,pdf_text,success,2535,407,Main Body
+MED-IMG-003,"Scribble Once, Segment the Sequence: Bidirectional Temporal Consistency for Weakly Supervised Medical Segmentation","Vincent Li Weixin, Chen Jingkun, et al.",2026,5,pdf_text,success,5154,787,neighbors rather than with the anchor. Each reference is
+MED-IMG-003,"Scribble Once, Segment the Sequence: Bidirectional Temporal Consistency for Weakly Supervised Medical Segmentation","Vincent Li Weixin, Chen Jingkun, et al.",2026,6,pdf_text,success,5436,762,4.3. Baseline and Evaluation Metrics
+MED-IMG-003,"Scribble Once, Segment the Sequence: Bidirectional Temporal Consistency for Weakly Supervised Medical Segmentation","Vincent Li Weixin, Chen Jingkun, et al.",2026,7,pdf_text,success,3301,501,Main Body
+MED-IMG-003,"Scribble Once, Segment the Sequence: Bidirectional Temporal Consistency for Weakly Supervised Medical Segmentation","Vincent Li Weixin, Chen Jingkun, et al.",2026,8,pdf_text,success,1652,239,Main Body
+MED-IMG-003,"Scribble Once, Segment the Sequence: Bidirectional Temporal Consistency for Weakly Supervised Medical Segmentation","Vincent Li Weixin, Chen Jingkun, et al.",2026,9,pdf_text,success,5873,804,References
+MED-IMG-003,"Scribble Once, Segment the Sequence: Bidirectional Temporal Consistency for Weakly Supervised Medical Segmentation","Vincent Li Weixin, Chen Jingkun, et al.",2026,10,pdf_text,success,1874,256,"Symposium on Biomedical Imaging (ISBI), pages 1–5. IEEE,"
+MED-IMG-004,FGCARL: Fisher-Guided Continuously Adaptive Representation Learning for Medical Image Classification,"Xiaobing Yu, Jin Yang, et al.",2026,1,pdf_text,success,5657,747,FGCARL: Fisher-Guided Continuously Adaptive Representation
+MED-IMG-004,FGCARL: Fisher-Guided Continuously Adaptive Representation Learning for Medical Image Classification,"Xiaobing Yu, Jin Yang, et al.",2026,2,pdf_text,success,5880,730,FGCARL for Medical Image Segmentation
+MED-IMG-004,FGCARL: Fisher-Guided Continuously Adaptive Representation Learning for Medical Image Classification,"Xiaobing Yu, Jin Yang, et al.",2026,3,pdf_text,success,5981,710,FGCARL for Medical Image Segmentation
+MED-IMG-004,FGCARL: Fisher-Guided Continuously Adaptive Representation Learning for Medical Image Classification,"Xiaobing Yu, Jin Yang, et al.",2026,4,pdf_text,success,5763,743,FGCARL for Medical Image Segmentation
+MED-IMG-004,FGCARL: Fisher-Guided Continuously Adaptive Representation Learning for Medical Image Classification,"Xiaobing Yu, Jin Yang, et al.",2026,5,pdf_text,success,3833,536,FGCARL for Medical Image Segmentation
+MED-IMG-004,FGCARL: Fisher-Guided Continuously Adaptive Representation Learning for Medical Image Classification,"Xiaobing Yu, Jin Yang, et al.",2026,6,pdf_text,success,4376,639,FGCARL for Medical Image Segmentation
+MED-IMG-004,FGCARL: Fisher-Guided Continuously Adaptive Representation Learning for Medical Image Classification,"Xiaobing Yu, Jin Yang, et al.",2026,7,pdf_text,success,3324,467,FGCARL for Medical Image Segmentation
+MED-IMG-004,FGCARL: Fisher-Guided Continuously Adaptive Representation Learning for Medical Image Classification,"Xiaobing Yu, Jin Yang, et al.",2026,8,pdf_text,success,5552,716,FGCARL for Medical Image Segmentation
+MED-IMG-004,FGCARL: Fisher-Guided Continuously Adaptive Representation Learning for Medical Image Classification,"Xiaobing Yu, Jin Yang, et al.",2026,9,pdf_text,success,4721,647,FGCARL for Medical Image Segmentation
+MED-IMG-004,FGCARL: Fisher-Guided Continuously Adaptive Representation Learning for Medical Image Classification,"Xiaobing Yu, Jin Yang, et al.",2026,10,pdf_text,success,6089,818,FGCARL for Medical Image Segmentation
+MED-IMG-004,FGCARL: Fisher-Guided Continuously Adaptive Representation Learning for Medical Image Classification,"Xiaobing Yu, Jin Yang, et al.",2026,11,pdf_text,success,5020,826,FGCARL for Medical Image Segmentation
+MED-IMG-004,FGCARL: Fisher-Guided Continuously Adaptive Representation Learning for Medical Image Classification,"Xiaobing Yu, Jin Yang, et al.",2026,12,pdf_text,success,6171,789,FGCARL for Medical Image Segmentation
+MED-IMG-004,FGCARL: Fisher-Guided Continuously Adaptive Representation Learning for Medical Image Classification,"Xiaobing Yu, Jin Yang, et al.",2026,13,pdf_text,success,3955,540,Methods
+MED-IMG-004,FGCARL: Fisher-Guided Continuously Adaptive Representation Learning for Medical Image Classification,"Xiaobing Yu, Jin Yang, et al.",2026,14,pdf_text,success,5122,672,Methods
+MED-IMG-004,FGCARL: Fisher-Guided Continuously Adaptive Representation Learning for Medical Image Classification,"Xiaobing Yu, Jin Yang, et al.",2026,15,pdf_text,success,4795,699,Methods
+MED-IMG-004,FGCARL: Fisher-Guided Continuously Adaptive Representation Learning for Medical Image Classification,"Xiaobing Yu, Jin Yang, et al.",2026,16,pdf_text,success,4871,685,FGCARL for Medical Image Segmentation
+MED-IMG-004,FGCARL: Fisher-Guided Continuously Adaptive Representation Learning for Medical Image Classification,"Xiaobing Yu, Jin Yang, et al.",2026,17,pdf_text,success,6434,889,FGCARL for Medical Image Segmentation
+MED-IMG-004,FGCARL: Fisher-Guided Continuously Adaptive Representation Learning for Medical Image Classification,"Xiaobing Yu, Jin Yang, et al.",2026,18,pdf_text,success,8209,1152,FGCARL for Medical Image Segmentation
+MED-IMG-004,FGCARL: Fisher-Guided Continuously Adaptive Representation Learning for Medical Image Classification,"Xiaobing Yu, Jin Yang, et al.",2026,19,pdf_text,success,5520,757,FGCARL for Medical Image Segmentation
+MED-IMG-005,Medical Image Segmentation: Foundation Model Adaptation versus Task-Specific Training,"Emre Kutlusan, Yongmin Li",2026,1,pdf_text,success,3258,464,Abstract
+MED-IMG-005,Medical Image Segmentation: Foundation Model Adaptation versus Task-Specific Training,"Emre Kutlusan, Yongmin Li",2026,2,pdf_text,success,4115,636,Main Body
+MED-IMG-005,Medical Image Segmentation: Foundation Model Adaptation versus Task-Specific Training,"Emre Kutlusan, Yongmin Li",2026,3,pdf_text,success,4244,618,Main Body
+MED-IMG-005,Medical Image Segmentation: Foundation Model Adaptation versus Task-Specific Training,"Emre Kutlusan, Yongmin Li",2026,4,pdf_text,success,4506,686,Main Body
+MED-IMG-005,Medical Image Segmentation: Foundation Model Adaptation versus Task-Specific Training,"Emre Kutlusan, Yongmin Li",2026,5,pdf_text,success,3924,599,2.5. Research gaps
+MED-IMG-005,Medical Image Segmentation: Foundation Model Adaptation versus Task-Specific Training,"Emre Kutlusan, Yongmin Li",2026,6,pdf_text,success,2652,420,Main Body
+MED-IMG-005,Medical Image Segmentation: Foundation Model Adaptation versus Task-Specific Training,"Emre Kutlusan, Yongmin Li",2026,7,pdf_text,success,3614,561,Main Body
+MED-IMG-005,Medical Image Segmentation: Foundation Model Adaptation versus Task-Specific Training,"Emre Kutlusan, Yongmin Li",2026,8,pdf_text,success,1888,295,Main Body
+MED-IMG-005,Medical Image Segmentation: Foundation Model Adaptation versus Task-Specific Training,"Emre Kutlusan, Yongmin Li",2026,9,pdf_text,success,2362,374,Main Body
+MED-IMG-005,Medical Image Segmentation: Foundation Model Adaptation versus Task-Specific Training,"Emre Kutlusan, Yongmin Li",2026,10,pdf_text,success,3695,568,Main Body
+MED-IMG-005,Medical Image Segmentation: Foundation Model Adaptation versus Task-Specific Training,"Emre Kutlusan, Yongmin Li",2026,11,pdf_text,success,4151,644,Main Body
+MED-IMG-005,Medical Image Segmentation: Foundation Model Adaptation versus Task-Specific Training,"Emre Kutlusan, Yongmin Li",2026,12,pdf_text,success,4361,688,Main Body
+MED-IMG-005,Medical Image Segmentation: Foundation Model Adaptation versus Task-Specific Training,"Emre Kutlusan, Yongmin Li",2026,13,pdf_text,success,3685,629,Main Body
+MED-IMG-005,Medical Image Segmentation: Foundation Model Adaptation versus Task-Specific Training,"Emre Kutlusan, Yongmin Li",2026,14,pdf_text,success,3660,599,Polyp
+MED-IMG-005,Medical Image Segmentation: Foundation Model Adaptation versus Task-Specific Training,"Emre Kutlusan, Yongmin Li",2026,15,pdf_text,success,3113,488,Main Body
+MED-IMG-005,Medical Image Segmentation: Foundation Model Adaptation versus Task-Specific Training,"Emre Kutlusan, Yongmin Li",2026,16,pdf_text,success,3022,515,0.0
+MED-IMG-005,Medical Image Segmentation: Foundation Model Adaptation versus Task-Specific Training,"Emre Kutlusan, Yongmin Li",2026,17,pdf_text,success,1484,235,Polyp
+MED-IMG-005,Medical Image Segmentation: Foundation Model Adaptation versus Task-Specific Training,"Emre Kutlusan, Yongmin Li",2026,18,pdf_text,success,4553,754,Main Body
+MED-IMG-005,Medical Image Segmentation: Foundation Model Adaptation versus Task-Specific Training,"Emre Kutlusan, Yongmin Li",2026,19,pdf_text,success,2478,398,130
+MED-IMG-005,Medical Image Segmentation: Foundation Model Adaptation versus Task-Specific Training,"Emre Kutlusan, Yongmin Li",2026,20,pdf_text,success,4232,707,4.5. Adaptation capacity requirements differ by domain
+MED-IMG-005,Medical Image Segmentation: Foundation Model Adaptation versus Task-Specific Training,"Emre Kutlusan, Yongmin Li",2026,21,pdf_text,success,3637,598,103
+MED-IMG-005,Medical Image Segmentation: Foundation Model Adaptation versus Task-Specific Training,"Emre Kutlusan, Yongmin Li",2026,22,pdf_text,success,792,141,Main Body
+MED-IMG-005,Medical Image Segmentation: Foundation Model Adaptation versus Task-Specific Training,"Emre Kutlusan, Yongmin Li",2026,23,pdf_text,success,3071,527,Main Body
+MED-IMG-005,Medical Image Segmentation: Foundation Model Adaptation versus Task-Specific Training,"Emre Kutlusan, Yongmin Li",2026,24,pdf_text,success,2852,594,Main Body
+MED-IMG-005,Medical Image Segmentation: Foundation Model Adaptation versus Task-Specific Training,"Emre Kutlusan, Yongmin Li",2026,25,pdf_text,success,2743,440,Main Body
+MED-IMG-005,Medical Image Segmentation: Foundation Model Adaptation versus Task-Specific Training,"Emre Kutlusan, Yongmin Li",2026,26,pdf_text,success,1619,247,Main Body
+MED-IMG-005,Medical Image Segmentation: Foundation Model Adaptation versus Task-Specific Training,"Emre Kutlusan, Yongmin Li",2026,27,pdf_text,success,5701,941,Main Body
+MED-IMG-005,Medical Image Segmentation: Foundation Model Adaptation versus Task-Specific Training,"Emre Kutlusan, Yongmin Li",2026,28,pdf_text,success,4361,700,4.6. Stability of the optimal configuration
+MED-IMG-005,Medical Image Segmentation: Foundation Model Adaptation versus Task-Specific Training,"Emre Kutlusan, Yongmin Li",2026,29,pdf_text,success,3237,501,Main Body
+MED-IMG-005,Medical Image Segmentation: Foundation Model Adaptation versus Task-Specific Training,"Emre Kutlusan, Yongmin Li",2026,30,pdf_text,success,4111,662,Main Body
+MED-IMG-005,Medical Image Segmentation: Foundation Model Adaptation versus Task-Specific Training,"Emre Kutlusan, Yongmin Li",2026,31,pdf_text,success,3774,607,Main Body
+MED-IMG-005,Medical Image Segmentation: Foundation Model Adaptation versus Task-Specific Training,"Emre Kutlusan, Yongmin Li",2026,32,pdf_text,success,3203,515,Main Body
+MED-IMG-005,Medical Image Segmentation: Foundation Model Adaptation versus Task-Specific Training,"Emre Kutlusan, Yongmin Li",2026,33,pdf_text,success,4431,697,Main Body
+MED-IMG-005,Medical Image Segmentation: Foundation Model Adaptation versus Task-Specific Training,"Emre Kutlusan, Yongmin Li",2026,34,pdf_text,success,3933,635,Main Body
+MED-IMG-005,Medical Image Segmentation: Foundation Model Adaptation versus Task-Specific Training,"Emre Kutlusan, Yongmin Li",2026,35,pdf_text,success,4475,681,Main Body
+MED-IMG-005,Medical Image Segmentation: Foundation Model Adaptation versus Task-Specific Training,"Emre Kutlusan, Yongmin Li",2026,36,pdf_text,success,3150,465,Main Body
+MED-IMG-005,Medical Image Segmentation: Foundation Model Adaptation versus Task-Specific Training,"Emre Kutlusan, Yongmin Li",2026,37,pdf_text,success,2694,379,Acknowledgements
+MED-IMG-005,Medical Image Segmentation: Foundation Model Adaptation versus Task-Specific Training,"Emre Kutlusan, Yongmin Li",2026,38,pdf_text,success,3173,475,Main Body
+MED-IMG-005,Medical Image Segmentation: Foundation Model Adaptation versus Task-Specific Training,"Emre Kutlusan, Yongmin Li",2026,39,pdf_text,success,3187,460,Main Body
+MED-IMG-005,Medical Image Segmentation: Foundation Model Adaptation versus Task-Specific Training,"Emre Kutlusan, Yongmin Li",2026,40,pdf_text,success,3077,457,Main Body
+MED-IMG-005,Medical Image Segmentation: Foundation Model Adaptation versus Task-Specific Training,"Emre Kutlusan, Yongmin Li",2026,41,pdf_text,success,3181,467,"[51] J. Bernal, J. Sánchez, F. Vilariño,"
+MED-IMG-005,Medical Image Segmentation: Foundation Model Adaptation versus Task-Specific Training,"Emre Kutlusan, Yongmin Li",2026,42,pdf_text,success,819,123,Main Body
+MED-IMG-006,DeVAR: Low-Dose CT Denoising via Visual Autoregressive Modeling,"Xizhuo Zhang, Yannian Gu, et al.",2026,1,pdf_text,success,2395,304,DeVAR: Low-Dose CT Denoising via Visual
+MED-IMG-006,DeVAR: Low-Dose CT Denoising via Visual Autoregressive Modeling,"Xizhuo Zhang, Yannian Gu, et al.",2026,2,pdf_text,success,3400,455,2
+MED-IMG-006,DeVAR: Low-Dose CT Denoising via Visual Autoregressive Modeling,"Xizhuo Zhang, Yannian Gu, et al.",2026,3,pdf_text,success,1952,276,Methodology
+MED-IMG-006,DeVAR: Low-Dose CT Denoising via Visual Autoregressive Modeling,"Xizhuo Zhang, Yannian Gu, et al.",2026,4,pdf_text,success,2717,425,4
+MED-IMG-006,DeVAR: Low-Dose CT Denoising via Visual Autoregressive Modeling,"Xizhuo Zhang, Yannian Gu, et al.",2026,5,pdf_text,success,2570,407,Main Body
+MED-IMG-006,DeVAR: Low-Dose CT Denoising via Visual Autoregressive Modeling,"Xizhuo Zhang, Yannian Gu, et al.",2026,6,pdf_text,success,2281,343,Methods
+MED-IMG-006,DeVAR: Low-Dose CT Denoising via Visual Autoregressive Modeling,"Xizhuo Zhang, Yannian Gu, et al.",2026,7,pdf_text,success,1891,264,Main Body
+MED-IMG-006,DeVAR: Low-Dose CT Denoising via Visual Autoregressive Modeling,"Xizhuo Zhang, Yannian Gu, et al.",2026,8,pdf_text,success,2457,337,Methods
+MED-IMG-006,DeVAR: Low-Dose CT Denoising via Visual Autoregressive Modeling,"Xizhuo Zhang, Yannian Gu, et al.",2026,9,pdf_text,success,3159,440,Main Body
+MED-IMG-006,DeVAR: Low-Dose CT Denoising via Visual Autoregressive Modeling,"Xizhuo Zhang, Yannian Gu, et al.",2026,10,pdf_text,success,2194,339,10
+MED-DHM-001,"From AI-Enabled Remote Patient Monitoring Toward Agentic Robotics: Embodiment, Governance, and Healthcare Translation","Ivana Ragusa, Lorenzo Guiducci, et al.",2026,1,pdf_text,success,2172,271,1
+MED-DHM-001,"From AI-Enabled Remote Patient Monitoring Toward Agentic Robotics: Embodiment, Governance, and Healthcare Translation","Ivana Ragusa, Lorenzo Guiducci, et al.",2026,2,pdf_text,success,2769,367,1. INTRODUCTION
+MED-DHM-001,"From AI-Enabled Remote Patient Monitoring Toward Agentic Robotics: Embodiment, Governance, and Healthcare Translation","Ivana Ragusa, Lorenzo Guiducci, et al.",2026,3,pdf_text,success,2929,386,3
+MED-DHM-001,"From AI-Enabled Remote Patient Monitoring Toward Agentic Robotics: Embodiment, Governance, and Healthcare Translation","Ivana Ragusa, Lorenzo Guiducci, et al.",2026,4,pdf_text,success,1974,264,2. METHODOLOGY
+MED-DHM-001,"From AI-Enabled Remote Patient Monitoring Toward Agentic Robotics: Embodiment, Governance, and Healthcare Translation","Ivana Ragusa, Lorenzo Guiducci, et al.",2026,5,pdf_text,success,2423,302,5
+MED-DHM-001,"From AI-Enabled Remote Patient Monitoring Toward Agentic Robotics: Embodiment, Governance, and Healthcare Translation","Ivana Ragusa, Lorenzo Guiducci, et al.",2026,6,pdf_text,success,1053,133,6
+MED-DHM-001,"From AI-Enabled Remote Patient Monitoring Toward Agentic Robotics: Embodiment, Governance, and Healthcare Translation","Ivana Ragusa, Lorenzo Guiducci, et al.",2026,7,pdf_text,success,2564,325,7
+MED-DHM-001,"From AI-Enabled Remote Patient Monitoring Toward Agentic Robotics: Embodiment, Governance, and Healthcare Translation","Ivana Ragusa, Lorenzo Guiducci, et al.",2026,8,pdf_text,success,2999,425,8
+MED-DHM-001,"From AI-Enabled Remote Patient Monitoring Toward Agentic Robotics: Embodiment, Governance, and Healthcare Translation","Ivana Ragusa, Lorenzo Guiducci, et al.",2026,9,pdf_text,success,2539,336,9
+MED-DHM-001,"From AI-Enabled Remote Patient Monitoring Toward Agentic Robotics: Embodiment, Governance, and Healthcare Translation","Ivana Ragusa, Lorenzo Guiducci, et al.",2026,10,pdf_text,success,1639,241,10
+MED-DHM-001,"From AI-Enabled Remote Patient Monitoring Toward Agentic Robotics: Embodiment, Governance, and Healthcare Translation","Ivana Ragusa, Lorenzo Guiducci, et al.",2026,11,pdf_text,success,2027,300,11
+MED-DHM-001,"From AI-Enabled Remote Patient Monitoring Toward Agentic Robotics: Embodiment, Governance, and Healthcare Translation","Ivana Ragusa, Lorenzo Guiducci, et al.",2026,12,pdf_text,success,1573,202,12
+MED-DHM-001,"From AI-Enabled Remote Patient Monitoring Toward Agentic Robotics: Embodiment, Governance, and Healthcare Translation","Ivana Ragusa, Lorenzo Guiducci, et al.",2026,13,pdf_text,success,1363,184,13
+MED-DHM-001,"From AI-Enabled Remote Patient Monitoring Toward Agentic Robotics: Embodiment, Governance, and Healthcare Translation","Ivana Ragusa, Lorenzo Guiducci, et al.",2026,14,pdf_text,success,2155,294,14
+MED-DHM-001,"From AI-Enabled Remote Patient Monitoring Toward Agentic Robotics: Embodiment, Governance, and Healthcare Translation","Ivana Ragusa, Lorenzo Guiducci, et al.",2026,15,pdf_text,success,2195,305,15
+MED-DHM-001,"From AI-Enabled Remote Patient Monitoring Toward Agentic Robotics: Embodiment, Governance, and Healthcare Translation","Ivana Ragusa, Lorenzo Guiducci, et al.",2026,16,pdf_text,success,1815,234,16
+MED-DHM-001,"From AI-Enabled Remote Patient Monitoring Toward Agentic Robotics: Embodiment, Governance, and Healthcare Translation","Ivana Ragusa, Lorenzo Guiducci, et al.",2026,17,pdf_text,success,2647,358,17
+MED-DHM-001,"From AI-Enabled Remote Patient Monitoring Toward Agentic Robotics: Embodiment, Governance, and Healthcare Translation","Ivana Ragusa, Lorenzo Guiducci, et al.",2026,18,pdf_text,success,2903,396,18
+MED-DHM-001,"From AI-Enabled Remote Patient Monitoring Toward Agentic Robotics: Embodiment, Governance, and Healthcare Translation","Ivana Ragusa, Lorenzo Guiducci, et al.",2026,19,pdf_text,success,2863,384,19
+MED-DHM-001,"From AI-Enabled Remote Patient Monitoring Toward Agentic Robotics: Embodiment, Governance, and Healthcare Translation","Ivana Ragusa, Lorenzo Guiducci, et al.",2026,20,pdf_text,success,2634,340,20
+MED-DHM-001,"From AI-Enabled Remote Patient Monitoring Toward Agentic Robotics: Embodiment, Governance, and Healthcare Translation","Ivana Ragusa, Lorenzo Guiducci, et al.",2026,21,pdf_text,success,1758,242,21
+MED-DHM-001,"From AI-Enabled Remote Patient Monitoring Toward Agentic Robotics: Embodiment, Governance, and Healthcare Translation","Ivana Ragusa, Lorenzo Guiducci, et al.",2026,22,pdf_text,success,2809,371,22
+MED-DHM-001,"From AI-Enabled Remote Patient Monitoring Toward Agentic Robotics: Embodiment, Governance, and Healthcare Translation","Ivana Ragusa, Lorenzo Guiducci, et al.",2026,23,pdf_text,success,2305,304,23
+MED-DHM-001,"From AI-Enabled Remote Patient Monitoring Toward Agentic Robotics: Embodiment, Governance, and Healthcare Translation","Ivana Ragusa, Lorenzo Guiducci, et al.",2026,24,pdf_text,success,1455,191,24
+MED-DHM-001,"From AI-Enabled Remote Patient Monitoring Toward Agentic Robotics: Embodiment, Governance, and Healthcare Translation","Ivana Ragusa, Lorenzo Guiducci, et al.",2026,25,pdf_text,success,2694,366,25
+MED-DHM-001,"From AI-Enabled Remote Patient Monitoring Toward Agentic Robotics: Embodiment, Governance, and Healthcare Translation","Ivana Ragusa, Lorenzo Guiducci, et al.",2026,26,pdf_text,success,2907,370,26
+MED-DHM-001,"From AI-Enabled Remote Patient Monitoring Toward Agentic Robotics: Embodiment, Governance, and Healthcare Translation","Ivana Ragusa, Lorenzo Guiducci, et al.",2026,27,pdf_text,success,2155,262,background reviews identify continuing translational barriers involving data qua
+MED-DHM-001,"From AI-Enabled Remote Patient Monitoring Toward Agentic Robotics: Embodiment, Governance, and Healthcare Translation","Ivana Ragusa, Lorenzo Guiducci, et al.",2026,28,pdf_text,success,1313,170,28
+MED-DHM-001,"From AI-Enabled Remote Patient Monitoring Toward Agentic Robotics: Embodiment, Governance, and Healthcare Translation","Ivana Ragusa, Lorenzo Guiducci, et al.",2026,29,pdf_text,success,2542,374,29
+MED-DHM-001,"From AI-Enabled Remote Patient Monitoring Toward Agentic Robotics: Embodiment, Governance, and Healthcare Translation","Ivana Ragusa, Lorenzo Guiducci, et al.",2026,30,pdf_text,success,2367,359,30
+MED-DHM-001,"From AI-Enabled Remote Patient Monitoring Toward Agentic Robotics: Embodiment, Governance, and Healthcare Translation","Ivana Ragusa, Lorenzo Guiducci, et al.",2026,31,pdf_text,success,2617,386,31
+MED-DHM-001,"From AI-Enabled Remote Patient Monitoring Toward Agentic Robotics: Embodiment, Governance, and Healthcare Translation","Ivana Ragusa, Lorenzo Guiducci, et al.",2026,32,pdf_text,success,2412,340,32
+MED-DHM-001,"From AI-Enabled Remote Patient Monitoring Toward Agentic Robotics: Embodiment, Governance, and Healthcare Translation","Ivana Ragusa, Lorenzo Guiducci, et al.",2026,33,pdf_text,success,2470,349,33
+MED-DHM-001,"From AI-Enabled Remote Patient Monitoring Toward Agentic Robotics: Embodiment, Governance, and Healthcare Translation","Ivana Ragusa, Lorenzo Guiducci, et al.",2026,34,pdf_text,success,1397,195,34
+MED-DHM-002,Digitally Supported Transitional Care Pathways for Older Adults: A Multi-Site Cohort Study,"Camilla Gabrielsen, Roberta Bevilacqua, et al.",2026,1,pdf_text,success,3506,428,1
+MED-DHM-002,Digitally Supported Transitional Care Pathways for Older Adults: A Multi-Site Cohort Study,"Camilla Gabrielsen, Roberta Bevilacqua, et al.",2026,2,pdf_text,success,4791,611,2
+MED-DHM-002,Digitally Supported Transitional Care Pathways for Older Adults: A Multi-Site Cohort Study,"Camilla Gabrielsen, Roberta Bevilacqua, et al.",2026,3,pdf_text,success,4108,560,3
+MED-DHM-002,Digitally Supported Transitional Care Pathways for Older Adults: A Multi-Site Cohort Study,"Camilla Gabrielsen, Roberta Bevilacqua, et al.",2026,4,pdf_text,success,4950,678,4
+MED-DHM-002,Digitally Supported Transitional Care Pathways for Older Adults: A Multi-Site Cohort Study,"Camilla Gabrielsen, Roberta Bevilacqua, et al.",2026,5,pdf_text,success,3389,424,5
+MED-DHM-002,Digitally Supported Transitional Care Pathways for Older Adults: A Multi-Site Cohort Study,"Camilla Gabrielsen, Roberta Bevilacqua, et al.",2026,6,pdf_text,success,2522,338,6
+MED-DHM-002,Digitally Supported Transitional Care Pathways for Older Adults: A Multi-Site Cohort Study,"Camilla Gabrielsen, Roberta Bevilacqua, et al.",2026,7,pdf_text,success,2849,369,7
+MED-DHM-002,Digitally Supported Transitional Care Pathways for Older Adults: A Multi-Site Cohort Study,"Camilla Gabrielsen, Roberta Bevilacqua, et al.",2026,8,pdf_text,success,3121,402,8
+MED-DHM-002,Digitally Supported Transitional Care Pathways for Older Adults: A Multi-Site Cohort Study,"Camilla Gabrielsen, Roberta Bevilacqua, et al.",2026,9,pdf_text,success,1296,168,9
+MED-DHM-002,Digitally Supported Transitional Care Pathways for Older Adults: A Multi-Site Cohort Study,"Camilla Gabrielsen, Roberta Bevilacqua, et al.",2026,10,pdf_text,success,2764,370,10
+MED-DHM-002,Digitally Supported Transitional Care Pathways for Older Adults: A Multi-Site Cohort Study,"Camilla Gabrielsen, Roberta Bevilacqua, et al.",2026,11,pdf_text,success,3330,450,11
+MED-DHM-002,Digitally Supported Transitional Care Pathways for Older Adults: A Multi-Site Cohort Study,"Camilla Gabrielsen, Roberta Bevilacqua, et al.",2026,12,pdf_text,success,2680,350,12
+MED-DHM-002,Digitally Supported Transitional Care Pathways for Older Adults: A Multi-Site Cohort Study,"Camilla Gabrielsen, Roberta Bevilacqua, et al.",2026,13,pdf_text,success,2254,299,13
+MED-DHM-002,Digitally Supported Transitional Care Pathways for Older Adults: A Multi-Site Cohort Study,"Camilla Gabrielsen, Roberta Bevilacqua, et al.",2026,14,pdf_text,success,2524,321,4. Discussion
+MED-DHM-002,Digitally Supported Transitional Care Pathways for Older Adults: A Multi-Site Cohort Study,"Camilla Gabrielsen, Roberta Bevilacqua, et al.",2026,15,pdf_text,success,4187,520,15
+MED-DHM-002,Digitally Supported Transitional Care Pathways for Older Adults: A Multi-Site Cohort Study,"Camilla Gabrielsen, Roberta Bevilacqua, et al.",2026,16,pdf_text,success,3927,561,16
+MED-DHM-002,Digitally Supported Transitional Care Pathways for Older Adults: A Multi-Site Cohort Study,"Camilla Gabrielsen, Roberta Bevilacqua, et al.",2026,17,pdf_text,success,3732,458,17
+MED-DHM-003,A Scoping Review of AI-Driven Digital Interventions in Mental Health Care: Mapping Clinical Horizons,"Yang Ni, Fanli Jia",2026,1,pdf_text,success,3664,477,A SCOPING REVIEW OF AI-DRIVEN DIGITAL INTERVENTIONS IN
+MED-DHM-003,A Scoping Review of AI-Driven Digital Interventions in Mental Health Care: Mapping Clinical Horizons,"Yang Ni, Fanli Jia",2026,2,pdf_text,success,5472,727,doi.org/10.3390/healthcare13101205
+MED-DHM-003,A Scoping Review of AI-Driven Digital Interventions in Mental Health Care: Mapping Clinical Horizons,"Yang Ni, Fanli Jia",2026,3,pdf_text,success,4028,553,doi.org/10.3390/healthcare13101205
+MED-DHM-003,A Scoping Review of AI-Driven Digital Interventions in Mental Health Care: Mapping Clinical Horizons,"Yang Ni, Fanli Jia",2026,4,pdf_text,success,1776,241,doi.org/10.3390/healthcare13101205
+MED-DHM-003,A Scoping Review of AI-Driven Digital Interventions in Mental Health Care: Mapping Clinical Horizons,"Yang Ni, Fanli Jia",2026,5,pdf_text,success,3781,474,doi.org/10.3390/healthcare13101205
+MED-DHM-003,A Scoping Review of AI-Driven Digital Interventions in Mental Health Care: Mapping Clinical Horizons,"Yang Ni, Fanli Jia",2026,6,pdf_text,success,6672,898,doi.org/10.3390/healthcare13101205
+MED-DHM-003,A Scoping Review of AI-Driven Digital Interventions in Mental Health Care: Mapping Clinical Horizons,"Yang Ni, Fanli Jia",2026,7,pdf_text,success,6878,920,doi.org/10.3390/healthcare13101205
+MED-DHM-003,A Scoping Review of AI-Driven Digital Interventions in Mental Health Care: Mapping Clinical Horizons,"Yang Ni, Fanli Jia",2026,8,pdf_text,success,5504,771,doi.org/10.3390/healthcare13101205
+MED-DHM-003,A Scoping Review of AI-Driven Digital Interventions in Mental Health Care: Mapping Clinical Horizons,"Yang Ni, Fanli Jia",2026,9,pdf_text,success,1844,251,doi.org/10.3390/healthcare13101205
+MED-DHM-003,A Scoping Review of AI-Driven Digital Interventions in Mental Health Care: Mapping Clinical Horizons,"Yang Ni, Fanli Jia",2026,10,pdf_text,success,5517,777,doi.org/10.3390/healthcare13101205
+MED-DHM-003,A Scoping Review of AI-Driven Digital Interventions in Mental Health Care: Mapping Clinical Horizons,"Yang Ni, Fanli Jia",2026,11,pdf_text,success,5419,751,doi.org/10.3390/healthcare13101205
+MED-DHM-003,A Scoping Review of AI-Driven Digital Interventions in Mental Health Care: Mapping Clinical Horizons,"Yang Ni, Fanli Jia",2026,12,pdf_text,success,5261,766,doi.org/10.3390/healthcare13101205
+MED-DHM-003,A Scoping Review of AI-Driven Digital Interventions in Mental Health Care: Mapping Clinical Horizons,"Yang Ni, Fanli Jia",2026,13,pdf_text,success,5847,822,doi.org/10.3390/healthcare13101205
+MED-DHM-003,A Scoping Review of AI-Driven Digital Interventions in Mental Health Care: Mapping Clinical Horizons,"Yang Ni, Fanli Jia",2026,14,pdf_text,success,5632,799,doi.org/10.3390/healthcare13101205
+MED-DHM-003,A Scoping Review of AI-Driven Digital Interventions in Mental Health Care: Mapping Clinical Horizons,"Yang Ni, Fanli Jia",2026,15,pdf_text,success,3791,489,doi.org/10.3390/healthcare13101205
+MED-DHM-003,A Scoping Review of AI-Driven Digital Interventions in Mental Health Care: Mapping Clinical Horizons,"Yang Ni, Fanli Jia",2026,16,pdf_text,success,3681,521,doi.org/10.3390/healthcare13101205
+MED-DHM-003,A Scoping Review of AI-Driven Digital Interventions in Mental Health Care: Mapping Clinical Horizons,"Yang Ni, Fanli Jia",2026,17,pdf_text,success,4389,654,doi.org/10.3390/healthcare13101205
+MED-DHM-003,A Scoping Review of AI-Driven Digital Interventions in Mental Health Care: Mapping Clinical Horizons,"Yang Ni, Fanli Jia",2026,18,pdf_text,success,4234,632,doi.org/10.3390/healthcare13101205
+MED-DHM-003,A Scoping Review of AI-Driven Digital Interventions in Mental Health Care: Mapping Clinical Horizons,"Yang Ni, Fanli Jia",2026,19,pdf_text,success,2643,380,doi.org/10.3390/healthcare13101205
+MED-DHM-004,A Novel Approach for a Smart IoMT-Based BAN for an Old Home Healthcare Monitoring System,"Shermin Sultana Setu, Mst. Amena Akter Pinky, et al.",2025,1,pdf_text,success,5721,749,Main Body
+MED-DHM-004,A Novel Approach for a Smart IoMT-Based BAN for an Old Home Healthcare Monitoring System,"Shermin Sultana Setu, Mst. Amena Akter Pinky, et al.",2025,2,pdf_text,success,3953,574,their much lower latency (20–50 ms) and high-speed internet
+MED-DHM-004,A Novel Approach for a Smart IoMT-Based BAN for an Old Home Healthcare Monitoring System,"Shermin Sultana Setu, Mst. Amena Akter Pinky, et al.",2025,3,pdf_text,success,4984,737,B. Traffic Types
+MED-DHM-004,A Novel Approach for a Smart IoMT-Based BAN for an Old Home Healthcare Monitoring System,"Shermin Sultana Setu, Mst. Amena Akter Pinky, et al.",2025,4,pdf_text,success,5167,767,Main Body
+MED-DHM-004,A Novel Approach for a Smart IoMT-Based BAN for an Old Home Healthcare Monitoring System,"Shermin Sultana Setu, Mst. Amena Akter Pinky, et al.",2025,5,pdf_text,success,2491,361,Main Body
+MED-DHM-005,CODE-II: A Large-Scale Dataset for Artificial Intelligence in ECG Analysis and Telemedicine,"Petrus E. O. G. B. Abreu, Gabriela M. M. Paixao, et al.",2025,1,pdf_text,success,4000,539,Abstract
+MED-DHM-005,CODE-II: A Large-Scale Dataset for Artificial Intelligence in ECG Analysis and Telemedicine,"Petrus E. O. G. B. Abreu, Gabriela M. M. Paixao, et al.",2025,2,pdf_text,success,5141,742,Main Body
+MED-DHM-005,CODE-II: A Large-Scale Dataset for Artificial Intelligence in ECG Analysis and Telemedicine,"Petrus E. O. G. B. Abreu, Gabriela M. M. Paixao, et al.",2025,3,pdf_text,success,2295,342,"BA: 357,475 (13.1%)"
+MED-DHM-005,CODE-II: A Large-Scale Dataset for Artificial Intelligence in ECG Analysis and Telemedicine,"Petrus E. O. G. B. Abreu, Gabriela M. M. Paixao, et al.",2025,4,pdf_text,success,5110,720,Main Body
+MED-DHM-005,CODE-II: A Large-Scale Dataset for Artificial Intelligence in ECG Analysis and Telemedicine,"Petrus E. O. G. B. Abreu, Gabriela M. M. Paixao, et al.",2025,5,pdf_text,success,2952,485,NORMAL
+MED-DHM-005,CODE-II: A Large-Scale Dataset for Artificial Intelligence in ECG Analysis and Telemedicine,"Petrus E. O. G. B. Abreu, Gabriela M. M. Paixao, et al.",2025,6,pdf_text,success,4063,586,2.4
+MED-DHM-005,CODE-II: A Large-Scale Dataset for Artificial Intelligence in ECG Analysis and Telemedicine,"Petrus E. O. G. B. Abreu, Gabriela M. M. Paixao, et al.",2025,7,pdf_text,success,3053,460,Main Body
+MED-DHM-005,CODE-II: A Large-Scale Dataset for Artificial Intelligence in ECG Analysis and Telemedicine,"Petrus E. O. G. B. Abreu, Gabriela M. M. Paixao, et al.",2025,8,pdf_text,success,5047,696,Main Body
+MED-DHM-005,CODE-II: A Large-Scale Dataset for Artificial Intelligence in ECG Analysis and Telemedicine,"Petrus E. O. G. B. Abreu, Gabriela M. M. Paixao, et al.",2025,9,pdf_text,success,3847,575,10
+MED-DHM-005,CODE-II: A Large-Scale Dataset for Artificial Intelligence in ECG Analysis and Telemedicine,"Petrus E. O. G. B. Abreu, Gabriela M. M. Paixao, et al.",2025,10,pdf_text,success,1947,278,0.55
+MED-DHM-005,CODE-II: A Large-Scale Dataset for Artificial Intelligence in ECG Analysis and Telemedicine,"Petrus E. O. G. B. Abreu, Gabriela M. M. Paixao, et al.",2025,11,pdf_text,success,3002,417,Main Body
+MED-DHM-005,CODE-II: A Large-Scale Dataset for Artificial Intelligence in ECG Analysis and Telemedicine,"Petrus E. O. G. B. Abreu, Gabriela M. M. Paixao, et al.",2025,12,pdf_text,success,5607,775,Discussion
+MED-DHM-005,CODE-II: A Large-Scale Dataset for Artificial Intelligence in ECG Analysis and Telemedicine,"Petrus E. O. G. B. Abreu, Gabriela M. M. Paixao, et al.",2025,13,pdf_text,success,5774,751,Main Body
+MED-DHM-005,CODE-II: A Large-Scale Dataset for Artificial Intelligence in ECG Analysis and Telemedicine,"Petrus E. O. G. B. Abreu, Gabriela M. M. Paixao, et al.",2025,14,pdf_text,success,5019,687,Main Body
+MED-DHM-005,CODE-II: A Large-Scale Dataset for Artificial Intelligence in ECG Analysis and Telemedicine,"Petrus E. O. G. B. Abreu, Gabriela M. M. Paixao, et al.",2025,15,pdf_text,success,5120,738,Main Body
+MED-DHM-005,CODE-II: A Large-Scale Dataset for Artificial Intelligence in ECG Analysis and Telemedicine,"Petrus E. O. G. B. Abreu, Gabriela M. M. Paixao, et al.",2025,16,pdf_text,success,2195,250,Paced rhythm
+MED-DHM-005,CODE-II: A Large-Scale Dataset for Artificial Intelligence in ECG Analysis and Telemedicine,"Petrus E. O. G. B. Abreu, Gabriela M. M. Paixao, et al.",2025,17,pdf_text,success,4112,643,"3,027,601 exam IDs"
+MED-DHM-005,CODE-II: A Large-Scale Dataset for Artificial Intelligence in ECG Analysis and Telemedicine,"Petrus E. O. G. B. Abreu, Gabriela M. M. Paixao, et al.",2025,18,pdf_text,success,4166,601,Main Body
+MED-DHM-005,CODE-II: A Large-Scale Dataset for Artificial Intelligence in ECG Analysis and Telemedicine,"Petrus E. O. G. B. Abreu, Gabriela M. M. Paixao, et al.",2025,19,pdf_text,success,5313,724,Main Body
+MED-DHM-005,CODE-II: A Large-Scale Dataset for Artificial Intelligence in ECG Analysis and Telemedicine,"Petrus E. O. G. B. Abreu, Gabriela M. M. Paixao, et al.",2025,20,pdf_text,success,5163,754,Main Body
+MED-DHM-005,CODE-II: A Large-Scale Dataset for Artificial Intelligence in ECG Analysis and Telemedicine,"Petrus E. O. G. B. Abreu, Gabriela M. M. Paixao, et al.",2025,21,pdf_text,success,4142,552,Main Body
+MED-DHM-005,CODE-II: A Large-Scale Dataset for Artificial Intelligence in ECG Analysis and Telemedicine,"Petrus E. O. G. B. Abreu, Gabriela M. M. Paixao, et al.",2025,22,pdf_text,success,4020,585,Main Body
+MED-DHM-005,CODE-II: A Large-Scale Dataset for Artificial Intelligence in ECG Analysis and Telemedicine,"Petrus E. O. G. B. Abreu, Gabriela M. M. Paixao, et al.",2025,23,pdf_text,success,3953,560,Main Body
+MED-DHM-005,CODE-II: A Large-Scale Dataset for Artificial Intelligence in ECG Analysis and Telemedicine,"Petrus E. O. G. B. Abreu, Gabriela M. M. Paixao, et al.",2025,24,pdf_text,success,2448,343,Main Body
+MED-DHM-005,CODE-II: A Large-Scale Dataset for Artificial Intelligence in ECG Analysis and Telemedicine,"Petrus E. O. G. B. Abreu, Gabriela M. M. Paixao, et al.",2025,25,pdf_text,success,4995,720,Supplementary Information
+MED-DHM-005,CODE-II: A Large-Scale Dataset for Artificial Intelligence in ECG Analysis and Telemedicine,"Petrus E. O. G. B. Abreu, Gabriela M. M. Paixao, et al.",2025,26,pdf_text,success,5062,723,Main Body
+MED-DHM-005,CODE-II: A Large-Scale Dataset for Artificial Intelligence in ECG Analysis and Telemedicine,"Petrus E. O. G. B. Abreu, Gabriela M. M. Paixao, et al.",2025,27,pdf_text,success,5392,775,Main Body
+MED-DHM-005,CODE-II: A Large-Scale Dataset for Artificial Intelligence in ECG Analysis and Telemedicine,"Petrus E. O. G. B. Abreu, Gabriela M. M. Paixao, et al.",2025,28,pdf_text,success,5182,735,Main Body
+MED-DHM-005,CODE-II: A Large-Scale Dataset for Artificial Intelligence in ECG Analysis and Telemedicine,"Petrus E. O. G. B. Abreu, Gabriela M. M. Paixao, et al.",2025,29,pdf_text,success,5332,732,C.2
+MED-DHM-005,CODE-II: A Large-Scale Dataset for Artificial Intelligence in ECG Analysis and Telemedicine,"Petrus E. O. G. B. Abreu, Gabriela M. M. Paixao, et al.",2025,30,pdf_text,success,4440,578,Main Body
+MED-DHM-005,CODE-II: A Large-Scale Dataset for Artificial Intelligence in ECG Analysis and Telemedicine,"Petrus E. O. G. B. Abreu, Gabriela M. M. Paixao, et al.",2025,31,pdf_text,success,3584,526,E
+MED-DHM-005,CODE-II: A Large-Scale Dataset for Artificial Intelligence in ECG Analysis and Telemedicine,"Petrus E. O. G. B. Abreu, Gabriela M. M. Paixao, et al.",2025,32,pdf_text,success,3763,553,Main Body
+MED-DHM-005,CODE-II: A Large-Scale Dataset for Artificial Intelligence in ECG Analysis and Telemedicine,"Petrus E. O. G. B. Abreu, Gabriela M. M. Paixao, et al.",2025,33,pdf_text,success,4682,665,G
+MED-DHM-005,CODE-II: A Large-Scale Dataset for Artificial Intelligence in ECG Analysis and Telemedicine,"Petrus E. O. G. B. Abreu, Gabriela M. M. Paixao, et al.",2025,34,pdf_text,success,4579,646,Main Body
+MED-DHM-005,CODE-II: A Large-Scale Dataset for Artificial Intelligence in ECG Analysis and Telemedicine,"Petrus E. O. G. B. Abreu, Gabriela M. M. Paixao, et al.",2025,35,pdf_text,success,1628,229,Main Body
+MED-DHM-005,CODE-II: A Large-Scale Dataset for Artificial Intelligence in ECG Analysis and Telemedicine,"Petrus E. O. G. B. Abreu, Gabriela M. M. Paixao, et al.",2025,36,pdf_text,success,433,82,Supplementary Figures
+MED-DHM-005,CODE-II: A Large-Scale Dataset for Artificial Intelligence in ECG Analysis and Telemedicine,"Petrus E. O. G. B. Abreu, Gabriela M. M. Paixao, et al.",2025,37,pdf_text,success,1190,218,Routine
+MED-DHM-005,CODE-II: A Large-Scale Dataset for Artificial Intelligence in ECG Analysis and Telemedicine,"Petrus E. O. G. B. Abreu, Gabriela M. M. Paixao, et al.",2025,38,pdf_text,success,254,45,1
+MED-DHM-005,CODE-II: A Large-Scale Dataset for Artificial Intelligence in ECG Analysis and Telemedicine,"Petrus E. O. G. B. Abreu, Gabriela M. M. Paixao, et al.",2025,39,pdf_text,success,1218,216,Normal
+MED-DHM-005,CODE-II: A Large-Scale Dataset for Artificial Intelligence in ECG Analysis and Telemedicine,"Petrus E. O. G. B. Abreu, Gabriela M. M. Paixao, et al.",2025,40,pdf_text,success,1007,174,18-59
+MED-DHM-005,CODE-II: A Large-Scale Dataset for Artificial Intelligence in ECG Analysis and Telemedicine,"Petrus E. O. G. B. Abreu, Gabriela M. M. Paixao, et al.",2025,41,pdf_text,success,410,87,2019
+MED-DHM-005,CODE-II: A Large-Scale Dataset for Artificial Intelligence in ECG Analysis and Telemedicine,"Petrus E. O. G. B. Abreu, Gabriela M. M. Paixao, et al.",2025,42,pdf_text,success,603,108,20
+MED-DHM-005,CODE-II: A Large-Scale Dataset for Artificial Intelligence in ECG Analysis and Telemedicine,"Petrus E. O. G. B. Abreu, Gabriela M. M. Paixao, et al.",2025,43,pdf_text,success,626,134,1
+MED-DHM-005,CODE-II: A Large-Scale Dataset for Artificial Intelligence in ECG Analysis and Telemedicine,"Petrus E. O. G. B. Abreu, Gabriela M. M. Paixao, et al.",2025,44,pdf_text,success,1554,294,NORMAL
+MED-DHM-005,CODE-II: A Large-Scale Dataset for Artificial Intelligence in ECG Analysis and Telemedicine,"Petrus E. O. G. B. Abreu, Gabriela M. M. Paixao, et al.",2025,45,pdf_text,success,1133,210,Normal
+MED-DHM-005,CODE-II: A Large-Scale Dataset for Artificial Intelligence in ECG Analysis and Telemedicine,"Petrus E. O. G. B. Abreu, Gabriela M. M. Paixao, et al.",2025,46,pdf_text,success,1022,178,18-59
+MED-DHM-005,CODE-II: A Large-Scale Dataset for Artificial Intelligence in ECG Analysis and Telemedicine,"Petrus E. O. G. B. Abreu, Gabriela M. M. Paixao, et al.",2025,47,pdf_text,success,462,99,2018
+MED-DHM-005,CODE-II: A Large-Scale Dataset for Artificial Intelligence in ECG Analysis and Telemedicine,"Petrus E. O. G. B. Abreu, Gabriela M. M. Paixao, et al.",2025,48,pdf_text,success,582,106,20
+MED-DHM-005,CODE-II: A Large-Scale Dataset for Artificial Intelligence in ECG Analysis and Telemedicine,"Petrus E. O. G. B. Abreu, Gabriela M. M. Paixao, et al.",2025,49,pdf_text,success,494,112,1
+MED-DHM-005,CODE-II: A Large-Scale Dataset for Artificial Intelligence in ECG Analysis and Telemedicine,"Petrus E. O. G. B. Abreu, Gabriela M. M. Paixao, et al.",2025,50,pdf_text,success,1508,291,NORMAL
+MED-DHM-005,CODE-II: A Large-Scale Dataset for Artificial Intelligence in ECG Analysis and Telemedicine,"Petrus E. O. G. B. Abreu, Gabriela M. M. Paixao, et al.",2025,51,pdf_text,success,1580,335,Normal
+MED-DHM-005,CODE-II: A Large-Scale Dataset for Artificial Intelligence in ECG Analysis and Telemedicine,"Petrus E. O. G. B. Abreu, Gabriela M. M. Paixao, et al.",2025,52,pdf_text,success,198,40,2
+MED-DHM-005,CODE-II: A Large-Scale Dataset for Artificial Intelligence in ECG Analysis and Telemedicine,"Petrus E. O. G. B. Abreu, Gabriela M. M. Paixao, et al.",2025,53,pdf_text,success,4305,631,Supplementary Tables
+MED-DHM-005,CODE-II: A Large-Scale Dataset for Artificial Intelligence in ECG Analysis and Telemedicine,"Petrus E. O. G. B. Abreu, Gabriela M. M. Paixao, et al.",2025,54,pdf_text,success,2795,468,Main Body
+MED-DHM-005,CODE-II: A Large-Scale Dataset for Artificial Intelligence in ECG Analysis and Telemedicine,"Petrus E. O. G. B. Abreu, Gabriela M. M. Paixao, et al.",2025,55,pdf_text,success,3261,528,Main Body
+MED-DHM-005,CODE-II: A Large-Scale Dataset for Artificial Intelligence in ECG Analysis and Telemedicine,"Petrus E. O. G. B. Abreu, Gabriela M. M. Paixao, et al.",2025,56,pdf_text,success,5464,690,Main Body
+MED-DHM-005,CODE-II: A Large-Scale Dataset for Artificial Intelligence in ECG Analysis and Telemedicine,"Petrus E. O. G. B. Abreu, Gabriela M. M. Paixao, et al.",2025,57,pdf_text,success,3912,521,Main Body
+MED-DHM-005,CODE-II: A Large-Scale Dataset for Artificial Intelligence in ECG Analysis and Telemedicine,"Petrus E. O. G. B. Abreu, Gabriela M. M. Paixao, et al.",2025,58,pdf_text,success,2946,391,Main Body
+MED-DHM-005,CODE-II: A Large-Scale Dataset for Artificial Intelligence in ECG Analysis and Telemedicine,"Petrus E. O. G. B. Abreu, Gabriela M. M. Paixao, et al.",2025,59,pdf_text,success,631,92,Supplementary References
+MED-DHM-006,Instant Preliminary Cardiac Analysis from Smartphone Auscultation: A Real-World Telehealth Study,"Aswin Jose, Roeland P. J. E. Decorte, et al.",2026,1,pdf_text,success,4132,548,1
+MED-DHM-006,Instant Preliminary Cardiac Analysis from Smartphone Auscultation: A Real-World Telehealth Study,"Aswin Jose, Roeland P. J. E. Decorte, et al.",2026,2,pdf_text,success,5089,681,2
+MED-DHM-006,Instant Preliminary Cardiac Analysis from Smartphone Auscultation: A Real-World Telehealth Study,"Aswin Jose, Roeland P. J. E. Decorte, et al.",2026,3,pdf_text,success,4282,584,3
+MED-DHM-006,Instant Preliminary Cardiac Analysis from Smartphone Auscultation: A Real-World Telehealth Study,"Aswin Jose, Roeland P. J. E. Decorte, et al.",2026,4,pdf_text,success,3780,523,4
+MED-DHM-006,Instant Preliminary Cardiac Analysis from Smartphone Auscultation: A Real-World Telehealth Study,"Aswin Jose, Roeland P. J. E. Decorte, et al.",2026,5,pdf_text,success,5147,665,5
+MED-DHM-006,Instant Preliminary Cardiac Analysis from Smartphone Auscultation: A Real-World Telehealth Study,"Aswin Jose, Roeland P. J. E. Decorte, et al.",2026,6,pdf_text,success,1939,277,6
+MED-DT-001,Digital Twin for Personalized Medicine Development,"Saniya Y. Saratkar, M. Langote, P. Kumar, P. Gote, et al.",2025,1,pdf_text,success,4372,597,EDITED BY
+MED-DT-001,Digital Twin for Personalized Medicine Development,"Saniya Y. Saratkar, M. Langote, P. Kumar, P. Gote, et al.",2025,2,pdf_text,success,6120,861,Main Body
+MED-DT-001,Digital Twin for Personalized Medicine Development,"Saniya Y. Saratkar, M. Langote, P. Kumar, P. Gote, et al.",2025,3,pdf_text,success,3695,524,"and two-way data ﬂow, much simpler. For instance, real-time"
+MED-DT-001,Digital Twin for Personalized Medicine Development,"Saniya Y. Saratkar, M. Langote, P. Kumar, P. Gote, et al.",2025,4,pdf_text,success,3076,436,"human comprehension, indicating the need to train machine"
+MED-DT-001,Digital Twin for Personalized Medicine Development,"Saniya Y. Saratkar, M. Langote, P. Kumar, P. Gote, et al.",2025,5,pdf_text,success,6014,830,Main Body
+MED-DT-001,Digital Twin for Personalized Medicine Development,"Saniya Y. Saratkar, M. Langote, P. Kumar, P. Gote, et al.",2025,6,pdf_text,success,3023,426,2.4.3 Layer 3: interface and communication layer
+MED-DT-001,Digital Twin for Personalized Medicine Development,"Saniya Y. Saratkar, M. Langote, P. Kumar, P. Gote, et al.",2025,7,pdf_text,success,6594,895,Main Body
+MED-DT-001,Digital Twin for Personalized Medicine Development,"Saniya Y. Saratkar, M. Langote, P. Kumar, P. Gote, et al.",2025,8,pdf_text,success,6623,882,Main Body
+MED-DT-001,Digital Twin for Personalized Medicine Development,"Saniya Y. Saratkar, M. Langote, P. Kumar, P. Gote, et al.",2025,9,pdf_text,success,3632,507,3.1 Contribution of personalized medicine
+MED-DT-001,Digital Twin for Personalized Medicine Development,"Saniya Y. Saratkar, M. Langote, P. Kumar, P. Gote, et al.",2025,10,pdf_text,success,5224,721,Main Body
+MED-DT-001,Digital Twin for Personalized Medicine Development,"Saniya Y. Saratkar, M. Langote, P. Kumar, P. Gote, et al.",2025,11,pdf_text,success,6151,831,results and fewer adverse effects. Predictive risk assessments help in
+MED-DT-001,Digital Twin for Personalized Medicine Development,"Saniya Y. Saratkar, M. Langote, P. Kumar, P. Gote, et al.",2025,12,pdf_text,success,4073,585,Main Body
+MED-DT-001,Digital Twin for Personalized Medicine Development,"Saniya Y. Saratkar, M. Langote, P. Kumar, P. Gote, et al.",2025,13,pdf_text,success,2976,397,Main Body
+MED-DT-001,Digital Twin for Personalized Medicine Development,"Saniya Y. Saratkar, M. Langote, P. Kumar, P. Gote, et al.",2025,14,pdf_text,success,5992,817,methods may miss by simulating different diagnostic scenarios
+MED-DT-001,Digital Twin for Personalized Medicine Development,"Saniya Y. Saratkar, M. Langote, P. Kumar, P. Gote, et al.",2025,15,pdf_text,success,2503,354,Main Body
+MED-DT-001,Digital Twin for Personalized Medicine Development,"Saniya Y. Saratkar, M. Langote, P. Kumar, P. Gote, et al.",2025,16,pdf_text,success,6178,840,Main Body
+MED-DT-001,Digital Twin for Personalized Medicine Development,"Saniya Y. Saratkar, M. Langote, P. Kumar, P. Gote, et al.",2025,17,pdf_text,success,6223,872,Main Body
+MED-DT-001,Digital Twin for Personalized Medicine Development,"Saniya Y. Saratkar, M. Langote, P. Kumar, P. Gote, et al.",2025,18,pdf_text,success,5721,806,Main Body
+MED-DT-001,Digital Twin for Personalized Medicine Development,"Saniya Y. Saratkar, M. Langote, P. Kumar, P. Gote, et al.",2025,19,pdf_text,success,6345,850,Main Body
+MED-DT-001,Digital Twin for Personalized Medicine Development,"Saniya Y. Saratkar, M. Langote, P. Kumar, P. Gote, et al.",2025,20,pdf_text,success,5335,692,Main Body
+MED-DT-001,Digital Twin for Personalized Medicine Development,"Saniya Y. Saratkar, M. Langote, P. Kumar, P. Gote, et al.",2025,21,pdf_text,success,10269,1175,Main Body
+MED-DT-001,Digital Twin for Personalized Medicine Development,"Saniya Y. Saratkar, M. Langote, P. Kumar, P. Gote, et al.",2025,22,pdf_text,success,9992,1120,Main Body
+MED-DT-001,Digital Twin for Personalized Medicine Development,"Saniya Y. Saratkar, M. Langote, P. Kumar, P. Gote, et al.",2025,23,pdf_text,success,9524,1186,Main Body
+MED-DT-002,Building Digital Twins of Different Human Organs for Personalized Healthcare,"Yilin Lyu, Zhen Li, et al.",2026,1,pdf_text,success,1915,251,Building Digital Twins of Diﬀerent Human Organs for
+MED-DT-002,Building Digital Twins of Different Human Organs for Personalized Healthcare,"Yilin Lyu, Zhen Li, et al.",2026,2,pdf_text,success,3733,449,ABSTRACT
+MED-DT-002,Building Digital Twins of Different Human Organs for Personalized Healthcare,"Yilin Lyu, Zhen Li, et al.",2026,3,pdf_text,success,2498,344,Main Body
+MED-DT-002,Building Digital Twins of Different Human Organs for Personalized Healthcare,"Yilin Lyu, Zhen Li, et al.",2026,4,pdf_text,success,2588,329,Main Body
+MED-DT-002,Building Digital Twins of Different Human Organs for Personalized Healthcare,"Yilin Lyu, Zhen Li, et al.",2026,5,pdf_text,success,3770,474,Main Body
+MED-DT-002,Building Digital Twins of Different Human Organs for Personalized Healthcare,"Yilin Lyu, Zhen Li, et al.",2026,6,pdf_text,success,3413,430,Main Body
+MED-DT-002,Building Digital Twins of Different Human Organs for Personalized Healthcare,"Yilin Lyu, Zhen Li, et al.",2026,7,pdf_text,success,3569,435,Main Body
+MED-DT-002,Building Digital Twins of Different Human Organs for Personalized Healthcare,"Yilin Lyu, Zhen Li, et al.",2026,8,pdf_text,success,2704,361,Main Body
+MED-DT-002,Building Digital Twins of Different Human Organs for Personalized Healthcare,"Yilin Lyu, Zhen Li, et al.",2026,9,pdf_text,success,3528,456,3.1 Electrophysiology and Signal Propagation Simulation
+MED-DT-002,Building Digital Twins of Different Human Organs for Personalized Healthcare,"Yilin Lyu, Zhen Li, et al.",2026,10,pdf_text,success,3262,410,Main Body
+MED-DT-002,Building Digital Twins of Different Human Organs for Personalized Healthcare,"Yilin Lyu, Zhen Li, et al.",2026,11,pdf_text,success,2398,317,Main Body
+MED-DT-002,Building Digital Twins of Different Human Organs for Personalized Healthcare,"Yilin Lyu, Zhen Li, et al.",2026,12,pdf_text,success,3949,498,Main Body
+MED-DT-002,Building Digital Twins of Different Human Organs for Personalized Healthcare,"Yilin Lyu, Zhen Li, et al.",2026,13,pdf_text,success,2661,340,Main Body
+MED-DT-002,Building Digital Twins of Different Human Organs for Personalized Healthcare,"Yilin Lyu, Zhen Li, et al.",2026,14,pdf_text,success,2969,406,Main Body
+MED-DT-002,Building Digital Twins of Different Human Organs for Personalized Healthcare,"Yilin Lyu, Zhen Li, et al.",2026,15,pdf_text,success,3410,441,Main Body
+MED-DT-002,Building Digital Twins of Different Human Organs for Personalized Healthcare,"Yilin Lyu, Zhen Li, et al.",2026,16,pdf_text,success,5170,790,References
+MED-DT-002,Building Digital Twins of Different Human Organs for Personalized Healthcare,"Yilin Lyu, Zhen Li, et al.",2026,17,pdf_text,success,5065,806,Main Body
+MED-DT-002,Building Digital Twins of Different Human Organs for Personalized Healthcare,"Yilin Lyu, Zhen Li, et al.",2026,18,pdf_text,success,5103,808,Main Body
+MED-DT-002,Building Digital Twins of Different Human Organs for Personalized Healthcare,"Yilin Lyu, Zhen Li, et al.",2026,19,pdf_text,success,5420,822,Main Body
+MED-DT-002,Building Digital Twins of Different Human Organs for Personalized Healthcare,"Yilin Lyu, Zhen Li, et al.",2026,20,pdf_text,success,5094,788,Main Body
+MED-DT-002,Building Digital Twins of Different Human Organs for Personalized Healthcare,"Yilin Lyu, Zhen Li, et al.",2026,21,pdf_text,success,5303,818,"Methods in Biomedical Engineering, vol. 41, no. 3, p. e70020 (2025)."
+MED-DT-002,Building Digital Twins of Different Human Organs for Personalized Healthcare,"Yilin Lyu, Zhen Li, et al.",2026,22,pdf_text,success,5272,781,Main Body
+MED-DT-002,Building Digital Twins of Different Human Organs for Personalized Healthcare,"Yilin Lyu, Zhen Li, et al.",2026,23,pdf_text,success,2362,375,Main Body
+MED-DT-003,Treatment Response Optimized Clinical Decision Support AI System via Digital Twin,"Xinyu Qin, Anil K. Sood, et al.",2026,1,pdf_text,success,4885,667,Treatment Response Optimized Clinical Decision
+MED-DT-003,Treatment Response Optimized Clinical Decision Support AI System via Digital Twin,"Xinyu Qin, Anil K. Sood, et al.",2026,2,pdf_text,success,3462,480,Main Body
+MED-DT-003,Treatment Response Optimized Clinical Decision Support AI System via Digital Twin,"Xinyu Qin, Anil K. Sood, et al.",2026,3,pdf_text,success,5677,911,dard privacy protection techniques in compliance with
+MED-DT-003,Treatment Response Optimized Clinical Decision Support AI System via Digital Twin,"Xinyu Qin, Anil K. Sood, et al.",2026,4,pdf_text,success,6056,807,selected = arg
+MED-DT-003,Treatment Response Optimized Clinical Decision Support AI System via Digital Twin,"Xinyu Qin, Anil K. Sood, et al.",2026,5,pdf_text,success,6033,816,Main Body
+MED-DT-003,Treatment Response Optimized Clinical Decision Support AI System via Digital Twin,"Xinyu Qin, Anil K. Sood, et al.",2026,6,pdf_text,success,4316,565,Main Body
+MED-DT-003,Treatment Response Optimized Clinical Decision Support AI System via Digital Twin,"Xinyu Qin, Anil K. Sood, et al.",2026,7,pdf_text,success,5269,774,"portunities,” Journal of personalized medicine, vol. 13,"
+MED-DT-004,"HAPI-EP: Towards Hybrid, Adaptive, and Predictive Digital Twins of Cardiac Electrophysiology","Sumeet Vadhavkar, Xiajun Jiang, et al.",2026,1,pdf_text,success,225,28,Graphical Abstract
+MED-DT-004,"HAPI-EP: Towards Hybrid, Adaptive, and Predictive Digital Twins of Cardiac Electrophysiology","Sumeet Vadhavkar, Xiajun Jiang, et al.",2026,2,pdf_text,success,938,127,Highlights
+MED-DT-004,"HAPI-EP: Towards Hybrid, Adaptive, and Predictive Digital Twins of Cardiac Electrophysiology","Sumeet Vadhavkar, Xiajun Jiang, et al.",2026,3,pdf_text,success,1968,270,Abstract
+MED-DT-004,"HAPI-EP: Towards Hybrid, Adaptive, and Predictive Digital Twins of Cardiac Electrophysiology","Sumeet Vadhavkar, Xiajun Jiang, et al.",2026,4,pdf_text,success,2526,349,1. Introduction
+MED-DT-004,"HAPI-EP: Towards Hybrid, Adaptive, and Predictive Digital Twins of Cardiac Electrophysiology","Sumeet Vadhavkar, Xiajun Jiang, et al.",2026,5,pdf_text,success,1611,240,Main Body
+MED-DT-004,"HAPI-EP: Towards Hybrid, Adaptive, and Predictive Digital Twins of Cardiac Electrophysiology","Sumeet Vadhavkar, Xiajun Jiang, et al.",2026,6,pdf_text,success,2461,357,Main Body
+MED-DT-004,"HAPI-EP: Towards Hybrid, Adaptive, and Predictive Digital Twins of Cardiac Electrophysiology","Sumeet Vadhavkar, Xiajun Jiang, et al.",2026,7,pdf_text,success,2168,306,Main Body
+MED-DT-004,"HAPI-EP: Towards Hybrid, Adaptive, and Predictive Digital Twins of Cardiac Electrophysiology","Sumeet Vadhavkar, Xiajun Jiang, et al.",2026,8,pdf_text,success,2618,365,Main Body
+MED-DT-004,"HAPI-EP: Towards Hybrid, Adaptive, and Predictive Digital Twins of Cardiac Electrophysiology","Sumeet Vadhavkar, Xiajun Jiang, et al.",2026,9,pdf_text,success,2664,398,Main Body
+MED-DT-004,"HAPI-EP: Towards Hybrid, Adaptive, and Predictive Digital Twins of Cardiac Electrophysiology","Sumeet Vadhavkar, Xiajun Jiang, et al.",2026,10,pdf_text,success,2152,324,Main Body
+MED-DT-004,"HAPI-EP: Towards Hybrid, Adaptive, and Predictive Digital Twins of Cardiac Electrophysiology","Sumeet Vadhavkar, Xiajun Jiang, et al.",2026,11,pdf_text,success,2514,371,Main Body
+MED-DT-004,"HAPI-EP: Towards Hybrid, Adaptive, and Predictive Digital Twins of Cardiac Electrophysiology","Sumeet Vadhavkar, Xiajun Jiang, et al.",2026,12,pdf_text,success,2299,309,Main Body
+MED-DT-004,"HAPI-EP: Towards Hybrid, Adaptive, and Predictive Digital Twins of Cardiac Electrophysiology","Sumeet Vadhavkar, Xiajun Jiang, et al.",2026,13,pdf_text,success,2243,344,Main Body
+MED-DT-004,"HAPI-EP: Towards Hybrid, Adaptive, and Predictive Digital Twins of Cardiac Electrophysiology","Sumeet Vadhavkar, Xiajun Jiang, et al.",2026,14,pdf_text,success,2136,330,Main Body
+MED-DT-004,"HAPI-EP: Towards Hybrid, Adaptive, and Predictive Digital Twins of Cardiac Electrophysiology","Sumeet Vadhavkar, Xiajun Jiang, et al.",2026,15,pdf_text,success,1920,307,xt = H ut + ϵ
+MED-DT-004,"HAPI-EP: Towards Hybrid, Adaptive, and Predictive Digital Twins of Cardiac Electrophysiology","Sumeet Vadhavkar, Xiajun Jiang, et al.",2026,16,pdf_text,success,2047,336,Main Body
+MED-DT-004,"HAPI-EP: Towards Hybrid, Adaptive, and Predictive Digital Twins of Cardiac Electrophysiology","Sumeet Vadhavkar, Xiajun Jiang, et al.",2026,17,pdf_text,success,2116,345,3.2.2. Conditional Generative Model
+MED-DT-004,"HAPI-EP: Towards Hybrid, Adaptive, and Predictive Digital Twins of Cardiac Electrophysiology","Sumeet Vadhavkar, Xiajun Jiang, et al.",2026,18,pdf_text,success,1957,321,Main Body
+MED-DT-004,"HAPI-EP: Towards Hybrid, Adaptive, and Predictive Digital Twins of Cardiac Electrophysiology","Sumeet Vadhavkar, Xiajun Jiang, et al.",2026,19,pdf_text,success,2764,403,4.1. Experimental Settings
+MED-DT-004,"HAPI-EP: Towards Hybrid, Adaptive, and Predictive Digital Twins of Cardiac Electrophysiology","Sumeet Vadhavkar, Xiajun Jiang, et al.",2026,20,pdf_text,success,2827,452,Main Body
+MED-DT-004,"HAPI-EP: Towards Hybrid, Adaptive, and Predictive Digital Twins of Cardiac Electrophysiology","Sumeet Vadhavkar, Xiajun Jiang, et al.",2026,21,pdf_text,success,2618,378,Main Body
+MED-DT-004,"HAPI-EP: Towards Hybrid, Adaptive, and Predictive Digital Twins of Cardiac Electrophysiology","Sumeet Vadhavkar, Xiajun Jiang, et al.",2026,22,pdf_text,success,2469,358,Main Body
+MED-DT-004,"HAPI-EP: Towards Hybrid, Adaptive, and Predictive Digital Twins of Cardiac Electrophysiology","Sumeet Vadhavkar, Xiajun Jiang, et al.",2026,23,pdf_text,success,1188,184,Main Body
+MED-DT-004,"HAPI-EP: Towards Hybrid, Adaptive, and Predictive Digital Twins of Cardiac Electrophysiology","Sumeet Vadhavkar, Xiajun Jiang, et al.",2026,24,pdf_text,success,2801,440,Main Body
+MED-DT-004,"HAPI-EP: Towards Hybrid, Adaptive, and Predictive Digital Twins of Cardiac Electrophysiology","Sumeet Vadhavkar, Xiajun Jiang, et al.",2026,25,pdf_text,success,1183,203,(a) D = 1.5
+MED-DT-004,"HAPI-EP: Towards Hybrid, Adaptive, and Predictive Digital Twins of Cardiac Electrophysiology","Sumeet Vadhavkar, Xiajun Jiang, et al.",2026,26,pdf_text,success,1191,180,Main Body
+MED-DT-004,"HAPI-EP: Towards Hybrid, Adaptive, and Predictive Digital Twins of Cardiac Electrophysiology","Sumeet Vadhavkar, Xiajun Jiang, et al.",2026,27,pdf_text,success,2615,420,Main Body
+MED-DT-004,"HAPI-EP: Towards Hybrid, Adaptive, and Predictive Digital Twins of Cardiac Electrophysiology","Sumeet Vadhavkar, Xiajun Jiang, et al.",2026,28,pdf_text,success,1176,204,(a) a = 0.08
+MED-DT-004,"HAPI-EP: Towards Hybrid, Adaptive, and Predictive Digital Twins of Cardiac Electrophysiology","Sumeet Vadhavkar, Xiajun Jiang, et al.",2026,29,pdf_text,success,1458,218,Main Body
+MED-DT-004,"HAPI-EP: Towards Hybrid, Adaptive, and Predictive Digital Twins of Cardiac Electrophysiology","Sumeet Vadhavkar, Xiajun Jiang, et al.",2026,30,pdf_text,success,2133,313,Main Body
+MED-DT-004,"HAPI-EP: Towards Hybrid, Adaptive, and Predictive Digital Twins of Cardiac Electrophysiology","Sumeet Vadhavkar, Xiajun Jiang, et al.",2026,31,pdf_text,success,885,141,experimental setup and preprocessing pipeline described in prior work [4].
+MED-DT-004,"HAPI-EP: Towards Hybrid, Adaptive, and Predictive Digital Twins of Cardiac Electrophysiology","Sumeet Vadhavkar, Xiajun Jiang, et al.",2026,32,pdf_text,success,945,147,Main Body
+MED-DT-004,"HAPI-EP: Towards Hybrid, Adaptive, and Predictive Digital Twins of Cardiac Electrophysiology","Sumeet Vadhavkar, Xiajun Jiang, et al.",2026,33,pdf_text,success,2443,382,Main Body
+MED-DT-004,"HAPI-EP: Towards Hybrid, Adaptive, and Predictive Digital Twins of Cardiac Electrophysiology","Sumeet Vadhavkar, Xiajun Jiang, et al.",2026,34,pdf_text,success,2470,371,Main Body
+MED-DT-004,"HAPI-EP: Towards Hybrid, Adaptive, and Predictive Digital Twins of Cardiac Electrophysiology","Sumeet Vadhavkar, Xiajun Jiang, et al.",2026,35,pdf_text,success,2790,398,Main Body
+MED-DT-004,"HAPI-EP: Towards Hybrid, Adaptive, and Predictive Digital Twins of Cardiac Electrophysiology","Sumeet Vadhavkar, Xiajun Jiang, et al.",2026,36,pdf_text,success,1858,240,Main Body
+MED-DT-004,"HAPI-EP: Towards Hybrid, Adaptive, and Predictive Digital Twins of Cardiac Electrophysiology","Sumeet Vadhavkar, Xiajun Jiang, et al.",2026,37,pdf_text,success,2101,250,Main Body
+MED-DT-004,"HAPI-EP: Towards Hybrid, Adaptive, and Predictive Digital Twins of Cardiac Electrophysiology","Sumeet Vadhavkar, Xiajun Jiang, et al.",2026,38,pdf_text,success,2157,266,"[13] Finn, C., Abbeel, P., Levine, S.:"
+MED-DT-004,"HAPI-EP: Towards Hybrid, Adaptive, and Predictive Digital Twins of Cardiac Electrophysiology","Sumeet Vadhavkar, Xiajun Jiang, et al.",2026,39,pdf_text,success,2085,241,Main Body
+MED-DT-004,"HAPI-EP: Towards Hybrid, Adaptive, and Predictive Digital Twins of Cardiac Electrophysiology","Sumeet Vadhavkar, Xiajun Jiang, et al.",2026,40,pdf_text,success,2273,289,Main Body
+MED-DT-004,"HAPI-EP: Towards Hybrid, Adaptive, and Predictive Digital Twins of Cardiac Electrophysiology","Sumeet Vadhavkar, Xiajun Jiang, et al.",2026,41,pdf_text,success,2134,259,Main Body
+MED-DT-004,"HAPI-EP: Towards Hybrid, Adaptive, and Predictive Digital Twins of Cardiac Electrophysiology","Sumeet Vadhavkar, Xiajun Jiang, et al.",2026,42,pdf_text,success,2075,239,Main Body
+MED-DT-004,"HAPI-EP: Towards Hybrid, Adaptive, and Predictive Digital Twins of Cardiac Electrophysiology","Sumeet Vadhavkar, Xiajun Jiang, et al.",2026,43,pdf_text,success,2157,286,Main Body
+MED-DT-004,"HAPI-EP: Towards Hybrid, Adaptive, and Predictive Digital Twins of Cardiac Electrophysiology","Sumeet Vadhavkar, Xiajun Jiang, et al.",2026,44,pdf_text,success,122,11,Main Body
+MED-DT-005,Digital Twins in Coronary Artery Disease: A Mathematical Roadmap,"Alessandro Veneziani, Annalisa Quaini, et al.",2026,1,pdf_text,success,2657,528,Digital Twins in Coronary Artery Disease:
+MED-DT-005,Digital Twins in Coronary Artery Disease: A Mathematical Roadmap,"Alessandro Veneziani, Annalisa Quaini, et al.",2026,2,pdf_text,success,4914,735,1
+MED-DT-005,Digital Twins in Coronary Artery Disease: A Mathematical Roadmap,"Alessandro Veneziani, Annalisa Quaini, et al.",2026,3,pdf_text,success,3541,582,Main Body
+MED-DT-005,Digital Twins in Coronary Artery Disease: A Mathematical Roadmap,"Alessandro Veneziani, Annalisa Quaini, et al.",2026,4,pdf_text,success,3760,645,Main Body
+MED-DT-005,Digital Twins in Coronary Artery Disease: A Mathematical Roadmap,"Alessandro Veneziani, Annalisa Quaini, et al.",2026,5,pdf_text,success,4644,737,Main Body
+MED-DT-005,Digital Twins in Coronary Artery Disease: A Mathematical Roadmap,"Alessandro Veneziani, Annalisa Quaini, et al.",2026,6,pdf_text,success,2291,348,Main Body
+MED-DT-005,Digital Twins in Coronary Artery Disease: A Mathematical Roadmap,"Alessandro Veneziani, Annalisa Quaini, et al.",2026,7,pdf_text,success,3271,530,Main Body
+MED-DT-005,Digital Twins in Coronary Artery Disease: A Mathematical Roadmap,"Alessandro Veneziani, Annalisa Quaini, et al.",2026,8,pdf_text,success,3700,610,Main Body
+MED-DT-005,Digital Twins in Coronary Artery Disease: A Mathematical Roadmap,"Alessandro Veneziani, Annalisa Quaini, et al.",2026,9,pdf_text,success,4290,722,Main Body
+MED-DT-005,Digital Twins in Coronary Artery Disease: A Mathematical Roadmap,"Alessandro Veneziani, Annalisa Quaini, et al.",2026,10,pdf_text,success,4673,811,Main Body
+MED-DT-005,Digital Twins in Coronary Artery Disease: A Mathematical Roadmap,"Alessandro Veneziani, Annalisa Quaini, et al.",2026,11,pdf_text,success,3915,643,L2 errors PINN
+MED-DT-005,Digital Twins in Coronary Artery Disease: A Mathematical Roadmap,"Alessandro Veneziani, Annalisa Quaini, et al.",2026,12,pdf_text,success,3751,595,Main Body
+MED-DT-005,Digital Twins in Coronary Artery Disease: A Mathematical Roadmap,"Alessandro Veneziani, Annalisa Quaini, et al.",2026,13,pdf_text,success,5206,732,Main Body
+MED-DT-005,Digital Twins in Coronary Artery Disease: A Mathematical Roadmap,"Alessandro Veneziani, Annalisa Quaini, et al.",2026,14,pdf_text,success,5241,743,Main Body
+MED-DT-005,Digital Twins in Coronary Artery Disease: A Mathematical Roadmap,"Alessandro Veneziani, Annalisa Quaini, et al.",2026,15,pdf_text,success,3678,527,Main Body
+MED-DT-005,Digital Twins in Coronary Artery Disease: A Mathematical Roadmap,"Alessandro Veneziani, Annalisa Quaini, et al.",2026,16,pdf_text,success,3668,496,Main Body
+MED-DT-005,Digital Twins in Coronary Artery Disease: A Mathematical Roadmap,"Alessandro Veneziani, Annalisa Quaini, et al.",2026,17,pdf_text,success,3703,494,Main Body
+MED-DT-005,Digital Twins in Coronary Artery Disease: A Mathematical Roadmap,"Alessandro Veneziani, Annalisa Quaini, et al.",2026,18,pdf_text,success,3483,465,Main Body
+MED-DT-005,Digital Twins in Coronary Artery Disease: A Mathematical Roadmap,"Alessandro Veneziani, Annalisa Quaini, et al.",2026,19,pdf_text,success,3578,510,Main Body
+MED-DT-005,Digital Twins in Coronary Artery Disease: A Mathematical Roadmap,"Alessandro Veneziani, Annalisa Quaini, et al.",2026,20,pdf_text,success,3777,527,Main Body
+MED-DT-005,Digital Twins in Coronary Artery Disease: A Mathematical Roadmap,"Alessandro Veneziani, Annalisa Quaini, et al.",2026,21,pdf_text,success,3795,521,Main Body
+MED-DT-005,Digital Twins in Coronary Artery Disease: A Mathematical Roadmap,"Alessandro Veneziani, Annalisa Quaini, et al.",2026,22,pdf_text,success,3707,505,Main Body
+MED-DT-006,TwinGuard-Lite: A Rule-Based State-Admission Gateway for Generative Patient Digital Twins,"Wenhui Chu, Sheikh Rabiul Islam",2026,1,pdf_text,success,5022,726,Main Body
+MED-DT-006,TwinGuard-Lite: A Rule-Based State-Admission Gateway for Generative Patient Digital Twins,"Wenhui Chu, Sheikh Rabiul Islam",2026,2,pdf_text,success,6040,904,"the retrieval store, not evidence about this patient), and"
+MED-DT-006,TwinGuard-Lite: A Rule-Based State-Admission Gateway for Generative Patient Digital Twins,"Wenhui Chu, Sheikh Rabiul Islam",2026,3,pdf_text,success,5584,828,Attack surface
+MED-DT-006,TwinGuard-Lite: A Rule-Based State-Admission Gateway for Generative Patient Digital Twins,"Wenhui Chu, Sheikh Rabiul Islam",2026,4,pdf_text,success,6018,958,Main Body
+MED-DT-006,TwinGuard-Lite: A Rule-Based State-Admission Gateway for Generative Patient Digital Twins,"Wenhui Chu, Sheikh Rabiul Islam",2026,5,pdf_text,success,5812,890,Direct/indirect
+MED-DT-006,TwinGuard-Lite: A Rule-Based State-Admission Gateway for Generative Patient Digital Twins,"Wenhui Chu, Sheikh Rabiul Islam",2026,6,pdf_text,success,6243,917,Main Body
+MED-DT-006,TwinGuard-Lite: A Rule-Based State-Admission Gateway for Generative Patient Digital Twins,"Wenhui Chu, Sheikh Rabiul Islam",2026,7,pdf_text,success,130,22,Main Body
+MED-IOT-001,PocketTSLM: Deploying an On-Device Soft-Prompt Time-Series Language Model for Predictive Wearable Health Analytics,"Max Rosenblattl, Nikhil Krishnaswamy, et al.",2026,1,pdf_text,success,2813,375,"October 14, 2026"
+MED-IOT-001,PocketTSLM: Deploying an On-Device Soft-Prompt Time-Series Language Model for Predictive Wearable Health Analytics,"Max Rosenblattl, Nikhil Krishnaswamy, et al.",2026,2,pdf_text,success,4011,550,1 Introduction
+MED-IOT-001,PocketTSLM: Deploying an On-Device Soft-Prompt Time-Series Language Model for Predictive Wearable Health Analytics,"Max Rosenblattl, Nikhil Krishnaswamy, et al.",2026,3,pdf_text,success,3510,475,PocketTSLM
+MED-IOT-001,PocketTSLM: Deploying an On-Device Soft-Prompt Time-Series Language Model for Predictive Wearable Health Analytics,"Max Rosenblattl, Nikhil Krishnaswamy, et al.",2026,4,pdf_text,success,3582,490,PocketTSLM
+MED-IOT-001,PocketTSLM: Deploying an On-Device Soft-Prompt Time-Series Language Model for Predictive Wearable Health Analytics,"Max Rosenblattl, Nikhil Krishnaswamy, et al.",2026,5,pdf_text,success,2648,363,PocketTSLM
+MED-IOT-001,PocketTSLM: Deploying an On-Device Soft-Prompt Time-Series Language Model for Predictive Wearable Health Analytics,"Max Rosenblattl, Nikhil Krishnaswamy, et al.",2026,6,pdf_text,success,3672,556,PocketTSLM
+MED-IOT-001,PocketTSLM: Deploying an On-Device Soft-Prompt Time-Series Language Model for Predictive Wearable Health Analytics,"Max Rosenblattl, Nikhil Krishnaswamy, et al.",2026,7,pdf_text,success,3643,557,4 Results
+MED-IOT-001,PocketTSLM: Deploying an On-Device Soft-Prompt Time-Series Language Model for Predictive Wearable Health Analytics,"Max Rosenblattl, Nikhil Krishnaswamy, et al.",2026,8,pdf_text,success,2102,342,PocketTSLM
+MED-IOT-001,PocketTSLM: Deploying an On-Device Soft-Prompt Time-Series Language Model for Predictive Wearable Health Analytics,"Max Rosenblattl, Nikhil Krishnaswamy, et al.",2026,9,pdf_text,success,2267,392,PocketTSLM
+MED-IOT-001,PocketTSLM: Deploying an On-Device Soft-Prompt Time-Series Language Model for Predictive Wearable Health Analytics,"Max Rosenblattl, Nikhil Krishnaswamy, et al.",2026,10,pdf_text,success,3510,505,PocketTSLM
+MED-IOT-001,PocketTSLM: Deploying an On-Device Soft-Prompt Time-Series Language Model for Predictive Wearable Health Analytics,"Max Rosenblattl, Nikhil Krishnaswamy, et al.",2026,11,pdf_text,success,1553,206,6 Conclusion
+MED-IOT-001,PocketTSLM: Deploying an On-Device Soft-Prompt Time-Series Language Model for Predictive Wearable Health Analytics,"Max Rosenblattl, Nikhil Krishnaswamy, et al.",2026,12,pdf_text,success,2781,348,PocketTSLM
+MED-IOT-001,PocketTSLM: Deploying an On-Device Soft-Prompt Time-Series Language Model for Predictive Wearable Health Analytics,"Max Rosenblattl, Nikhil Krishnaswamy, et al.",2026,13,pdf_text,success,3238,418,PocketTSLM
+MED-IOT-001,PocketTSLM: Deploying an On-Device Soft-Prompt Time-Series Language Model for Predictive Wearable Health Analytics,"Max Rosenblattl, Nikhil Krishnaswamy, et al.",2026,14,pdf_text,success,3140,405,PocketTSLM
+MED-IOT-001,PocketTSLM: Deploying an On-Device Soft-Prompt Time-Series Language Model for Predictive Wearable Health Analytics,"Max Rosenblattl, Nikhil Krishnaswamy, et al.",2026,15,pdf_text,success,2082,262,PocketTSLM
+MED-IOT-002,Wearable Data Profiling for NDN-Based Smart Healthcare: Performance Comparison and Energy Efficiency,"Mohammad R. Shakournia, Nasser Yazdani, et al.",2026,1,pdf_text,success,2286,312,Wearable Data Profiling for NDN-Based Smart
+MED-IOT-002,Wearable Data Profiling for NDN-Based Smart Healthcare: Performance Comparison and Energy Efficiency,"Mohammad R. Shakournia, Nasser Yazdani, et al.",2026,2,pdf_text,success,3403,495,2
+MED-IOT-002,Wearable Data Profiling for NDN-Based Smart Healthcare: Performance Comparison and Energy Efficiency,"Mohammad R. Shakournia, Nasser Yazdani, et al.",2026,3,pdf_text,success,3214,456,Wearable Data Profiling for NDN-Based Smart Healthcare
+MED-IOT-002,Wearable Data Profiling for NDN-Based Smart Healthcare: Performance Comparison and Energy Efficiency,"Mohammad R. Shakournia, Nasser Yazdani, et al.",2026,4,pdf_text,success,3411,483,4
+MED-IOT-002,Wearable Data Profiling for NDN-Based Smart Healthcare: Performance Comparison and Energy Efficiency,"Mohammad R. Shakournia, Nasser Yazdani, et al.",2026,5,pdf_text,success,2667,385,Wearable Data Profiling for NDN-Based Smart Healthcare
+MED-IOT-002,Wearable Data Profiling for NDN-Based Smart Healthcare: Performance Comparison and Energy Efficiency,"Mohammad R. Shakournia, Nasser Yazdani, et al.",2026,6,pdf_text,success,3130,473,6
+MED-IOT-002,Wearable Data Profiling for NDN-Based Smart Healthcare: Performance Comparison and Energy Efficiency,"Mohammad R. Shakournia, Nasser Yazdani, et al.",2026,7,pdf_text,success,1756,265,Wearable Data Profiling for NDN-Based Smart Healthcare
+MED-IOT-002,Wearable Data Profiling for NDN-Based Smart Healthcare: Performance Comparison and Energy Efficiency,"Mohammad R. Shakournia, Nasser Yazdani, et al.",2026,8,pdf_text,success,3028,447,8
+MED-IOT-002,Wearable Data Profiling for NDN-Based Smart Healthcare: Performance Comparison and Energy Efficiency,"Mohammad R. Shakournia, Nasser Yazdani, et al.",2026,9,pdf_text,success,2569,376,Wearable Data Profiling for NDN-Based Smart Healthcare
+MED-IOT-002,Wearable Data Profiling for NDN-Based Smart Healthcare: Performance Comparison and Energy Efficiency,"Mohammad R. Shakournia, Nasser Yazdani, et al.",2026,10,pdf_text,success,1331,207,10
+MED-IOT-002,Wearable Data Profiling for NDN-Based Smart Healthcare: Performance Comparison and Energy Efficiency,"Mohammad R. Shakournia, Nasser Yazdani, et al.",2026,11,pdf_text,success,2351,366,Wearable Data Profiling for NDN-Based Smart Healthcare
+MED-IOT-002,Wearable Data Profiling for NDN-Based Smart Healthcare: Performance Comparison and Energy Efficiency,"Mohammad R. Shakournia, Nasser Yazdani, et al.",2026,12,pdf_text,success,2335,356,12
+MED-IOT-002,Wearable Data Profiling for NDN-Based Smart Healthcare: Performance Comparison and Energy Efficiency,"Mohammad R. Shakournia, Nasser Yazdani, et al.",2026,13,pdf_text,success,992,149,Wearable Data Profiling for NDN-Based Smart Healthcare
+MED-IOT-002,Wearable Data Profiling for NDN-Based Smart Healthcare: Performance Comparison and Energy Efficiency,"Mohammad R. Shakournia, Nasser Yazdani, et al.",2026,14,pdf_text,success,875,117,14
+MED-IOT-002,Wearable Data Profiling for NDN-Based Smart Healthcare: Performance Comparison and Energy Efficiency,"Mohammad R. Shakournia, Nasser Yazdani, et al.",2026,15,pdf_text,success,3283,393,Wearable Data Profiling for NDN-Based Smart Healthcare
+MED-IOT-002,Wearable Data Profiling for NDN-Based Smart Healthcare: Performance Comparison and Energy Efficiency,"Mohammad R. Shakournia, Nasser Yazdani, et al.",2026,16,pdf_text,success,487,64,16
+MED-IOT-003,A Hybrid Predictive Ensemble of Machine Learning and Deep Neural Networks for Early Disease Prognosis,Balaji Venkateswaran,2026,1,pdf_text,success,3323,428,Abstract
+MED-IOT-003,A Hybrid Predictive Ensemble of Machine Learning and Deep Neural Networks for Early Disease Prognosis,Balaji Venkateswaran,2026,2,pdf_text,success,2530,330,Main Body
+MED-IOT-003,A Hybrid Predictive Ensemble of Machine Learning and Deep Neural Networks for Early Disease Prognosis,Balaji Venkateswaran,2026,3,pdf_text,success,3427,460,2
+MED-IOT-003,A Hybrid Predictive Ensemble of Machine Learning and Deep Neural Networks for Early Disease Prognosis,Balaji Venkateswaran,2026,4,pdf_text,success,2498,338,Main Body
+MED-IOT-003,A Hybrid Predictive Ensemble of Machine Learning and Deep Neural Networks for Early Disease Prognosis,Balaji Venkateswaran,2026,5,pdf_text,success,2283,345,Main Body
+MED-IOT-003,A Hybrid Predictive Ensemble of Machine Learning and Deep Neural Networks for Early Disease Prognosis,Balaji Venkateswaran,2026,6,pdf_text,success,1428,198,Main Body
+MED-IOT-003,A Hybrid Predictive Ensemble of Machine Learning and Deep Neural Networks for Early Disease Prognosis,Balaji Venkateswaran,2026,7,pdf_text,success,2800,397,4.4
+MED-IOT-003,A Hybrid Predictive Ensemble of Machine Learning and Deep Neural Networks for Early Disease Prognosis,Balaji Venkateswaran,2026,8,pdf_text,success,1934,283,Algorithm 1 Hybrid IoMT-Based Heart Disease Prediction
+MED-IOT-003,A Hybrid Predictive Ensemble of Machine Learning and Deep Neural Networks for Early Disease Prognosis,Balaji Venkateswaran,2026,9,pdf_text,success,2498,330,6.3
+MED-IOT-003,A Hybrid Predictive Ensemble of Machine Learning and Deep Neural Networks for Early Disease Prognosis,Balaji Venkateswaran,2026,10,pdf_text,success,1214,174,DT
+MED-IOT-003,A Hybrid Predictive Ensemble of Machine Learning and Deep Neural Networks for Early Disease Prognosis,Balaji Venkateswaran,2026,11,pdf_text,success,2518,354,7.2
+MED-IOT-003,A Hybrid Predictive Ensemble of Machine Learning and Deep Neural Networks for Early Disease Prognosis,Balaji Venkateswaran,2026,12,pdf_text,success,1162,170,DT
+MED-IOT-003,A Hybrid Predictive Ensemble of Machine Learning and Deep Neural Networks for Early Disease Prognosis,Balaji Venkateswaran,2026,13,pdf_text,success,3254,477,Main Body
+MED-IOT-003,A Hybrid Predictive Ensemble of Machine Learning and Deep Neural Networks for Early Disease Prognosis,Balaji Venkateswaran,2026,14,pdf_text,success,1918,292,Main Body
+MED-IOT-004,Memory-Efficient EDA Denoising via Knowledge Distillation for Wearable IoT Under Ambulation,"Yongbin Lee, Andrew Peitzsch, et al.",2026,1,pdf_text,success,5256,674,1
+MED-IOT-004,Memory-Efficient EDA Denoising via Knowledge Distillation for Wearable IoT Under Ambulation,"Yongbin Lee, Andrew Peitzsch, et al.",2026,2,pdf_text,success,5714,739,2
+MED-IOT-004,Memory-Efficient EDA Denoising via Knowledge Distillation for Wearable IoT Under Ambulation,"Yongbin Lee, Andrew Peitzsch, et al.",2026,3,pdf_text,success,4114,575,3
+MED-IOT-004,Memory-Efficient EDA Denoising via Knowledge Distillation for Wearable IoT Under Ambulation,"Yongbin Lee, Andrew Peitzsch, et al.",2026,4,pdf_text,success,6314,882,4
+MED-IOT-004,Memory-Efficient EDA Denoising via Knowledge Distillation for Wearable IoT Under Ambulation,"Yongbin Lee, Andrew Peitzsch, et al.",2026,5,pdf_text,success,2424,320,5
+MED-IOT-004,Memory-Efficient EDA Denoising via Knowledge Distillation for Wearable IoT Under Ambulation,"Yongbin Lee, Andrew Peitzsch, et al.",2026,6,pdf_text,success,5478,802,6
+MED-IOT-004,Memory-Efficient EDA Denoising via Knowledge Distillation for Wearable IoT Under Ambulation,"Yongbin Lee, Andrew Peitzsch, et al.",2026,7,pdf_text,success,5976,861,7
+MED-IOT-004,Memory-Efficient EDA Denoising via Knowledge Distillation for Wearable IoT Under Ambulation,"Yongbin Lee, Andrew Peitzsch, et al.",2026,8,pdf_text,success,6399,949,8
+MED-IOT-004,Memory-Efficient EDA Denoising via Knowledge Distillation for Wearable IoT Under Ambulation,"Yongbin Lee, Andrew Peitzsch, et al.",2026,9,pdf_text,success,5217,756,9
+MED-IOT-004,Memory-Efficient EDA Denoising via Knowledge Distillation for Wearable IoT Under Ambulation,"Yongbin Lee, Andrew Peitzsch, et al.",2026,10,pdf_text,success,6189,902,10
+MED-IOT-004,Memory-Efficient EDA Denoising via Knowledge Distillation for Wearable IoT Under Ambulation,"Yongbin Lee, Andrew Peitzsch, et al.",2026,11,pdf_text,success,6275,823,11
+MED-IOT-004,Memory-Efficient EDA Denoising via Knowledge Distillation for Wearable IoT Under Ambulation,"Yongbin Lee, Andrew Peitzsch, et al.",2026,12,pdf_text,success,7716,1069,12
+MED-IOT-004,Memory-Efficient EDA Denoising via Knowledge Distillation for Wearable IoT Under Ambulation,"Yongbin Lee, Andrew Peitzsch, et al.",2026,13,pdf_text,success,3935,527,13
+MED-IOT-005,SmartEdge: Smart Healthcare End-to-End Integrated Edge and Cloud Computing System for IoMT,"Alain Hennebelle, Qifan Dieng, et al.",2025,1,pdf_text,success,5462,743,SmartEdge: Smart Healthcare End-to-End
+MED-IOT-005,SmartEdge: Smart Healthcare End-to-End Integrated Edge and Cloud Computing System for IoMT,"Alain Hennebelle, Qifan Dieng, et al.",2025,2,pdf_text,success,5952,850,learning and the networking capacity of Edge-enabled
+MED-IOT-005,SmartEdge: Smart Healthcare End-to-End Integrated Edge and Cloud Computing System for IoMT,"Alain Hennebelle, Qifan Dieng, et al.",2025,3,pdf_text,success,3967,590,Main Body
+MED-IOT-005,SmartEdge: Smart Healthcare End-to-End Integrated Edge and Cloud Computing System for IoMT,"Alain Hennebelle, Qifan Dieng, et al.",2025,4,pdf_text,success,5604,821,"results. In addition, the Worker node can include other"
+MED-IOT-005,SmartEdge: Smart Healthcare End-to-End Integrated Edge and Cloud Computing System for IoMT,"Alain Hennebelle, Qifan Dieng, et al.",2025,5,pdf_text,success,5233,764,Main Body
+MED-IOT-005,SmartEdge: Smart Healthcare End-to-End Integrated Edge and Cloud Computing System for IoMT,"Alain Hennebelle, Qifan Dieng, et al.",2025,6,pdf_text,success,4300,712,"and AUC performance metrics, according to the number of"
+MED-IOT-005,SmartEdge: Smart Healthcare End-to-End Integrated Edge and Cloud Computing System for IoMT,"Alain Hennebelle, Qifan Dieng, et al.",2025,7,pdf_text,success,1997,280,Fig. 9. Scenario A+BCD Response times
+MED-IOT-005,SmartEdge: Smart Healthcare End-to-End Integrated Edge and Cloud Computing System for IoMT,"Alain Hennebelle, Qifan Dieng, et al.",2025,8,pdf_text,success,7532,1028,VII. CONCLUSIONS AND FUTURE WORK
+MED-IOT-006,A Voice-based Triage for Type 2 Diabetes using a Conversational Virtual Assistant and Predictive Sensors,"Kelvin Summoogum, Debayan Das, et al.",2024,1,pdf_text,success,6447,901,Abstract — Incorporating cloud technology with Internet of
+MED-IOT-006,A Voice-based Triage for Type 2 Diabetes using a Conversational Virtual Assistant and Predictive Sensors,"Kelvin Summoogum, Debayan Das, et al.",2024,2,pdf_text,success,6289,905,Main Body
+MED-IOT-006,A Voice-based Triage for Type 2 Diabetes using a Conversational Virtual Assistant and Predictive Sensors,"Kelvin Summoogum, Debayan Das, et al.",2024,3,pdf_text,success,6077,881,"speech-to-text, natural language processing methods, and"
+MED-IOT-006,A Voice-based Triage for Type 2 Diabetes using a Conversational Virtual Assistant and Predictive Sensors,"Kelvin Summoogum, Debayan Das, et al.",2024,4,pdf_text,success,5535,853,every day and collects their responses as voice
+MED-IOT-006,A Voice-based Triage for Type 2 Diabetes using a Conversational Virtual Assistant and Predictive Sensors,"Kelvin Summoogum, Debayan Das, et al.",2024,5,pdf_text,success,5168,831,Jitter
+MED-IOT-006,A Voice-based Triage for Type 2 Diabetes using a Conversational Virtual Assistant and Predictive Sensors,"Kelvin Summoogum, Debayan Das, et al.",2024,6,pdf_text,success,5654,909,G. Preprocessing Voice Biomarkers
+MED-IOT-006,A Voice-based Triage for Type 2 Diabetes using a Conversational Virtual Assistant and Predictive Sensors,"Kelvin Summoogum, Debayan Das, et al.",2024,7,pdf_text,success,5303,783,Main Body
+MED-IOT-006,A Voice-based Triage for Type 2 Diabetes using a Conversational Virtual Assistant and Predictive Sensors,"Kelvin Summoogum, Debayan Das, et al.",2024,8,pdf_text,success,10892,1514,Main Body
+MED-IOT-006,A Voice-based Triage for Type 2 Diabetes using a Conversational Virtual Assistant and Predictive Sensors,"Kelvin Summoogum, Debayan Das, et al.",2024,9,pdf_text,success,845,101,Authors’ background
+MED-CDS-001,RAG-Enhanced LLMs for Interactive Explainability in Clinical Decision Support Systems,"Lorenzo Mannocci, Francesca Naretto, et al.",2026,1,pdf_text,success,2521,306,RAG-Enhanced LLMs for Interactive
+MED-CDS-001,RAG-Enhanced LLMs for Interactive Explainability in Clinical Decision Support Systems,"Lorenzo Mannocci, Francesca Naretto, et al.",2026,2,pdf_text,success,3452,481,Introduction
+MED-CDS-001,RAG-Enhanced LLMs for Interactive Explainability in Clinical Decision Support Systems,"Lorenzo Mannocci, Francesca Naretto, et al.",2026,3,pdf_text,success,3195,434,RAG-Enhanced LLMs for Interactive Explainability in CDSS
+MED-CDS-001,RAG-Enhanced LLMs for Interactive Explainability in Clinical Decision Support Systems,"Lorenzo Mannocci, Francesca Naretto, et al.",2026,4,pdf_text,success,3145,447,4
+MED-CDS-001,RAG-Enhanced LLMs for Interactive Explainability in Clinical Decision Support Systems,"Lorenzo Mannocci, Francesca Naretto, et al.",2026,5,pdf_text,success,2850,391,RAG-Enhanced LLMs for Interactive Explainability in CDSS
+MED-CDS-001,RAG-Enhanced LLMs for Interactive Explainability in Clinical Decision Support Systems,"Lorenzo Mannocci, Francesca Naretto, et al.",2026,6,pdf_text,success,2145,391,6
+MED-CDS-001,RAG-Enhanced LLMs for Interactive Explainability in Clinical Decision Support Systems,"Lorenzo Mannocci, Francesca Naretto, et al.",2026,7,pdf_text,success,2896,465,RAG-Enhanced LLMs for Interactive Explainability in CDSS
+MED-CDS-001,RAG-Enhanced LLMs for Interactive Explainability in Clinical Decision Support Systems,"Lorenzo Mannocci, Francesca Naretto, et al.",2026,8,pdf_text,success,2841,392,8
+MED-CDS-001,RAG-Enhanced LLMs for Interactive Explainability in Clinical Decision Support Systems,"Lorenzo Mannocci, Francesca Naretto, et al.",2026,9,pdf_text,success,2968,473,RAG-Enhanced LLMs for Interactive Explainability in CDSS
+MED-CDS-001,RAG-Enhanced LLMs for Interactive Explainability in Clinical Decision Support Systems,"Lorenzo Mannocci, Francesca Naretto, et al.",2026,10,pdf_text,success,1874,269,Discussion and conclusions
+MED-CDS-001,RAG-Enhanced LLMs for Interactive Explainability in Clinical Decision Support Systems,"Lorenzo Mannocci, Francesca Naretto, et al.",2026,11,pdf_text,success,3417,487,RAG-Enhanced LLMs for Interactive Explainability in CDSS
+MED-CDS-001,RAG-Enhanced LLMs for Interactive Explainability in Clinical Decision Support Systems,"Lorenzo Mannocci, Francesca Naretto, et al.",2026,12,pdf_text,success,3554,501,12
+MED-CDS-001,RAG-Enhanced LLMs for Interactive Explainability in Clinical Decision Support Systems,"Lorenzo Mannocci, Francesca Naretto, et al.",2026,13,pdf_text,success,2867,401,RAG-Enhanced LLMs for Interactive Explainability in CDSS
+MED-CDS-001,RAG-Enhanced LLMs for Interactive Explainability in Clinical Decision Support Systems,"Lorenzo Mannocci, Francesca Naretto, et al.",2026,14,pdf_text,success,3242,467,14
+MED-CDS-001,RAG-Enhanced LLMs for Interactive Explainability in Clinical Decision Support Systems,"Lorenzo Mannocci, Francesca Naretto, et al.",2026,15,pdf_text,success,2161,310,RAG-Enhanced LLMs for Interactive Explainability in CDSS
+MED-CDS-002,Operation-aware Multimodal Clinical Decision Support System for ICU Discharge Risk,"Guoqing Zhang, Rafik Hadfi, et al.",2026,1,pdf_text,success,5424,677,Abstract
+MED-CDS-002,Operation-aware Multimodal Clinical Decision Support System for ICU Discharge Risk,"Guoqing Zhang, Rafik Hadfi, et al.",2026,2,pdf_text,success,5651,742,from data disparity and text template noise. Intensive care
+MED-CDS-002,Operation-aware Multimodal Clinical Decision Support System for ICU Discharge Risk,"Guoqing Zhang, Rafik Hadfi, et al.",2026,3,pdf_text,success,6184,784,Main Body
+MED-CDS-002,Operation-aware Multimodal Clinical Decision Support System for ICU Discharge Risk,"Guoqing Zhang, Rafik Hadfi, et al.",2026,4,pdf_text,success,6845,927,(a) Multimodal EHR Inputs & Operational Context
+MED-CDS-002,Operation-aware Multimodal Clinical Decision Support System for ICU Discharge Risk,"Guoqing Zhang, Rafik Hadfi, et al.",2026,5,pdf_text,success,6086,858,Main Body
+MED-CDS-002,Operation-aware Multimodal Clinical Decision Support System for ICU Discharge Risk,"Guoqing Zhang, Rafik Hadfi, et al.",2026,6,pdf_text,success,3391,476,0
+MED-CDS-002,Operation-aware Multimodal Clinical Decision Support System for ICU Discharge Risk,"Guoqing Zhang, Rafik Hadfi, et al.",2026,7,pdf_text,success,3515,530,Main Body
+MED-CDS-002,Operation-aware Multimodal Clinical Decision Support System for ICU Discharge Risk,"Guoqing Zhang, Rafik Hadfi, et al.",2026,8,pdf_text,success,4677,655,A
+MED-CDS-002,Operation-aware Multimodal Clinical Decision Support System for ICU Discharge Risk,"Guoqing Zhang, Rafik Hadfi, et al.",2026,9,pdf_text,success,4042,683,Main Body
+MED-CDS-002,Operation-aware Multimodal Clinical Decision Support System for ICU Discharge Risk,"Guoqing Zhang, Rafik Hadfi, et al.",2026,10,pdf_text,success,3063,439,MIMIC-III v1.4 Database Initial ICU Stays
+MED-CDS-002,Operation-aware Multimodal Clinical Decision Support System for ICU Discharge Risk,"Guoqing Zhang, Rafik Hadfi, et al.",2026,11,pdf_text,success,4198,567,24
+MED-CDS-002,Operation-aware Multimodal Clinical Decision Support System for ICU Discharge Risk,"Guoqing Zhang, Rafik Hadfi, et al.",2026,12,pdf_text,success,5041,667,Main Body
+MED-CDS-002,Operation-aware Multimodal Clinical Decision Support System for ICU Discharge Risk,"Guoqing Zhang, Rafik Hadfi, et al.",2026,13,pdf_text,success,6687,1058,Main Body
+MED-CDS-002,Operation-aware Multimodal Clinical Decision Support System for ICU Discharge Risk,"Guoqing Zhang, Rafik Hadfi, et al.",2026,14,pdf_text,success,1030,145,Table S9: Ranking of static features by ablation impact
+MED-CDS-003,Radiology Guideline-derived Decision Graph for Efficient Clinical Decision Support,"Xuewen Zhou, Zhen Chen",2026,1,pdf_text,success,4891,633,ABSTRACT
+MED-CDS-003,Radiology Guideline-derived Decision Graph for Efficient Clinical Decision Support,"Xuewen Zhou, Zhen Chen",2026,2,pdf_text,success,5043,783,(a) LLM-based Graph Construction
+MED-CDS-003,Radiology Guideline-derived Decision Graph for Efficient Clinical Decision Support,"Xuewen Zhou, Zhen Chen",2026,3,pdf_text,success,4842,722,Algorithm 1 GDGraph Construction
+MED-CDS-003,Radiology Guideline-derived Decision Graph for Efficient Clinical Decision Support,"Xuewen Zhou, Zhen Chen",2026,4,pdf_text,success,4066,605,Main Body
+MED-CDS-003,Radiology Guideline-derived Decision Graph for Efficient Clinical Decision Support,"Xuewen Zhou, Zhen Chen",2026,5,pdf_text,success,4486,669,5. COMPLIANCE WITH ETHICAL STANDARDS
+MED-CDS-004,DocTalk: Enhancing Medical Knowledge Retrieval via Fine-tuned Large Language Models for CDSS,"Asad Gohar, Md Ariful Islam Mozumder, et al.",2026,1,pdf_text,success,3203,387,Abstract:-
+MED-CDS-004,DocTalk: Enhancing Medical Knowledge Retrieval via Fine-tuned Large Language Models for CDSS,"Asad Gohar, Md Ariful Islam Mozumder, et al.",2026,2,pdf_text,success,4054,557,Main Body
+MED-CDS-004,DocTalk: Enhancing Medical Knowledge Retrieval via Fine-tuned Large Language Models for CDSS,"Asad Gohar, Md Ariful Islam Mozumder, et al.",2026,3,pdf_text,success,3257,407,Main Body
+MED-CDS-004,DocTalk: Enhancing Medical Knowledge Retrieval via Fine-tuned Large Language Models for CDSS,"Asad Gohar, Md Ariful Islam Mozumder, et al.",2026,4,pdf_text,success,3525,440,Main Body
+MED-CDS-004,DocTalk: Enhancing Medical Knowledge Retrieval via Fine-tuned Large Language Models for CDSS,"Asad Gohar, Md Ariful Islam Mozumder, et al.",2026,5,pdf_text,success,1342,175,Main Body
+MED-CDS-004,DocTalk: Enhancing Medical Knowledge Retrieval via Fine-tuned Large Language Models for CDSS,"Asad Gohar, Md Ariful Islam Mozumder, et al.",2026,6,pdf_text,success,3582,477,Main Body
+MED-CDS-004,DocTalk: Enhancing Medical Knowledge Retrieval via Fine-tuned Large Language Models for CDSS,"Asad Gohar, Md Ariful Islam Mozumder, et al.",2026,7,pdf_text,success,329,43,Main Body
+MED-CDS-004,DocTalk: Enhancing Medical Knowledge Retrieval via Fine-tuned Large Language Models for CDSS,"Asad Gohar, Md Ariful Islam Mozumder, et al.",2026,8,pdf_text,success,2261,321,3.4. Dataset Overview
+MED-CDS-004,DocTalk: Enhancing Medical Knowledge Retrieval via Fine-tuned Large Language Models for CDSS,"Asad Gohar, Md Ariful Islam Mozumder, et al.",2026,9,pdf_text,success,2937,389,𝑦= 𝑊0𝑥+ (𝛼/𝑟)𝐵𝐴𝑥 (3)
+MED-CDS-004,DocTalk: Enhancing Medical Knowledge Retrieval via Fine-tuned Large Language Models for CDSS,"Asad Gohar, Md Ariful Islam Mozumder, et al.",2026,10,pdf_text,success,2008,270,Main Body
+MED-CDS-004,DocTalk: Enhancing Medical Knowledge Retrieval via Fine-tuned Large Language Models for CDSS,"Asad Gohar, Md Ariful Islam Mozumder, et al.",2026,11,pdf_text,success,3146,397,Main Body
+MED-CDS-004,DocTalk: Enhancing Medical Knowledge Retrieval via Fine-tuned Large Language Models for CDSS,"Asad Gohar, Md Ariful Islam Mozumder, et al.",2026,12,pdf_text,success,3180,397,Main Body
+MED-CDS-004,DocTalk: Enhancing Medical Knowledge Retrieval via Fine-tuned Large Language Models for CDSS,"Asad Gohar, Md Ariful Islam Mozumder, et al.",2026,13,pdf_text,success,1231,144,Main Body
+MED-CDS-004,DocTalk: Enhancing Medical Knowledge Retrieval via Fine-tuned Large Language Models for CDSS,"Asad Gohar, Md Ariful Islam Mozumder, et al.",2026,14,pdf_text,success,2956,380,Main Body
+MED-CDS-004,DocTalk: Enhancing Medical Knowledge Retrieval via Fine-tuned Large Language Models for CDSS,"Asad Gohar, Md Ariful Islam Mozumder, et al.",2026,15,pdf_text,success,3815,489,Main Body
+MED-CDS-004,DocTalk: Enhancing Medical Knowledge Retrieval via Fine-tuned Large Language Models for CDSS,"Asad Gohar, Md Ariful Islam Mozumder, et al.",2026,16,pdf_text,success,4574,651,Main Body
+MED-CDS-004,DocTalk: Enhancing Medical Knowledge Retrieval via Fine-tuned Large Language Models for CDSS,"Asad Gohar, Md Ariful Islam Mozumder, et al.",2026,17,pdf_text,success,4963,706,Main Body
+MED-CDS-004,DocTalk: Enhancing Medical Knowledge Retrieval via Fine-tuned Large Language Models for CDSS,"Asad Gohar, Md Ariful Islam Mozumder, et al.",2026,18,pdf_text,success,4877,727,Main Body
+MED-CDS-004,DocTalk: Enhancing Medical Knowledge Retrieval via Fine-tuned Large Language Models for CDSS,"Asad Gohar, Md Ariful Islam Mozumder, et al.",2026,19,pdf_text,success,400,58,Main Body
+MED-CDS-005,MedJev: Evaluating Zero-Shot System-One Decision Making in Medicine,"Simon A. Lee, Jiahang Sha, et al.",2026,1,pdf_text,success,3729,496,MedJev: Evaluating Zero-Shot System-One
+MED-CDS-005,MedJev: Evaluating Zero-Shot System-One Decision Making in Medicine,"Simon A. Lee, Jiahang Sha, et al.",2026,2,pdf_text,success,4491,587,Main Body
+MED-CDS-005,MedJev: Evaluating Zero-Shot System-One Decision Making in Medicine,"Simon A. Lee, Jiahang Sha, et al.",2026,3,pdf_text,success,4194,525,Main Body
+MED-CDS-005,MedJev: Evaluating Zero-Shot System-One Decision Making in Medicine,"Simon A. Lee, Jiahang Sha, et al.",2026,4,pdf_text,success,4214,538,Main Body
+MED-CDS-005,MedJev: Evaluating Zero-Shot System-One Decision Making in Medicine,"Simon A. Lee, Jiahang Sha, et al.",2026,5,pdf_text,success,3106,448,3. Methodology
+MED-CDS-005,MedJev: Evaluating Zero-Shot System-One Decision Making in Medicine,"Simon A. Lee, Jiahang Sha, et al.",2026,6,pdf_text,success,3471,491,Main Body
+MED-CDS-005,MedJev: Evaluating Zero-Shot System-One Decision Making in Medicine,"Simon A. Lee, Jiahang Sha, et al.",2026,7,pdf_text,success,3129,421,Main Body
+MED-CDS-005,MedJev: Evaluating Zero-Shot System-One Decision Making in Medicine,"Simon A. Lee, Jiahang Sha, et al.",2026,8,pdf_text,success,3721,518,Main Body
+MED-CDS-005,MedJev: Evaluating Zero-Shot System-One Decision Making in Medicine,"Simon A. Lee, Jiahang Sha, et al.",2026,9,pdf_text,success,3392,505,Main Body
+MED-CDS-005,MedJev: Evaluating Zero-Shot System-One Decision Making in Medicine,"Simon A. Lee, Jiahang Sha, et al.",2026,10,pdf_text,success,1751,242,Main Body
+MED-CDS-005,MedJev: Evaluating Zero-Shot System-One Decision Making in Medicine,"Simon A. Lee, Jiahang Sha, et al.",2026,11,pdf_text,success,2092,292,Main Body
+MED-CDS-005,MedJev: Evaluating Zero-Shot System-One Decision Making in Medicine,"Simon A. Lee, Jiahang Sha, et al.",2026,12,pdf_text,success,5014,774,Main Body
+MED-CDS-005,MedJev: Evaluating Zero-Shot System-One Decision Making in Medicine,"Simon A. Lee, Jiahang Sha, et al.",2026,13,pdf_text,success,2120,302,Main Body
+MED-CDS-005,MedJev: Evaluating Zero-Shot System-One Decision Making in Medicine,"Simon A. Lee, Jiahang Sha, et al.",2026,14,pdf_text,success,2035,289,Main Body
+MED-CDS-005,MedJev: Evaluating Zero-Shot System-One Decision Making in Medicine,"Simon A. Lee, Jiahang Sha, et al.",2026,15,pdf_text,success,2671,382,Main Body
+MED-CDS-005,MedJev: Evaluating Zero-Shot System-One Decision Making in Medicine,"Simon A. Lee, Jiahang Sha, et al.",2026,16,pdf_text,success,3368,445,Main Body
+MED-CDS-005,MedJev: Evaluating Zero-Shot System-One Decision Making in Medicine,"Simon A. Lee, Jiahang Sha, et al.",2026,17,pdf_text,success,3960,535,Main Body
+MED-CDS-005,MedJev: Evaluating Zero-Shot System-One Decision Making in Medicine,"Simon A. Lee, Jiahang Sha, et al.",2026,18,pdf_text,success,2678,364,Main Body
+MED-CDS-005,MedJev: Evaluating Zero-Shot System-One Decision Making in Medicine,"Simon A. Lee, Jiahang Sha, et al.",2026,19,pdf_text,success,3187,439,Main Body
+MED-CDS-005,MedJev: Evaluating Zero-Shot System-One Decision Making in Medicine,"Simon A. Lee, Jiahang Sha, et al.",2026,20,pdf_text,success,3491,498,Main Body
+MED-CDS-005,MedJev: Evaluating Zero-Shot System-One Decision Making in Medicine,"Simon A. Lee, Jiahang Sha, et al.",2026,21,pdf_text,success,3281,454,Main Body
+MED-CDS-005,MedJev: Evaluating Zero-Shot System-One Decision Making in Medicine,"Simon A. Lee, Jiahang Sha, et al.",2026,22,pdf_text,success,4347,585,Main Body
+MED-CDS-005,MedJev: Evaluating Zero-Shot System-One Decision Making in Medicine,"Simon A. Lee, Jiahang Sha, et al.",2026,23,pdf_text,success,1437,198,Main Body
+MED-CDS-005,MedJev: Evaluating Zero-Shot System-One Decision Making in Medicine,"Simon A. Lee, Jiahang Sha, et al.",2026,24,pdf_text,success,188,28,Main Body
+MED-CDS-005,MedJev: Evaluating Zero-Shot System-One Decision Making in Medicine,"Simon A. Lee, Jiahang Sha, et al.",2026,25,pdf_text,success,2196,331,Main Body
+MED-CDS-005,MedJev: Evaluating Zero-Shot System-One Decision Making in Medicine,"Simon A. Lee, Jiahang Sha, et al.",2026,26,pdf_text,success,2360,375,Main Body
+MED-CDS-005,MedJev: Evaluating Zero-Shot System-One Decision Making in Medicine,"Simon A. Lee, Jiahang Sha, et al.",2026,27,pdf_text,success,2336,343,Main Body
+MED-CDS-005,MedJev: Evaluating Zero-Shot System-One Decision Making in Medicine,"Simon A. Lee, Jiahang Sha, et al.",2026,28,pdf_text,success,2144,258,Main Body
+MED-CDS-005,MedJev: Evaluating Zero-Shot System-One Decision Making in Medicine,"Simon A. Lee, Jiahang Sha, et al.",2026,29,pdf_text,success,2799,351,Main Body
+MED-CDS-005,MedJev: Evaluating Zero-Shot System-One Decision Making in Medicine,"Simon A. Lee, Jiahang Sha, et al.",2026,30,pdf_text,success,1694,214,Main Body
+MED-CDS-005,MedJev: Evaluating Zero-Shot System-One Decision Making in Medicine,"Simon A. Lee, Jiahang Sha, et al.",2026,31,pdf_text,success,2707,342,Main Body
+MED-CDS-006,Decisions by Discrimination: Differential Evidence for Medical Reasoning in Clinical Decision Support,"Yunpeng Xiao, Yuzhang Xie, et al.",2026,1,pdf_text,success,4224,568,Abstract
+MED-CDS-006,Decisions by Discrimination: Differential Evidence for Medical Reasoning in Clinical Decision Support,"Yunpeng Xiao, Yuzhang Xie, et al.",2026,2,pdf_text,success,3741,526,Shared symptoms
+MED-CDS-006,Decisions by Discrimination: Differential Evidence for Medical Reasoning in Clinical Decision Support,"Yunpeng Xiao, Yuzhang Xie, et al.",2026,3,pdf_text,success,4455,605,Main Body
+MED-CDS-006,Decisions by Discrimination: Differential Evidence for Medical Reasoning in Clinical Decision Support,"Yunpeng Xiao, Yuzhang Xie, et al.",2026,4,pdf_text,success,2561,410,Main Body
+MED-CDS-006,Decisions by Discrimination: Differential Evidence for Medical Reasoning in Clinical Decision Support,"Yunpeng Xiao, Yuzhang Xie, et al.",2026,5,pdf_text,success,4046,609,This strict input separation reduces the risk that
+MED-CDS-006,Decisions by Discrimination: Differential Evidence for Medical Reasoning in Clinical Decision Support,"Yunpeng Xiao, Yuzhang Xie, et al.",2026,6,pdf_text,success,4179,591,Model
+MED-CDS-006,Decisions by Discrimination: Differential Evidence for Medical Reasoning in Clinical Decision Support,"Yunpeng Xiao, Yuzhang Xie, et al.",2026,7,pdf_text,success,4527,659,Model
+MED-CDS-006,Decisions by Discrimination: Differential Evidence for Medical Reasoning in Clinical Decision Support,"Yunpeng Xiao, Yuzhang Xie, et al.",2026,8,pdf_text,success,3791,552,Model
+MED-CDS-006,Decisions by Discrimination: Differential Evidence for Medical Reasoning in Clinical Decision Support,"Yunpeng Xiao, Yuzhang Xie, et al.",2026,9,pdf_text,success,3089,424,Llama-3-8B
+MED-CDS-006,Decisions by Discrimination: Differential Evidence for Medical Reasoning in Clinical Decision Support,"Yunpeng Xiao, Yuzhang Xie, et al.",2026,10,pdf_text,success,5270,716,Main Body
+MED-CDS-006,Decisions by Discrimination: Differential Evidence for Medical Reasoning in Clinical Decision Support,"Yunpeng Xiao, Yuzhang Xie, et al.",2026,11,pdf_text,success,5079,694,"Sewon Min, Kalpesh Krishna, Xinxi Lyu, Mike Lewis,"
+MED-CDS-006,Decisions by Discrimination: Differential Evidence for Medical Reasoning in Clinical Decision Support,"Yunpeng Xiao, Yuzhang Xie, et al.",2026,12,pdf_text,success,4349,641,"An Yang, Anfeng Li, Baosong Yang, Beichen Zhang,"
+MED-CDS-006,Decisions by Discrimination: Differential Evidence for Medical Reasoning in Clinical Decision Support,"Yunpeng Xiao, Yuzhang Xie, et al.",2026,13,pdf_text,success,3278,497,Model
+MED-CDS-006,Decisions by Discrimination: Differential Evidence for Medical Reasoning in Clinical Decision Support,"Yunpeng Xiao, Yuzhang Xie, et al.",2026,14,pdf_text,success,3917,585,Return structured JSON matching the provided
+MED-CDS-006,Decisions by Discrimination: Differential Evidence for Medical Reasoning in Clinical Decision Support,"Yunpeng Xiao, Yuzhang Xie, et al.",2026,15,pdf_text,success,787,121,You are taking a medical multiple-choice

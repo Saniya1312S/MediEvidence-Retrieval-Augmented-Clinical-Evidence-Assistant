@@ -1,0 +1,494 @@
+--- PAGE 1 [pdf_text] ---
+2025 IEEE International Conference on Biomedical Engineering, Computer and Information Technology for Health (BECITHCON)
+29-30 November 2025, Eastern University, Dhaka, Bangladesh
+A Novel Approach for a Smart IoMT-Based BAN
+for an Old Home Healthcare Monitoring System
+Using Starlink
+Shermin Sultana Setu, Mst. Amena Akter Pinky, Md. Abdul Awal, Sheekar Banerjee, Ishtiak Al Mamoon
+International University of Business Agriculture and Technology (IUBAT)
+Dhaka, Bangladesh
+Email: 22103324@iubat.edu, 22103308@iubat.edu, abdul.awal@iubat.edu, sheekar.cse@iubat.edu, ishtiak.cse@iubat.edu
+Abstract—The rapid evolution of the Internet of Medical
+Things (IoMT) technology has become a transformative force in
+modern healthcare, particularly in elderly patient management.
+The current elderly care system faces significant challenges,
+including insufficient long-term care resources and poor communication between healthcare providers. To address this limitation,
+this study introduces a novel Starlink-assisted IOMT-based
+elderly healthcare model designed to improve remote patient
+monitoring and communication reliability. This proposal system
+focused on a monitoring system of key biomedical parameters
+such as electrocardiogram (ECG), body temperature, heart
+attack indicators, and a fall detection alert system. Performance
+is evaluated using the network simulator (NS-3) to assess its
+effectiveness in remote and underserved regions. Physiological
+data collected from patients are transmitted through a local
+communication hub and forwarded over a Low Earth Orbit
+(LEO) satellite link to a medical center. Based on Quality of
+Service (QoS) technology that combines Flow Queuing (FQ)
+with Controlled Delay (CoDel) with Differentiated Services Code
+Point (DSCP) marking. This approach prioritizes critical health
+data for faster transmission while allocating lower priority to
+non-urgent information. This architecture is entirely wireless,
+allowing continuous monitoring, real-time alerts, and secure data
+storage for medical analysis. The simulation results demonstrate
+that the proposed Starlink-enabled IOMT system outperforms
+existing solutions in terms of throughput, latency, and reliability.
+The findings highlight Starlink’s potential as a robust and highperformance telehealth communication tool. In addition, this
+study provides a scalable and reproducible framework for future
+satellite-assisted healthcare systems that prioritize quality of
+service (QoS) performance and improved elderly patient care.
+Index Terms—Starlink communication, remote patient monitoring, Internet of Medical Things (IoMT), biomedical signal
+transmission, and cloud-based healthcare.
+I. INTRODUCTION
+Nowadays, great health challenges are heart disease and
+stroke, diabetes, and infectious diseases. Personalized healthcare has become the new baseline, fueled by the rise of wearables and advancements in AI. Recently, healthcare research
+has been working on balancing technological breakthroughs
+(AI, genomics, digital tools, wireless communication) with
+global priorities (equity, climate, AMR). From this motivation,
+our contributions are as follows: quickly administering medication to patients and transmitting medical data from the medical center to the hospital. The integration of Low Earth Orbit
+(LEO) satellites, particularly Starlink, into remote healthcare
+Internet of Medical Things (IoMT) systems offers a significant
+opportunity to bridge the digital divide in underserved regions
+but also presents network engineering challenges that must be
+addressed before reliable real-time monitoring can be ensured
+[1].
+Starlink communication offers low-latency (∼20–50 ms)
+and high-throughput (∼50–100 Mbps) connectivity compared
+to traditional satellite systems [2]. Its multi-hop architecture,
+susceptibility to weather-induced attenuation (rain fade), and
+lack of native Quality of Service (QoS) support create unpredictable performance for delay-sensitive medical telemetry
+like biomedical markers (ECG) and fall alerts [4].
+We present a detailed network simulation (ns-3) of a smart
+elderly home with 15 concurrent patients, each transmitting
+six physiological streams to a local hub forwarding traffic
+via Starlink’s modeled path [5]. We enforce edge-based QoS
+with Flow Queuing Controlled Delay (FQ-CoDel) and Differentiated Services Code Point (DSCP)-based flow isolation,
+measuring packet delivery, delay, and throughput under varying sensor rates. This provides a reproducible testbed for
+evaluating Starlink’s viability as a healthcare backhaul under
+realistic conditions [15].
+The remainder of this paper is organized as follows. Section
+2 provides a literature review of relevant studies on Starlink
+and its integration into healthcare IoMT systems. Section
+3 describes the methodology, including the system model
+and network simulation. Section 4 presents the results and
+analysis of the simulation, evaluating Starlink’s performance
+in healthcare applications. Finally, Section 5 concludes the
+paper, summarizing the key findings and outlining directions
+for future work.
+II. BACKGROUND STUDY
+The application of satellite communication in healthcare
+has been explored for decades, primarily in the context of
+geostationary (GEO) systems for telemedicine in remote areas
+[6]. However, the high latency (>500 ms) and limited bandwidth of GEO satellites rendered them unsuitable for real-time
+physiological monitoring, restricting their use to store-andforward or non-urgent consultative services [7]. The rise of
+Low Earth Orbit (LEO) constellations, especially Starlink, has
+sparked new interest in satellite-based telehealth because of
+979-8-3315-6105-5/25/$31.00 © 2025 IEEE
+arXiv:2512.22553v1 [cs.NI] 27 Dec 2025
+
+--- PAGE 2 [pdf_text] ---
+their much lower latency (20–50 ms) and high-speed internet
+(50–200 Mbps) [4]. Recent field trials have demonstrated
+Starlink’s feasibility in ambulances [8], rural clinics [12], and
+disaster zones [10], but these deployments remain anecdotal
+and lack systematic performance evaluation under controlled,
+multi-patient, QoS-aware conditions.
+Several simulation studies have modeled satellite backhaul
+for IoMT, but few focus on healthcare. Al-Fuqaha et al.
+[11] provide a broad survey of IoMT architectures but omit
+satellite-specific QoS challenges. Sharma et al. [4] model
+satellite-IoMT for rural healthcare but assume static GEO
+links and do not implement modern queue disciplines. More
+recently, Portillo et al. [1] proposed an architectural framework
+for LEO-enabled emergency healthcare but did not provide
+an open-source simulation model or evaluate per-flow QoS
+performance under congestion.
+Our work directly addresses this gap by providing the first
+open, reproducible ns-3 simulation of a Starlink-backhauled
+elderly monitoring system with 15 patients, six sensor types,
+voice reminders, and email all prioritized via DSCP and
+managed via FQ-CoDel on the bottleneck uplink. We measure
+per-flow PDR, delay, and throughput under varying loads,
+offering practitioners and researchers a validated testbed for
+pre-deployment performance prediction.
+III. SYSTEM MODEL
+This study simulates an IoMT-based healthcare system
+leveraging Starlink’s LEO satellite communication to transmit
+health data from elderly patients in remote areas to a medical
+center. IoMT devices monitor vital signs such as ECG, heart
+rate, SpO2, blood pressure, temperature, and fall alerts. The
+data is sent via Wi-Fi to a Communication Hub (CommHub),
+which then forwards the aggregated data over a simulated
+Starlink link to the satellite, ground station, and medical center,
+modeling realistic delays (25–35 ms jitter) and bandwidth
+variations typical of LEO constellations. To manage satellite
+link latency and congestion, IEEE 802.11E (DiffServ) with
+FQ-CoDel queue discipline is implemented at the CommHub,
+ensuring prioritization of life-critical data like ECG and fall
+alerts over less critical traffic such as email.
+Fig. 1 illustrates the proposed model, which includes 15
+old home patients with sensors monitoring vital signs. Data
+is transmitted to the CommHub, aggregated, and forwarded
+via Starlink to the medical center. Traffic is classified for
+QoS management using FQ-CoDel, simulating remote patient
+monitoring in a satellite-enabled telehealth environment. Our
+proposed model is equipped with several features, like patients receiving voice reminders from time to time for taking
+medicine and monitoring their health data.
+Comm-Hub
+AP-1 (Wi-Fi Access Points)
+AP-2 (Wi-Fi Access Points)
+AP-3 (Wi-Fi Access Points)
+Medical Center
+Patient 1
+Patient 2
+Health Sensors (ECG, BP, Fall alert, Heart rate,
+SpO2, Temperature, Voice Reminder)
+Patient 3
+Patient 4
+Patient 5
+Patient 10
+Patient 9
+Patient 8
+Patient 6
+Patient 7
+Uplink
+Downlinlk
+Starlink
+EF (Expedited
+Forwarding)
+Sensor: ECG
+and Fall Alerts
+AF (Assured
+Forwarding)
+Heart Rate (HR)
+and SpO2.
+BE (Best Effort)
+Blood Pressure
+(BP),
+Temperature and
+Email.
+Fig. 1: A proposed IoMT-based Healthcare Network
+A. System Architecture
+The system architecture in Fig. 2 shows the end-to-end
+workflow of the Starlink-backed healthcare simulation. It
+includes 15 mobile patient nodes, 3 access points, a hub, a
+Starlink LEO satellite, a ground station, and a medical center,
+all using Optimized Link State Routing (OLSR), 802.11n
+Wi-Fi, and FQ-CoDel-based QoS with DSCP classes (EF:
+ECG/Fall/Voice, AF: HR/SpO2, BE: BP/Temp/Email). Traffic
+passes through a 50 mbps, 30 ms hub-to-satellite bottleneck
+and then the starlink path ( 41 ms). Voice reminders are sent as
+EF bursts, and performance metrics (PDR, delay, throughput)
+are exported to XML for analysis and figure generation.
+Fig. 2: System Architecture Flowchart
+
+--- PAGE 3 [pdf_text] ---
+B. Traffic Types
+The system generates a mix of real-time and non-real-time
+traffic to reflect the nature of remote patient monitoring. Key
+sensor data includes ECG, heart rate, SpO2, blood pressure,
+temperature, and fall alerts. ECG and fall alerts are life-critical
+and time-sensitive, while heart rate and SpO2 are important but
+less time-sensitive. Blood pressure and temperature are periodic, non-critical data. The system also handles non-medical
+traffic like voice reminders and email notifications. Traffic is
+classified into three DiffServ classes based on urgency.
+TABLE I: Traffic Classification and DSCP Mapping
+Class
+DSCP Value
+Traffic Types
+EF (Expedited Forwarding)
+CS6/CS5
+ECG, Fall/Voice alert
+AF (Assured Forwarding)
+CS4/CS3
+HR, SpO2
+BE (Best Effort)
+CS2/CS1
+BP, Temperature, Email
+C. Traffic Control Mechanism
+To prioritize traffic, we use FQ-CoDel at the CommHub to
+Satellite link. FQ-CoDel offers: Flow isolation: Prevents bursty
+flows from starving others. Bufferbloat control: Maintains low
+latency under congestion. Fairness: Prevents any class from
+monopolizing bandwidth. Each DSCP class (EF, AF, BE) is
+assigned a dedicated FQ-CoDel instance to protect EF traffic.
+D. Simulation Parameters
+The simulation uses the network simulator (3.45) for modeling Wi-Fi, satellite links, mobility, and QoS mechanisms.
+Key parameters are as follows:
+TABLE II: Simulation Parameters
+Category
+Parameter
+Simulation Duration
+100 s
+Routing Protocol
+OLSR
+Patient Nodes
+15
+Wi-Fi Standard
+IEEE 802.11n (2.4 GHz)
+Wi-Fi AP Data Rate
+100 Mbps
+Wi-Fi AP Delay
+1 ms
+Satellite Uplink Bandwidth
+50 Mbps
+Satellite Downlink Bandwidth
+1 Gbps
+ECG Sensor Data Rate
+16 kbps to 256 kbps
+Heart Rate Sensor Rate
+12 kbps
+SpO2 Sensor Rate
+8 kbps
+Blood Pressure Sensor Rate
+6 kbps
+Temperature Sensor Rate
+2 kbps
+Fall Alert Rate
+1 kbps (event-based)
+Traffic Classes
+DSCP(EF, AF, BE)
+QoS Mechanism
+FQ-CoDel (EF/AF/BE)
+Packet Sizes (ECG/HR/SpO2/BP/Temp/Fall):
+80 to 400 bytes
+E. Simulation Methodology
+The simulation evaluates system performance under varying
+ECG data rates (16–256 kbps) to assess how the system
+behaves under increasing load. The methodology begins with
+the network setup, where a topology is built, IP addresses are
+assigned, and routing (OLSR) is installed. For mobility, the
+patient nodes are assigned using the RandomWalk2d model
+within defined bounds to simulate realistic movement. Applications are configured by using OnOff applications for sensors
+with DSCP marking, with a VoiceReminder being sent from
+the CommHub to the patients and an email being sent from
+the CommHub to the medical center. To ensure quality of service, FQ-CoDel is implemented on the CommHub→Satellite
+link. Finally, monitoring is enabled through FlowMonitor
+and NetAnim to provide detailed analysis of the network’s
+performance after the simulation.
+F. QoS Performance Metrics Evaluation
+FlowMonitor
+sections per-flow statistics (PDR, delay,
+throughput) NetAnim Visualizes node movement and packet
+flows Results exported to flowmon results.csv for statistical
+analysis Graphs comparing PDR, delay, and throughput across
+different transmission rates are generated for analysis.
+IV. RESULTS AND ANALYSIS
+This section evaluates the proposed Starlink-Backhaul
+Smart IoMT Healthcare System for remote patient monitoring
+in underserved areas. The simulation, conducted using ns3.45, models a network with 15 mobile patients, three Wi-Fi
+access points, a communication hub, a Starlink LEO satellite,
+a ground station, and a medical center, connected via a 50
+Mbps backhaul link with 25–35 ms jitter. The system uses
+FQ-CoDel-based QoS to prioritize critical healthcare data
+into three classes: EF (real-time, life-critical), AF (important
+non-real-time), and BE (non-critical). Performance is assessed
+based on throughput, delay, and packet delivery ratio (PDR)
+across transmission rates of 16–256 kbps.
+A. Throughput Performance
+Fig 3 shows the throughput performance of EF, AF, and
+BE traffic classes across transmission rates. EF traffic achieves
+the highest throughput, increasing from 87 kbps at 16 kbps to
+500 kbps at 256 kbps, thanks to FQ-CoDel’s prioritization of
+high-priority flows. AF and BE traffic have lower, nearly flat
+throughput, peaking at 30 kbps and 50 kbps, respectively, ensuring non-critical data doesn’t consume excessive bandwidth.
+50
+100
+150
+200
+250
+Transmission Rate (kbps)
+0
+100
+200
+300
+400
+500
+Throughput (kbps)
+EF: Highest priority for real-time traffic (e.g., ECG, Fall Alerts)
+AF: Medium priority for important non-real-time traffic (e.g., Heart Rate, SpO2)
+BE: Lowest priority for non-critical traffic (e.g., Blood Pressure, Temperature)
+Throughput vs Rate 
+ EF / AF / BE
+Class
+EF
+AF
+BE
+Fig. 3: Average End-to-End Delay vs Transmission Rate for
+EF, AF, and BE Classes
+B. End-to-End Delay
+Fig 4 shows that overall delay rises as transmission rates increase because queues build up and links get busier. However,
+the FDA’s latency limit applies only to real-time physiological
+
+--- PAGE 4 [pdf_text] ---
+data in the EF class. In results, EF traffic consistently stays
+between (5-12 ms), well under the FDA’s 125 ms requirement—due to strict prioritization through DSCP tagging and
+FQ-CoDel management. The delay increases seen in AF and
+BE traffic don’t affect FDA compliance, since those classes
+aren’t held to real-time standards. So, even with higher delays
+in lower-priority traffic, the system still fully meets FDA
+latency expectations for critical medical data.
+50
+100
+150
+200
+250
+Transmission Rate (kbps)
+0
+50
+100
+150
+200
+250
+Delay (ms)
+EF: Highest priority for real-time traffic (e.g., ECG, Fall Alerts)
+AF: Medium priority for important non-real-time traffic (e.g., Heart Rate, SpO2)
+BE: Lowest priority for non-critical traffic (e.g., Blood Pressure, Temperature)
+Delay vs Rate 
+ EF / AF / BE
+Class
+EF
+AF
+BE
+FDA 125 ms
+AAMI/FCC 250 ms
+Fig. 4: Average End-to-End Delay vs Transmission Rate for
+EF, AF, and BE Classes
+C. Packet Delivery Ratio (PDR)
+Fig 5 shows the PDR for each traffic class. At low transmission rates (16–64 kbps), all classes maintain a near-perfect
+PDR (>99%). As the rate increases, BE traffic drops sharply
+to 55% at 256 kbps due to buffer overflow and packet drops,
+as BE packets are discarded first. EF traffic maintains an
+88% PDR, and AF traffic holds at 67%, highlighting the QoS
+mechanism’s effectiveness in prioritizing critical data.
+50
+100
+150
+200
+250
+Transmission Rate (kbps)
+0
+20
+40
+60
+80
+100
+Packet Delivery Ratio (%)
+EF: Highest priority for real-time traffic (e.g., ECG, Fall Alerts)
+AF: Medium priority for important non-real-time traffic (e.g., Heart Rate, SpO2)
+BE: Lowest priority for non-critical traffic (e.g., Blood Pressure, Temperature)
+PDR vs Rate 
+ EF / AF / BE
+Class
+EF
+AF
+BE
+Fig. 5: Packet Delivery Ratio (PDR) vs Transmission Rate for
+EF, AF, and BE Classes
+D. Comparison with Prior Work
+TABLE III: Performance Comparison with Prior Work
+QoS Mechanism
+Transmission Model
+EF Delay
+PDR
+Mamoon et al. [3]
+WMMQ
+> 10ms
+∼85%
+Capozzi et al. [16]
+PRIO
+20 ms
+95%
+Our Proposed Work
+FQ-CoDel
+≤12 ms
+≥88%
+Our work significantly outperforms prior studies in both latency (≤12 ms vs. >95 ms) and QoS enforcement (FQ-CoDel
+vs. FIFO/PRIO), enabling reliable real-time transmission of
+critical healthcare data. While the packet delivery ratio (PDR)
+is lower than that reported by Capozzi et al., this reflects a
+more realistic and demanding testbed. Our simulation includes
+15 patients generating traffic from six sensors each, combined with satellite-induced jitter and bandwidth constraints
+factors absent in terrestrial-only models. achieving ≤12 ms
+delay and ≥88% PDR for life-critical EF traffic (ECG, fall
+alerts), outperforming both cognitive radio-based transmission
+(Mamoon et al., >10 ms) and terrestrial LTE (Capozzi et
+al., 20 ms) models in latency-sensitive scenarios. While BEclass performance degrades under load due to satellite jitter
+and 15-patient congestion, this trade-off is clinically justified
+and reflects real-world conditions absent in idealized terrestrial
+simulations.
+This comparison validates Starlink’s clinical viability for
+remote healthcare and sets a new benchmark for QoS-aware
+satellite telehealth simulations.
+V. CONCLUSION AND FUTURE WORK
+This study demonstrates that a Starlink-backhauled IoMT
+healthcare system, enhanced with FQ-CoDel QoS, delivers
+clinically viable performance for real-time remote monitoring.
+Our work confirms that Starlink, with edge-based QoS, is
+not just a connectivity solution it’s a reliable, scalable backbone for equitable, real-time telehealth in underserved regions
+worldwide. As a natural extension of this work, future research
+will focus on enhancing resilience and adaptability under
+dynamic satellite conditions by integrating forward error correction (FEC) to mitigate packet loss without retransmission
+delay. Dynamic handoff modeling to simulate seamless satellite switching as LEO constellations orbit. Additionally, we
+plan to incorporate machine learning-based traffic prediction to
+pre-allocate bandwidth for anticipated critical events (e.g., fall
+alerts) and evaluate multi-satellite load balancing to distribute
+patient traffic across beams or satellites, further improving
+scalability and QoS for large-scale rural deployments.
+VI. ACKNOWLEDGMENT
+This research is supported by the Miyan Research Institute,
+International University of Business Agriculture and Technology, Dhaka 1230, Bangladesh. Research Grant number:
+IUBAT-MRI-RG-2025.
+REFERENCES
+[1] Han, L., Retana, A., Westphal, C., Li, R. (2023). Large scale leo satellite
+networks for the future internet: Challenges and solutions to addressing
+and routing. Computer Networks and Communications, 30-57.
+[2] Sowe, E. A. (2025). Satellite Communications in the New Space Era:
+A Survey and Future Challenges.
+[3] Al Mamoon, I., Muzahidul Islam, A. K. M., Ahmed, A., Baharun, S.,
+& Komaki, S. (2017). Priority Aware Cognitive Radio Driven Hospital
+System. Wireless Personal Communications, 96(4), 5973-5994.
+[4] Sharma, A., Sharma, S., Gupta, D. (2021). A review of sensors and their
+application in internet of things (IOT). International Journal of Computer
+Applications, 174(24), 27-34.
+
+--- PAGE 5 [pdf_text] ---
+[5] Izhikevich, L., Enghardt, R., Huang, T. Y., Teixeira, R. (2024). A global
+perspective on the past, present, and future of video streaming over
+starlink. Proceedings of the ACM on Measurement and Analysis of
+Computing Systems, 8(3), 1-22.
+[6] Belgiu, M., Dr˘agut¸, L. (2016). Random forest in remote sensing: A
+review of applications and future directions. ISPRS journal of photogrammetry and remote sensing, 114, 24-31.
+[7] Alenoghena, C. O., Ohize, H. O., Adejo, A. O., Onumanyi, A. J.,
+Ohihoin, E. E., Balarabe, A. I., ... Alenoghena, B. (2023). Telemedicine:
+a survey of telecommunication technologies, developments, and challenges. Journal of Sensor and Actuator Networks, 12(2), 20.
+[8] Hamilton, D., Kohli, S. S. S., McBeth, P., Moore, R., Hamilton, K.,
+Kirkpatrick, A. W. (2025). Low Earth Orbit Communication Satellites:
+A Positively Disruptive Technology That Could Change the Delivery of
+Health Care in Rural and Northern Canada. Journal of Medical Internet
+Research, 27, e46113.
+[9] Parkhurst, N. D., Morris, T., Tahy, E., & Mossberger, K. (2015, May).
+The digital reality: e-government and access to technology and internet
+for American Indian and Alaska Native populations. In Proceedings
+of the 16th Annual International Conference on Digital Government
+Research (pp. 217-229).
+[10] Kagai, F., Branch, P., But, J., Allen, R., Rice, M. (2024). Rapidly
+deployable satellite-based emergency communications infrastructure.
+IEEE Access.
+[11] Al-Fuqaha, A., Guizani, M., Mohammadi, M., Aledhari, M., Ayyash, M.
+(2015). Internet of things: A survey on enabling technologies, protocols,
+and applications. IEEE communications surveys and tutorials, 17(4),
+2347-2376.
+[12] Carr, J. A. THE DIGITAL DIVIDE: INTERNET IN ALASKA.
+[13] Sandri, M. (2023). An NS-3 module for non-terrestrial network (NTN)
+simulation: Implementation, design and performance evaluation.
+[14] Sahu, A., Goulart, A., Butler-Purry, K. (2016, October). Modeling
+AMI network for real-time simulation in NS-3. In 2016 Principles,
+Systems and Applications of IP Telecommunications (IPTComm) (pp.
+1-8). IEEE.
+[15] Badini, N., Patrone, F., Zanon, A. M., & Marchese, M. (2025, March).
+Evaluating Performance in Satellite Communication Networks: An NS3Based Simulation Study. In 2025 IEEE Aerospace Conference (pp. 1-8).
+IEEE.
+[16] Michel, F., Trevisan, M., Giordano, D., Bonaventure, O. (2022, October).
+A first look at starlink performance. In Proceedings of the 22nd ACM
+Internet Measurement Conference (pp. 130-136).

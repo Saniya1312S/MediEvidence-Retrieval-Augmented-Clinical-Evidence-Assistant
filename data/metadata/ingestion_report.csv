@@ -1,0 +1,12 @@
+metric,value,description
+total_documents,30,Total indexed research papers
+total_pdf_pages,570,Total original PDF pages
+normal_extracted_pages,570,Pages extracted using native PyMuPDF
+ocr_processed_pages,0,Pages requiring selective Tesseract OCR
+failed_pages,0,Pages with failed extraction
+total_indexed_chunks,570,Total research-aware text chunks
+total_extracted_words,281976,Total words extracted from collection
+extraction_success_rate_percent,100.0,Percentage of pages successfully extracted
+embedding_dimensions,384,Vector dimensionality (all-MiniLM-L6-v2)
+chunk_size_chars,550,Target chunk size in characters
+chunk_overlap_chars,100,Chunk overlap in characters

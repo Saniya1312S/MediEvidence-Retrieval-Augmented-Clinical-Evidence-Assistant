@@ -1,0 +1,734 @@
+[
+  {
+    "id": "Q01",
+    "category": "In-Domain Factual",
+    "question": "How are digital twins used in personalized medicine development?",
+    "expected_paper_id": "MED-DT-001",
+    "expected_title": "Digital Twin for Personalized Medicine Development",
+    "expected_page": 2,
+    "is_out_of_domain": false,
+    "is_sufficient": true,
+    "expected_keywords": [
+      "digital twin",
+      "personalized medicine",
+      "individualized",
+      "therapies"
+    ]
+  },
+  {
+    "id": "Q02",
+    "category": "In-Domain Factual",
+    "question": "What is the primary objective of LeViT-UNet++ in medical image segmentation?",
+    "expected_paper_id": "MED-IMG-002",
+    "expected_title": "LeViT-UNet++: Towards Balanced Fine-Grained Details and Context for Medical Image Segmentation",
+    "expected_page": 1,
+    "is_out_of_domain": false,
+    "is_sufficient": true,
+    "expected_keywords": [
+      "fine-grained",
+      "context",
+      "segmentation",
+      "levit"
+    ]
+  },
+  {
+    "id": "Q03",
+    "category": "In-Domain Factual",
+    "question": "How does retrieval-augmented correction support medical image segmentation?",
+    "expected_paper_id": "MED-IMG-001",
+    "expected_title": "Retrieval-Augmented Correction for Generalist Medical Image Segmentation",
+    "expected_page": 1,
+    "is_out_of_domain": false,
+    "is_sufficient": true,
+    "expected_keywords": [
+      "retrieval-augmented",
+      "correction",
+      "segmentation"
+    ]
+  },
+  {
+    "id": "Q04",
+    "category": "In-Domain Factual",
+    "question": "What role does agentic robotics play in remote patient monitoring?",
+    "expected_paper_id": "MED-DHM-001",
+    "expected_title": "From AI-Enabled Remote Patient Monitoring Toward Agentic Robotics: Embodiment, Governance, and Healthcare Translation",
+    "expected_page": 2,
+    "is_out_of_domain": false,
+    "is_sufficient": true,
+    "expected_keywords": [
+      "agentic robotics",
+      "remote patient monitoring",
+      "embodiment"
+    ]
+  },
+  {
+    "id": "Q05",
+    "category": "In-Domain Factual",
+    "question": "What clinical outcomes are reported for digitally supported transitional care pathways for older adults?",
+    "expected_paper_id": "MED-DHM-002",
+    "expected_title": "Digitally Supported Transitional Care Pathways for Older Adults: A Multi-Site Cohort Study",
+    "expected_page": 1,
+    "is_out_of_domain": false,
+    "is_sufficient": true,
+    "expected_keywords": [
+      "transitional care",
+      "older adults",
+      "cohort"
+    ]
+  },
+  {
+    "id": "Q06",
+    "category": "In-Domain Factual",
+    "question": "How is a Body Area Network designed for smart IoMT elderly healthcare monitoring?",
+    "expected_paper_id": "MED-DHM-004",
+    "expected_title": "A Novel Approach for a Smart IoMT-Based BAN for an Old Home Healthcare Monitoring System",
+    "expected_page": 1,
+    "is_out_of_domain": false,
+    "is_sufficient": true,
+    "expected_keywords": [
+      "ban",
+      "iomt",
+      "elderly",
+      "monitoring"
+    ]
+  },
+  {
+    "id": "Q07",
+    "category": "In-Domain Factual",
+    "question": "What is the HAPI-EP framework for digital twins in cardiac electrophysiology?",
+    "expected_paper_id": "MED-DT-004",
+    "expected_title": "HAPI-EP: Towards Hybrid, Adaptive, and Predictive Digital Twins in Cardiac Electrophysiology",
+    "expected_page": 1,
+    "is_out_of_domain": false,
+    "is_sufficient": true,
+    "expected_keywords": [
+      "hapi-ep",
+      "cardiac",
+      "electrophysiology",
+      "digital twins"
+    ]
+  },
+  {
+    "id": "Q08",
+    "category": "In-Domain Factual",
+    "question": "How does PocketTSLM deploy language models for wearable time-series modeling on smart devices?",
+    "expected_paper_id": "MED-IOT-001",
+    "expected_title": "PocketTSLM: Deploying an On-Device Soft-Prompt Time-Series Language Model for Privacy-Preserving Smart Healthcare Wearables",
+    "expected_page": 1,
+    "is_out_of_domain": false,
+    "is_sufficient": true,
+    "expected_keywords": [
+      "pockettslm",
+      "wearable",
+      "time-series",
+      "on-device"
+    ]
+  },
+  {
+    "id": "Q09",
+    "category": "In-Domain Factual",
+    "question": "How do RAG-enhanced LLMs support interactive explainability in clinical decision support?",
+    "expected_paper_id": "MED-CDS-001",
+    "expected_title": "RAG-Enhanced LLMs for Interactive Explainability in Clinical Decision Support Systems",
+    "expected_page": 1,
+    "is_out_of_domain": false,
+    "is_sufficient": true,
+    "expected_keywords": [
+      "rag",
+      "explainability",
+      "clinical decision support",
+      "llm"
+    ]
+  },
+  {
+    "id": "Q10",
+    "category": "In-Domain Factual",
+    "question": "How does an operation-aware multimodal CDSS predict ICU discharge risks?",
+    "expected_paper_id": "MED-CDS-002",
+    "expected_title": "Operation-aware Multimodal Clinical Decision Support System for ICU Discharge Risk",
+    "expected_page": 1,
+    "is_out_of_domain": false,
+    "is_sufficient": true,
+    "expected_keywords": [
+      "icu",
+      "discharge risk",
+      "multimodal",
+      "cdss"
+    ]
+  },
+  {
+    "id": "Q11",
+    "category": "Exact Passage",
+    "question": "In contrast, the use of DTs enables a shift toward precision care by creating individualized virtual models that can simulate responses to specific therapies",
+    "expected_paper_id": "MED-DT-001",
+    "expected_title": "Digital Twin for Personalized Medicine Development",
+    "expected_page": 2,
+    "is_out_of_domain": false,
+    "is_sufficient": true,
+    "expected_keywords": [
+      "dts",
+      "precision care",
+      "individualized virtual models",
+      "therapies"
+    ]
+  },
+  {
+    "id": "Q12",
+    "category": "Exact Passage",
+    "question": "Efficient medical image segmentation is essential for clinical applications requiring rapid and accurate delineation of anatomical structures",
+    "expected_paper_id": "MED-IMG-002",
+    "expected_title": "LeViT-UNet++: Towards Balanced Fine-Grained Details and Context for Medical Image Segmentation",
+    "expected_page": 1,
+    "is_out_of_domain": false,
+    "is_sufficient": true,
+    "expected_keywords": [
+      "efficient medical image segmentation",
+      "delineation",
+      "anatomical"
+    ]
+  },
+  {
+    "id": "Q13",
+    "category": "Exact Passage",
+    "question": "Global aging and the expansion of care beyond institutional settings are creating sustained demand for remote care technologies",
+    "expected_paper_id": "MED-DHM-001",
+    "expected_title": "From AI-Enabled Remote Patient Monitoring Toward Agentic Robotics: Embodiment, Governance, and Healthcare Translation",
+    "expected_page": 2,
+    "is_out_of_domain": false,
+    "is_sufficient": true,
+    "expected_keywords": [
+      "global aging",
+      "remote care",
+      "institutional settings"
+    ]
+  },
+  {
+    "id": "Q14",
+    "category": "Exact Passage",
+    "question": "Deploying an On-Device Soft-Prompt Time-Series Language Model for Privacy-Preserving Smart Healthcare Wearables",
+    "expected_paper_id": "MED-IOT-001",
+    "expected_title": "PocketTSLM: Deploying an On-Device Soft-Prompt Time-Series Language Model for Privacy-Preserving Smart Healthcare Wearables",
+    "expected_page": 1,
+    "is_out_of_domain": false,
+    "is_sufficient": true,
+    "expected_keywords": [
+      "soft-prompt",
+      "time-series",
+      "wearables",
+      "privacy-preserving"
+    ]
+  },
+  {
+    "id": "Q15",
+    "category": "Exact Passage",
+    "question": "Interactive Explainability in Clinical Decision Support Systems",
+    "expected_paper_id": "MED-CDS-001",
+    "expected_title": "RAG-Enhanced LLMs for Interactive Explainability in Clinical Decision Support Systems",
+    "expected_page": 1,
+    "is_out_of_domain": false,
+    "is_sufficient": true,
+    "expected_keywords": [
+      "interactive explainability",
+      "clinical decision support"
+    ]
+  },
+  {
+    "id": "Q16",
+    "category": "Semantic Retrieval",
+    "question": "In what manner do computer-generated patient simulations help tailor healthcare interventions to specific individuals?",
+    "expected_paper_id": "MED-DT-001",
+    "expected_title": "Digital Twin for Personalized Medicine Development",
+    "expected_page": 2,
+    "is_out_of_domain": false,
+    "is_sufficient": true,
+    "expected_keywords": [
+      "patient simulations",
+      "personalized medicine",
+      "digital twin"
+    ]
+  },
+  {
+    "id": "Q17",
+    "category": "Semantic Retrieval",
+    "question": "What vision transformer architectures achieve high precision contour tracing in radiological scans?",
+    "expected_paper_id": "MED-IMG-002",
+    "expected_title": "LeViT-UNet++: Towards Balanced Fine-Grained Details and Context for Medical Image Segmentation",
+    "expected_page": 1,
+    "is_out_of_domain": false,
+    "is_sufficient": true,
+    "expected_keywords": [
+      "vision transformer",
+      "segmentation",
+      "levit"
+    ]
+  },
+  {
+    "id": "Q18",
+    "category": "Semantic Retrieval",
+    "question": "How do physical autonomous robotic devices assist elderly individuals outside the clinical environment?",
+    "expected_paper_id": "MED-DHM-001",
+    "expected_title": "From AI-Enabled Remote Patient Monitoring Toward Agentic Robotics: Embodiment, Governance, and Healthcare Translation",
+    "expected_page": 2,
+    "is_out_of_domain": false,
+    "is_sufficient": true,
+    "expected_keywords": [
+      "robotic",
+      "remote monitoring",
+      "elderly"
+    ]
+  },
+  {
+    "id": "Q19",
+    "category": "Semantic Retrieval",
+    "question": "How can compact sequence models run locally on personal smart accessories without leaking sensitive medical telemetry?",
+    "expected_paper_id": "MED-IOT-001",
+    "expected_title": "PocketTSLM: Deploying an On-Device Soft-Prompt Time-Series Language Model for Privacy-Preserving Smart Healthcare Wearables",
+    "expected_page": 1,
+    "is_out_of_domain": false,
+    "is_sufficient": true,
+    "expected_keywords": [
+      "pockettslm",
+      "wearable",
+      "privacy",
+      "on-device"
+    ]
+  },
+  {
+    "id": "Q20",
+    "category": "Semantic Retrieval",
+    "question": "How can retrieval-grounded generative models clarify diagnostic recommendations for attending physicians?",
+    "expected_paper_id": "MED-CDS-001",
+    "expected_title": "RAG-Enhanced LLMs for Interactive Explainability in Clinical Decision Support Systems",
+    "expected_page": 1,
+    "is_out_of_domain": false,
+    "is_sufficient": true,
+    "expected_keywords": [
+      "rag",
+      "explainability",
+      "clinical decision support"
+    ]
+  },
+  {
+    "id": "Q21",
+    "category": "Numerical Findings",
+    "question": "What is the total page count and chunk count of the primary publication by Saratkar et al. (2025)?",
+    "expected_paper_id": "MED-DT-001",
+    "expected_title": "Digital Twin for Personalized Medicine Development",
+    "expected_page": 1,
+    "is_out_of_domain": false,
+    "is_sufficient": true,
+    "expected_keywords": [
+      "23 pages",
+      "23 chunks",
+      "saratkar"
+    ]
+  },
+  {
+    "id": "Q22",
+    "category": "Numerical Findings",
+    "question": "What is the size and dataset scale of the CODE-II electrocardiogram corpus for telehealth?",
+    "expected_paper_id": "MED-DHM-005",
+    "expected_title": "CODE-II: A Large-Scale Dataset for Artificial Intelligence in ECG Analysis and Telemedicine",
+    "expected_page": 1,
+    "is_out_of_domain": false,
+    "is_sufficient": true,
+    "expected_keywords": [
+      "code-ii",
+      "ecg",
+      "telemedicine",
+      "dataset"
+    ]
+  },
+  {
+    "id": "Q23",
+    "category": "Numerical Findings",
+    "question": "How does visual autoregressive modeling reduce radiation noise in low-dose CT denoising in DeVAR?",
+    "expected_paper_id": "MED-IMG-006",
+    "expected_title": "DeVAR: Low-Dose CT Denoising via Visual Autoregressive Modeling",
+    "expected_page": 1,
+    "is_out_of_domain": false,
+    "is_sufficient": true,
+    "expected_keywords": [
+      "devar",
+      "ct denoising",
+      "low-dose"
+    ]
+  },
+  {
+    "id": "Q24",
+    "category": "Numerical Findings",
+    "question": "How many body sensor nodes are typically deployed in the IoMT BAN architecture for home health?",
+    "expected_paper_id": "MED-DHM-004",
+    "expected_title": "A Novel Approach for a Smart IoMT-Based BAN for an Old Home Healthcare Monitoring System",
+    "expected_page": 1,
+    "is_out_of_domain": false,
+    "is_sufficient": true,
+    "expected_keywords": [
+      "ban",
+      "iomt",
+      "sensor nodes"
+    ]
+  },
+  {
+    "id": "Q25",
+    "category": "Numerical Findings",
+    "question": "How does MedJev benchmark zero-shot system-one decision making across medical cohorts?",
+    "expected_paper_id": "MED-CDS-005",
+    "expected_title": "MedJev: Evaluating Zero-Shot System-One Decision Making in Medicine",
+    "expected_page": 1,
+    "is_out_of_domain": false,
+    "is_sufficient": true,
+    "expected_keywords": [
+      "medjev",
+      "zero-shot",
+      "decision making"
+    ]
+  },
+  {
+    "id": "Q26",
+    "category": "Methodology",
+    "question": "How does bidirectional temporal consistency handle sparse scribble annotations in video segmentation?",
+    "expected_paper_id": "MED-IMG-003",
+    "expected_title": "Scribble Once, Segment the Sequence: Bidirectional Temporal Consistency for Weakly Supervised Medical Segmentation",
+    "expected_page": 1,
+    "is_out_of_domain": false,
+    "is_sufficient": true,
+    "expected_keywords": [
+      "temporal consistency",
+      "scribble",
+      "video segmentation"
+    ]
+  },
+  {
+    "id": "Q27",
+    "category": "Methodology",
+    "question": "How does Fisher-Guided representation learning prevent catastrophic forgetting in medical classification?",
+    "expected_paper_id": "MED-IMG-004",
+    "expected_title": "FGCARL: Fisher-Guided Continuously Adaptive Representation Learning for Medical Image Classification",
+    "expected_page": 1,
+    "is_out_of_domain": false,
+    "is_sufficient": true,
+    "expected_keywords": [
+      "fisher",
+      "continual learning",
+      "catastrophic forgetting"
+    ]
+  },
+  {
+    "id": "Q28",
+    "category": "Methodology",
+    "question": "How does knowledge distillation compress electrodermal activity (EDA) denoising models for wearable IoT?",
+    "expected_paper_id": "MED-IOT-004",
+    "expected_title": "Memory-Efficient EDA Denoising via Knowledge Distillation for Wearable IoT Under Ambulation",
+    "expected_page": 1,
+    "is_out_of_domain": false,
+    "is_sufficient": true,
+    "expected_keywords": [
+      "eda denoising",
+      "knowledge distillation",
+      "wearable iot"
+    ]
+  },
+  {
+    "id": "Q29",
+    "category": "Methodology",
+    "question": "What mathematical modeling approaches are utilized in digital twins for coronary artery disease?",
+    "expected_paper_id": "MED-DT-005",
+    "expected_title": "Digital Twins in Coronary Artery Disease: A Mathematical Perspective",
+    "expected_page": 1,
+    "is_out_of_domain": false,
+    "is_sufficient": true,
+    "expected_keywords": [
+      "coronary artery disease",
+      "mathematical perspective",
+      "digital twins"
+    ]
+  },
+  {
+    "id": "Q30",
+    "category": "Methodology",
+    "question": "How does a guideline-derived decision graph structure clinical recommendations in radiology CDSS?",
+    "expected_paper_id": "MED-CDS-003",
+    "expected_title": "Radiology Guideline-derived Decision Graph for Efficient Clinical Decision Support",
+    "expected_page": 1,
+    "is_out_of_domain": false,
+    "is_sufficient": true,
+    "expected_keywords": [
+      "radiology guideline",
+      "decision graph",
+      "cdss"
+    ]
+  },
+  {
+    "id": "Q31",
+    "category": "Limitations",
+    "question": "What clinical horizons and regulatory hurdles are documented in digital mental health interventions?",
+    "expected_paper_id": "MED-DHM-003",
+    "expected_title": "A Scoping Review of AI-Driven Digital Interventions in Mental Health Care: Mapping Clinical Horizons",
+    "expected_page": 1,
+    "is_out_of_domain": false,
+    "is_sufficient": true,
+    "expected_keywords": [
+      "mental health",
+      "scoping review",
+      "clinical horizons"
+    ]
+  },
+  {
+    "id": "Q32",
+    "category": "Limitations",
+    "question": "What limitations exist when comparing vision foundation model adaptation against task-specific segmentation?",
+    "expected_paper_id": "MED-IMG-005",
+    "expected_title": "Medical Image Segmentation: Foundation Model Adaptation versus Task-Specific Training",
+    "expected_page": 1,
+    "is_out_of_domain": false,
+    "is_sufficient": true,
+    "expected_keywords": [
+      "foundation models",
+      "task-specific",
+      "segmentation"
+    ]
+  },
+  {
+    "id": "Q33",
+    "category": "Limitations",
+    "question": "What state-admission governance challenges are addressed by TwinGuard-Lite in critical medical twins?",
+    "expected_paper_id": "MED-DT-006",
+    "expected_title": "TwinGuard-Lite: A Rule-Based State-Admission Gateway for High-Reliability Critical-Medical Twins",
+    "expected_page": 1,
+    "is_out_of_domain": false,
+    "is_sufficient": true,
+    "expected_keywords": [
+      "twinguard-lite",
+      "state-admission",
+      "high-reliability"
+    ]
+  },
+  {
+    "id": "Q34",
+    "category": "Limitations",
+    "question": "What differential evidence challenges occur when reasoning across discriminative clinical decisions?",
+    "expected_paper_id": "MED-CDS-006",
+    "expected_title": "Decisions by Discrimination: Differential Evidence for Medical Reasoning in Clinical Decision Support",
+    "expected_page": 1,
+    "is_out_of_domain": false,
+    "is_sufficient": true,
+    "expected_keywords": [
+      "differential evidence",
+      "discrimination",
+      "clinical decision support"
+    ]
+  },
+  {
+    "id": "Q35",
+    "category": "Multi-Paper",
+    "question": "How do digital twins and remote wearable sensors work together to enable personalized patient tracking?",
+    "expected_paper_id": "MED-DT-001",
+    "expected_title": "Digital Twin for Personalized Medicine Development",
+    "expected_page": 2,
+    "is_out_of_domain": false,
+    "is_sufficient": true,
+    "expected_keywords": [
+      "digital twin",
+      "wearable",
+      "sensors",
+      "personalized"
+    ]
+  },
+  {
+    "id": "Q36",
+    "category": "Multi-Paper",
+    "question": "How does deep neural segmentation compare with on-device wearable analytics in digital healthcare?",
+    "expected_paper_id": "MED-IMG-002",
+    "expected_title": "LeViT-UNet++: Towards Balanced Fine-Grained Details and Context for Medical Image Segmentation",
+    "expected_page": 1,
+    "is_out_of_domain": false,
+    "is_sufficient": true,
+    "expected_keywords": [
+      "segmentation",
+      "wearable",
+      "ai"
+    ]
+  },
+  {
+    "id": "Q37",
+    "category": "Multi-Paper",
+    "question": "What are the common explainability techniques used in LLM-based CDSS and radiology decision graphs?",
+    "expected_paper_id": "MED-CDS-001",
+    "expected_title": "RAG-Enhanced LLMs for Interactive Explainability in Clinical Decision Support Systems",
+    "expected_page": 1,
+    "is_out_of_domain": false,
+    "is_sufficient": true,
+    "expected_keywords": [
+      "explainability",
+      "cdss",
+      "radiology"
+    ]
+  },
+  {
+    "id": "Q38",
+    "category": "Multi-Paper",
+    "question": "How do IoT body area networks integrate with cloud and edge systems for elderly healthcare?",
+    "expected_paper_id": "MED-DHM-004",
+    "expected_title": "A Novel Approach for a Smart IoMT-Based BAN for an Old Home Healthcare Monitoring System",
+    "expected_page": 1,
+    "is_out_of_domain": false,
+    "is_sufficient": true,
+    "expected_keywords": [
+      "ban",
+      "iomt",
+      "elderly",
+      "edge"
+    ]
+  },
+  {
+    "id": "Q39",
+    "category": "Paper-Specific",
+    "question": "What specific personalized oncology modeling methods are detailed in MED-DT-001?",
+    "expected_paper_id": "MED-DT-001",
+    "expected_title": "Digital Twin for Personalized Medicine Development",
+    "expected_page": 2,
+    "is_out_of_domain": false,
+    "is_sufficient": true,
+    "paper_id_filter": "MED-DT-001",
+    "expected_keywords": [
+      "oncology",
+      "personalized",
+      "digital twin"
+    ]
+  },
+  {
+    "id": "Q40",
+    "category": "Paper-Specific",
+    "question": "What is the hybrid predictive ensemble architecture proposed in MED-IOT-003 for disease prognosis?",
+    "expected_paper_id": "MED-IOT-003",
+    "expected_title": "A Hybrid Predictive Ensemble of Machine Learning and Deep Neural Networks for Early Disease Prognosis",
+    "expected_page": 1,
+    "is_out_of_domain": false,
+    "is_sufficient": true,
+    "paper_id_filter": "MED-IOT-003",
+    "expected_keywords": [
+      "hybrid predictive ensemble",
+      "disease prognosis"
+    ]
+  },
+  {
+    "id": "Q41",
+    "category": "Paper-Specific",
+    "question": "How does DocTalk enhance medical knowledge retrieval in paper MED-CDS-004?",
+    "expected_paper_id": "MED-CDS-004",
+    "expected_title": "DocTalk: Enhancing Medical Knowledge Retrieval via Fine-tuned Large Language Models for CDSS",
+    "expected_page": 1,
+    "is_out_of_domain": false,
+    "is_sufficient": true,
+    "paper_id_filter": "MED-CDS-004",
+    "expected_keywords": [
+      "doctalk",
+      "medical knowledge retrieval"
+    ]
+  },
+  {
+    "id": "Q42",
+    "category": "Paper-Specific",
+    "question": "How does smart edge and cloud integration work for IoMT in MED-IOT-005?",
+    "expected_paper_id": "MED-IOT-005",
+    "expected_title": "SmartEdge: Smart Healthcare End-to-End Integrated Edge and Cloud Computing System for IoMT",
+    "expected_page": 1,
+    "is_out_of_domain": false,
+    "is_sufficient": true,
+    "paper_id_filter": "MED-IOT-005",
+    "expected_keywords": [
+      "smartedge",
+      "cloud",
+      "iomt"
+    ]
+  },
+  {
+    "id": "Q43",
+    "category": "Out-of-Domain",
+    "question": "Who won the FIFA World Cup final in 2022?",
+    "expected_paper_id": null,
+    "expected_title": null,
+    "expected_page": null,
+    "is_out_of_domain": true,
+    "is_sufficient": false,
+    "expected_keywords": []
+  },
+  {
+    "id": "Q44",
+    "category": "Out-of-Domain",
+    "question": "How do I bake a chocolate cake with rich fudge frosting from scratch?",
+    "expected_paper_id": null,
+    "expected_title": null,
+    "expected_page": null,
+    "is_out_of_domain": true,
+    "is_sufficient": false,
+    "expected_keywords": []
+  },
+  {
+    "id": "Q45",
+    "category": "Out-of-Domain",
+    "question": "What is the capital city of France and what is its official currency?",
+    "expected_paper_id": null,
+    "expected_title": null,
+    "expected_page": null,
+    "is_out_of_domain": true,
+    "is_sufficient": false,
+    "expected_keywords": []
+  },
+  {
+    "id": "Q46",
+    "category": "Out-of-Domain",
+    "question": "How do I repair a blown cylinder head gasket on a Honda Civic engine?",
+    "expected_paper_id": null,
+    "expected_title": null,
+    "expected_page": null,
+    "is_out_of_domain": true,
+    "is_sufficient": false,
+    "expected_keywords": []
+  },
+  {
+    "id": "Q47",
+    "category": "Insufficient Evidence",
+    "question": "What is the first-line artemisinin combination therapy dosage for uncomplicated Plasmodium falciparum malaria?",
+    "expected_paper_id": null,
+    "expected_title": null,
+    "expected_page": null,
+    "is_out_of_domain": false,
+    "is_sufficient": false,
+    "expected_keywords": []
+  },
+  {
+    "id": "Q48",
+    "category": "Insufficient Evidence",
+    "question": "What was the Phase 3 clinical trial efficacy percentage of the Moderna mRNA-1273 COVID-19 vaccine?",
+    "expected_paper_id": null,
+    "expected_title": null,
+    "expected_page": null,
+    "is_out_of_domain": false,
+    "is_sufficient": false,
+    "expected_keywords": []
+  },
+  {
+    "id": "Q49",
+    "category": "Insufficient Evidence",
+    "question": "What is the cost comparison between continuous subcutaneous insulin pump therapy versus multiple daily injections for Type 1 diabetes?",
+    "expected_paper_id": null,
+    "expected_title": null,
+    "expected_page": null,
+    "is_out_of_domain": false,
+    "is_sufficient": false,
+    "expected_keywords": []
+  },
+  {
+    "id": "Q50",
+    "category": "Insufficient Evidence",
+    "question": "What is the standardized SUV cutoff threshold for florbetapir amyloid-beta PET imaging in Alzheimer disease diagnosis?",
+    "expected_paper_id": null,
+    "expected_title": null,
+    "expected_page": null,
+    "is_out_of_domain": false,
+    "is_sufficient": false,
+    "expected_keywords": []
+  }
+]

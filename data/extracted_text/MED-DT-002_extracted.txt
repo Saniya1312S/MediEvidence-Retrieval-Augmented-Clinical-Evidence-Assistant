@@ -1,0 +1,1218 @@
+--- PAGE 1 [pdf_text] ---
+Building Digital Twins of Diﬀerent Human Organs for 
+Personalized Healthcare 
+ 
+Yilin Lyu1, #, Zhen Li1, #, Vu Tran1, Xuan Yang1, Hao Li1, Meng Wang2, 3, Ching-Yu Cheng2, 3, 4, 5, 
+Mamatha Bhat6, 7, 8, 9, Viktor Jirsa10, Roger Foo11, 12, 13, Chwee Teck Lim1, 14, 15, Lei Li1, * 
+ 
+1 Department of Biomedical Engineering, National University of Singapore, Singapore, Singapore 
+2 Centre for Innovation and Precision Eye Health, Yong Loo Lin School of Medicine, National University 
+of Singapore, Singapore, Singapore 
+3 Department of Ophthalmology, Yong Loo Lin School of Medicine, National University of Singapore, 
+Singapore, Singapore 
+4 Singapore Eye Research Institute, Singapore National Eye Centre, Singapore, Singapore 
+5 Ophthalmology & Visual Sciences Academic Clinical Program (EYE ACP), Duke-NUS Medical School, 
+Singapore, Singapore 
+6 Ajmera Transplant Centre, Toronto General Hospital, University Health Network, Toronto, ON, 
+Canada 
+7 Toronto General Hospital Research Institute, University Health Network, Toronto, ON, Canada 
+8 Vector Institute, Toronto, ON, Canada 
+9 Department of Medicine, University of Toronto, Toronto, ON, Canada 
+10 Aix Marseille University, INSERM, INS, Inst Neurosci System, Marseille, France 
+11 Cardiovascular-Metabolic Disease Translational Research Programme, Yong Loo Lin School of 
+Medicine, National University of Singapore, Singapore, Singapore 
+12 Department of Cardiology, National University Heart Centre, Singapore, Singapore, Singapore 
+13 Cardiovascular Research Institute (CVRI), Yong Loo Lin School of Medicine, National University of 
+Singapore, Singapore, Singapore 
+14 Institute for Health Innovation and Technology (iHealthtech), National University of Singapore, 
+Singapore, Singapore 
+15 Mechanobiology Institute, National University of Singapore, Singapore, Singapore 
+ 
+# These authors contributed equally 
+*Corresponding author: lei.li@nus.edu.sg
+
+--- PAGE 2 [pdf_text] ---
+ABSTRACT 
+Digital twins are virtual replicas of physical entities and are poised to transform personalized medicine 
+through the real-time simulation and prediction of human physiology. Translating this paradigm from 
+engineering to biomedicine requires overcoming profound challenges, including anatomical variability, 
+multi-scale biological processes, and the integration of multi-physics phenomena. This survey 
+systematically reviews methodologies for building digital twins of human organs, structured around a 
+pipeline decoupled into anatomical twinning (capturing patient-speciﬁc geometry and structure) and 
+functional twinning (simulating multi-scale physiology from cellular to organ-level function). We 
+categorize approaches both by organ-speciﬁc properties and by technical paradigm, with particular 
+emphasis on multi-scale and multi-physics integration. A key focus is the role of artiﬁcial intelligence 
+(AI), especially physics-informed AI, in enhancing model ﬁdelity, scalability, and personalization. 
+Furthermore, we discuss the critical challenges of clinical validation and translational pathways. This 
+study not only charts a roadmap for overcoming current bottlenecks in single-organ twins but also 
+outlines the promising, albeit ambitious, future of interconnected multi-organ digital twins for wholebody precision healthcare. 
+ 
+1. Introduction 
+Digital twins are now widely seen as a transformative force in healthcare, promising to revolutionize 
+personalized medicine by enabling real-time monitoring, predictive diagnostics, and optimized treatment 
+strategies1,2. However, the transition from a promising concept to clinically viable tools remain a formidable 
+challenge. This challenge requires moving beyond two dominant paradigms: conventional computational 
+modeling, which often personalizes anatomy but relies on static, literature-derived functional parameters3, 
+and general-purpose AI, such as foundation models, which have garnered signiﬁcant attention for broad 
+pattern recognition but often prioritize generality over the deep personalization and interpretability essential 
+for clinical trust4-7. The digital twin paradigm proposes a distinct, complementary solution. It is a technology 
+fundamentally oriented toward building a patient-speciﬁc, data-assimilating, and dynamically evolving virtual 
+replica. This is achieved by continually integrating individual clinical data with well-established mathematical 
+and physical models, such as the Navier-Stokes equations for hemodynamics8 or the Monodomain/Bidomain 
+models for cardiac electrophysiology9. By grounding predictions in known biophysical principles, the digital 
+twin framework aims to deliver inherently personalized, interpretable, and actionable insights, directly 
+addressing the limitations of purely data-driven or static modeling approaches10,11. 
+ 
+Constructing such high-ﬁdelity, organ-speciﬁc digital twins confronts the immense complexity of human 
+physiology. Unlike their industrial counterparts, which operate in controlled environments, biological digital 
+twins must account for intrinsic patient variability, multi-scale interactions (from molecules to whole-organ 
+function), and the integration of sparse, noisy, or incomplete clinical data15-18. This complexity reveals 
+limitations in both foundational modeling approaches. While physics-based models provide essential 
+mechanistic insight and interpretability, they often struggle with computational cost and incomplete biological 
+knowledge. Purely data-driven AI models, conversely, may fail under data-scarce conditions and lack the 
+interpretability required for clinical adoption19. To bridge this divide, hybrid approaches that synergistically
+
+--- PAGE 3 [pdf_text] ---
+combine mechanistic modeling with machine learning are emerging as the most promising technical path 
+forward20. In such frameworks, well-understood physical laws are encoded into the model architecture (e.g., 
+via physics equations), while data-driven components are tasked with learning the unknown or residual 
+physics that are diﬃcult to model explicitly. However, the precise methodologies for constructing, validating, 
+and deploying these integrated, clinically reliable systems are still nascent. A critical gap persists between 
+the high-level vision and practical implementation, underscoring the urgent need for a systematic synthesis 
+of the technical frameworks required to realize functional digital twins in healthcare. 
+ 
+This survey systematically reviews state-of-the-art computational frameworks for constructing digital twins 
+of diﬀerent human organs. In general, the digital twin workﬂows usually involve two stages, namely 
+anatomical and functional twinnings, as presented in Fig. 1. The anatomical twinning stage involves the 
+segmentation of medical images, reconstruction of the three-dimensional (3D) or 3D+t geometry of the organ, 
+and the localization of relevant pathologies. At the functional twinning stage, the mathematical models are 
+used to simulate physiological function of the organ. More importantly, the parameters of the mathematical 
+ 
+Fig. 1: Pipeline for developing organ-speciﬁc digital twins, including anatomical and functional twinings 
+based on patient speciﬁc dataset. Here, we use the digital twin of the eyes12, brain13, and heart14 as 
+examples. Images adapted with permission from ref. 13-14 under a Creative Commons license CC BY 
+4.0. 
+Personalized data
+Dataset
+Anatomical Twining
+Functional Twining
+3D(+t) mesh recon
+Simulation & personalization
+Eye
+3D artery reconstruction
+Brain
+3D brain reconstruction
+Simulated SEEG
+Multi-view cardiac MRIs
+Clinical ECG
+Ⅰ
+V6
+…
+Q
+S
+Q S
+R
+T
+T
+P
+P
+Heart
+Torso mesh reconstruction
+Electrophysiological 
+simulation
+Simulated ECG
+…
+Ⅰ
+V6
+Q S
+R
+Q S
+R
+T
+T
+P
+P
+Anatomical and electrophysiological
+parameters
+ECG calibration
+Retinal hemodynamics simulation
+Transmural 
+(𝒕𝒎)
+Apicobasal 
+(𝒂𝒃)
+Rotational 
+(𝒓𝒕)
+Biventricular mesh reconstruction
+T1W MRI
+DW MRI
+SEEG
+TI stimulation and 
+corresponding electric field
+Stereo-EEG (SEEG) calibration
+Artery/vein labeling
+Vein graph
+Oxygen partial pressure
+Blood pressure distribution 
+Fundus
+Blood 
+pressure
+IOP
+Intraocular pressure (IOP) calibration
+Image and measurement
+
+--- PAGE 4 [pdf_text] ---
+models need to be optimized via inverse inference using patient-speciﬁc data for personalization. In this 
+survey, we examine the methodologies for both anatomical and functional modeling and the key challenges 
+in terms of methodologies. By comparing methodologies across diﬀerent organs, we provide a roadmap for 
+advancing digital twins from conceptual promise to clinical reality. 
+ 
+2 Organ-Speciﬁc Anatomical Twining 
+The development of clinically viable digital twins necessitates a foundational anatomical model that serves 
+not merely as a visual representation, but as a structured, simulation-ready computational domain. This 
+model, derived from patient-speciﬁc imaging data, forms the essential geometric and topological scaﬀold 
+upon which biophysical laws are solved. The ﬁdelity and utility of any subsequent functional modeling are 
+therefore fundamentally predicated on the anatomical model. This pipeline for anatomical modeling 
+traditionally involves a two-stage process: 1) the semantic segmentation of anatomical structures from 
+2D/3D(+t) medical images, and 2) the conversion of these discrete labels into continuous, high-quality 
+geometric meshes suitable for numerical simulation. 
+ 
+The segmentation stage has been revolutionized by deep learning. Following early reliance on manual 
+delineation and classical methods (e.g., graph-cut21, multi-atlas segmentation22), convolutional neural 
+networks, particularly U-Net architectures23 and their optimized variants especially nnU-Net24, have become 
+the dominant paradigm. More recently, transformer-based models (e.g., TransUNet25) and medical-adapted 
+foundational segmentation models (e.g., MedSAM26) are pushing the boundaries of accuracy and 
+generalization across diverse imaging modalities and anatomical structures. 
+Fig. 2: Overview of digital twin anatomical modeling of diﬀerent anatomy types. The pipeline is shaped by 
+the dominant biomechanical behavior of organs: (1) Structural-Static Anatomy (e.g., teeth31, spine32) 
+demands high geometric accuracy for structural planning. (2) Motion-Dominant Anatomy (e.g., heart, 
+uterus33, stomach34) requires 4D spatiotemporal reconstruction to capture deformation. (3) Fluid-Conduit 
+Anatomy (e.g., lung35, liver36, kidney37) focuses on extracting topologically correct, connected tree 
+structures for ﬂow simulation. Images adapted with permission from refs. 31-33, 35-37 (CC BY 4.0) and 
+ref. 34 (CC BY-NC 4.0). 
+Jawbone
+Structural-Static Anatomy
+Spine
+Motion-Dominant Anatomy
+Heart
+Fluid-Conduit Anatomy 
+Kidney
+Stomach
+…
+Time
+Uterine
+Teeth
+Liver
+Lung
+
+--- PAGE 5 [pdf_text] ---
+The subsequent mesh generation stage, however, remains a signiﬁcant computational bottleneck. Converting 
+segmented labels into simulation-ready meshes, free of topological errors, with appropriate element quality, 
+and preserving physiological interfaces, is non-trivial. Traditional isosurfacing (e.g., Marching Cubes) followed 
+by volumetric meshing often propagates segmentation artifacts and requires extensive manual correction27. 
+Emerging end-to-end and learning-based approaches aim to bypass these limitations28. Techniques 
+leveraging diﬀerentiable rendering29, graph convolutional networks30, and direct image-to-mesh 
+architectures28 represent a paradigm shift toward generating physics-compatible geometries directly from 
+imaging data. Critically, the design priorities for this anatomical scaﬀold are not uniform across all organs. 
+They are intrinsically dictated by the dominant biophysical processes the digital twin aims to simulate. We 
+posit that organ-speciﬁc anatomical modeling strategies can be eﬀectively classiﬁed into three computational 
+paradigms: structural-static anatomy, motion-dominant anatomy, and vascular/parenchymal network 
+anatomy (Fig. 2). Here, the geometry of structural-static organs is largely invariant, and the primary modeling 
+goal is precise structural representation for intervention planning or as a stable mechanical scaﬀold. The 
+primary function of motion-dominant organs involves cyclic or aperiodic deformation, necessitating 
+spatiotemporal (4D) reconstruction to capture dynamic geometry. For organs whose function is deﬁned by 
+the transport of ﬂuids through a hierarchical branching tree (blood vessels, ducts, airways), topological 
+connectivity is crucial. This classiﬁcation is not merely a descriptive convenience; it is a prescriptive 
+framework that guides the prioritization of modeling features, the selection of computational algorithms, and 
+the very criteria for validating the anatomical pipeline, ensuring that the model is ﬁt-for-purpose from its 
+inception. 
+ 
+2.1 Static and Semi-Static Structural Anatomy 
+This paradigm encompasses organs and tissues whose geometry, for the purposes of the digital twin, can 
+be treated as ﬁxed or changing only due to externally imposed interventions (e.g., surgery, growth). The 
+computational objective is to achieve a high degree of geometric accuracy to serve as a template for 
+prosthetic design, surgical planning, or as a stable reference frame for functional simulations. 
+ 
+Modeling the musculoskeletal system and skin presents a unique computational contrast between rigid and 
+deformable tissues. Bone modeling, primarily from computed tomography (CT), is a mature domain where 
+threshold-based segmentation yields highly accurate surfaces for 3D printing and surgical guide fabrication38. 
+The challenge shifts to muscle and skin, which are deformable and require preservation of volume and 
+biomechanical consistency. Early physics-based methods utilized implicit surfaces39 and volume-preserving 
+constraints (e.g., volumetric Laplacian formulations40). Contemporary approaches integrate data-driven 
+techniques with physical priors. For instance, Li et al.41 combined Neo-Hookean hyperelasticity constraints 
+with iterative shape registration for subject-speciﬁc muscle deformation. Multiscale modeling, such as using 
+deep generative networks to synthesize trabecular bone microstructure from micro-CT data42, exempliﬁes 
+the push towards hierarchical anatomical ﬁdelity. Skin modeling adds the complexity of layered structure and 
+optical properties. While ﬁnite element models of epidermal/dermal layers have been used to study wound 
+healing43, recent advances leverage 3D photogrammetry and optical coherence tomography (OCT) for high-
+
+--- PAGE 6 [pdf_text] ---
+ﬁdelity surface and subdermal reconstruction44, with deep learning enabling automatic segmentation from 
+multi-view images45. 
+ 
+Although brain function is dynamic, its gross anatomical architecture for many large-scale simulation 
+frameworks (e.g., The Virtual Brain46) is often treated as a semi-static conductive domain. Traditional 
+neuroimaging pipelines rely on atlas-based tools like FreeSurfer47 and FSL48 to segment gray matter, white 
+matter, and subcortical structures from MRI, followed by surface and volumetric meshing. The propagation 
+of segmentation errors to meshes remains a key challenge49. This has motivated the development of 
+accelerated deep learning replicants of traditional pipelines (e.g., FastSurfer50) and, more importantly, endto-end methods that directly infer topologically correct surfaces. Architectures like Vox2Cortex51, 
+CortexODE52, and CorticalFlow53 use neural ODEs and ﬂow-based models to generate cortical surfaces with 
+inherent correspondences, signiﬁcantly reducing error accumulation and processing time. 
+ 
+The modeling of craniofacial and aural structures, such as teeth, jaw, and ear, forms a subdomain deﬁned by 
+integrating extreme geometric precision with aesthetic and functional demands54-56. This uniﬁes distinct sites 
+into a coherent challenge: dental twins require multi-modal fusion of structural and color data for prosthetics; 
+outer ear models achieve sub-millimeter accuracy via scanning and template morphing for hearing aids; while 
+middle ear modeling confronts inaccessible micro-anatomy, often relying on HRCT and manual reﬁnement57,58. 
+Across these applications, the computational objective extends beyond anatomical representation to a level 
+of precision that directly dictates clinical utility and patient outcome. 
+ 
+2.2 Motion-Dominant Anatomy 
+This paradigm addresses organs whose primary physiological function is intrinsically linked to large-scale, 
+cyclic deformation. The anatomical model must therefore be a 4D reconstruction that accurately captures the 
+spatiotemporal trajectory of the organ, imposing strict requirements on dynamic imaging, temporal 
+registration, and deforming mesh generation. 
+ 
+Cardiac anatomical twinning inherently demands 4D anatomical modeling to faithfully capture the cardiac 
+cyclic deformation, valve motion, and dynamic blood ﬂow throughout the cardiac cycle via cine MRI, 3D(+t)-
+CT, or 2D/3D(+t) ultrasound59,60. A central computational challenge is reconstructing high-ﬁdelity shapes from 
+imaging data with limited through-plane resolution within cine MRIs or 2D(+t) echo61,62, often addressed 
+through multi-view learning63 or the use of sparse point clouds from sequential slices64. Recent frameworks 
+like Mesh4D65 employ transformer-based variational autoencoders to jointly learn shape and motion from 
+multi-view image sequences, producing temporally coherent 4D meshes essential for simulating 
+electrophysiology, biomechanics, and hemodynamics. 
+ 
+Uterine anatomy is highly variable and changes with physiological state (e.g., menstrual cycle, pregnancy)66. 
+Reconstruction from 3D transvaginal ultrasound67 or MRI68 provides a static snapshot, but functional twins 
+for electrophysiology (e.g., modeling uterine contractions) or biomechanics (e.g., simulating labor) require the 
+incorporation of tissue anisotropy. This involves stratifying the myometrium into layers and assigning
+
+--- PAGE 7 [pdf_text] ---
+characteristic ﬁber orientations (inner circumferential, outer longitudinal) based on anatomical rules69,70 or 
+microstructural imaging71. Furthermore, comprehensive models often extend to include interactions with 
+pelvic ﬂoor muscles and ligaments to study support dynamics and parturition72,73. 
+ 
+As a central digestive organ, the stomach undergoes complex peristaltic and accommodative deformations. 
+Anatomical modeling must therefore capture its highly variable morphology, inﬂuenced by food content and 
+motility phase74. Strategies include fusing volumetric CT data with high-resolution endoscopic surface 
+reconstructions obtained via structure-from-motion75. The resulting geometries are used in computational 
+ﬂuid dynamics (CFD) models to study gastric mixing76 and are coupled with biomechanical representations 
+(e.g., ﬁber-reinforced visco-hyperelastic laws77) to simulate wall stress and accommodation. 
+ 
+While the airway network of the lung falls under ﬂuid-conduit anatomy, its parenchymal tissue is motiondominant, deforming with respiration. Reconstruction must be explicitly correct for respiratory and cardiac 
+motion artifacts in CT/MRI78. Techniques like attention-augmented Long Short-Term Memory (LSTM) 
+networks79 and motion-compensated iterative reconstruction80 aim to produce consistent, phase-resolved 
+geometric models. Similarly, the eye exhibits dynamic accommodation. While global ocular shape can be 
+reconstructed from fundus photos81 or MRI82, modeling accommodation requires parameterized 
+representations of the lens and ciliary body. Consequently, computer-aided design (CAD) based parametric 
+models are often utilized to generate ﬁnite element meshes for coupled optical-biomechanical simulation83. 
+ 
+2.3 Fluid-Conduit Anatomy 
+Organs in this category are deﬁned by their intricate, hierarchical ﬂuid transport systems (arteries, veins, ducts, 
+airways). The main computational objective is the extraction of a topologically correct, connected tree 
+structure that faithfully represents branching patterns down to physiologically relevant scales. 
+ 
+Digital twins of the liver and kidney require dual reconstruction: the parenchymal volume and the complex 
+vascular trees (hepatic artery/portal vein/veins; renal artery/vein/pelvicalyceal system). Contrast-enhanced 
+CT or MRI allows segmentation of major vessels, but the complete vascular network is typically incomplete. 
+Computational workﬂows thus involve centerline extraction, skeletonization, and algorithmic reconstruction 
+using physiological principles (e.g., Murray’s Law) to generate missing branches84. For the kidney, vascular 
+reconstruction is particularly critical for surgical planning (e.g., partial nephrectomy)85. Signiﬁcant research 
+focuses on improving the segmentation of thin, low-contrast vessels using topology-aware loss functions86, 
+boundary-focused metrics87, and cross-domain validation frameworks88. The resulting outputs are 1D graph 
+models for fast hemodynamics or 3D tubular meshes for high-ﬁdelity CFD. 
+ 
+The lung presents one of the most complex branching networks in the human body. Traditional reconstruction 
+methods frequently fail to capture the full, fractal nature of the airway tree, leading to premature truncation89. 
+Deep learning approaches have shown promise in preserving distal bronchiole morphology under noisy 
+conditions90. The parallel challenge of reconstructing the pulmonary vasculature is equally demanding, with 
+similar requirements for topology preservation to accurately model gas exchange and perfusion.
+
+--- PAGE 8 [pdf_text] ---
+Beyond the parenchymal geometry, cerebrovascular networks, segmented from magnetic resonance 
+angiography (MRA) or CT angiography (CTA), are essential for hemodynamic models of stroke, aneurysm 
+rupture, and neurovascular coupling. Furthermore, the structural connectome, representing the network of 
+white matter ﬁber tracts, is a cornerstone of large-scale brain network simulations. It is reconstructed noninvasively using diﬀusion MRI tractography pipelines (e.g., MRtrix391, TractSeg92), where the accuracy of the 
+underlying anatomical model directly inﬂuences the estimated connectivity weights and subsequent 
+simulation outcomes93. 
+ 
+3 Organ-Speciﬁc Functional Twining 
+The transition from a static anatomical scaﬀold to a dynamic digital twin requires integrating mathematical 
+models that simulate physiological function, bridging the gap between structural data and physiological 
+behavior in computational medicine94. The ﬁeld has matured through a strategic focus on mastering the 
+dominant physical processes that govern the primary function of each organ, leading to the emergence of 
+three core computational paradigms (Fig. 3). The ﬁrst is the modeling of electrophysiology and signal 
+propagation (Reaction-Diﬀusion), which captures the dynamics of excitable tissues and biochemical 
+networks95. The second encompasses ﬂuid and hemodynamics, addressing the convective and diﬀusive 
+movement of biological ﬂuids96. The third is structural biomechanics, which simulates the mechanical 
+response of tissues to force97. While many state-of-the-art studies excel within a single paradigm due to 
+computational and methodological constraints, the ultimate frontier lies in their integration to capture 
+emergent, multi-physics physiology98. 
+ 
+Fig. 3: Three major physics-based paradigms for digital twin functional modeling, each deﬁned by a 
+typical partial diﬀerential equation. Each paradigm underpins several established computational models, 
+and few advanced models integrate multiple paradigms for greater ﬁdelity. 
+Solid 
+Mechanics
+ReactionDiffusion
+Fluid 
+Mechanics
+Biot Poroelastic Model
+Growth & Remodeling (G&R)
+Continuum Models
+Visco-Elasticity Model
+Darcy/ Brinkman/ Forchheimer
+Navier-Stokes Equations
+Fluid-Structure Interaction
+Lumped Parameter Model
+Reaction-Diffusion-Advection Equation
+Monodomain/ Bidomain Models
+FitzHugh-Nagumo Models
+Functional Modeling
+Eikonal Models
+𝜕𝒖
+𝜕𝑡= ∇∙𝑫𝛻𝒖+ 𝑅(𝒖, 𝑡)
+• 𝒖: State vector 
+• 𝑫: Diffusion tensor 
+• 𝑅: Reaction term
+• 𝑡: time
+∇∙𝒗= 0
+𝜌
+𝜕𝒗
+𝜕𝑡+ 𝒗∙∇𝒗= −∇𝑝+ 𝜇∇2𝒗+ 𝒇;
+• 𝜌: fluid density
+• 𝒗: velocity field
+• 𝑝: pressure
+• 𝜇: viscosity
+𝜌𝜕2𝒅
+𝜕𝑡2 = ∇∙𝝈+ 𝒇
+• 𝜌: material density
+• 𝒅: displacement vector
+• 𝝈: stress tensor
+• 𝒇: body forces
+
+--- PAGE 9 [pdf_text] ---
+3.1 Electrophysiology and Signal Propagation Simulation 
+A fundamental class of organ function arises from the generation and propagation of electrochemical signals, 
+a domain governed by the mathematics of reaction-diﬀusion systems and network theory. The brain stands 
+as the most complex embodiment of this paradigm46. At one extreme, detailed models of spiking neural 
+networks strive for biophysical realism at the cellular level100. At the other extreme, mean-ﬁeld models, such 
+as those implemented in The Virtual Brain platform, abstract the collective activity of neuronal populations 
+into a limited number of state variables93. A critical advancement is the development of Bayesian inversion 
+techniques, which enable the estimation of hidden neurophysiological parameters from noninvasive 
+electrophysiological data, demonstrating signiﬁcant clinical translatability in epilepsy101. 
+ 
+The heart represents the most mature application of electrophysiological modeling, with a clear pathway to 
+clinical impact in arrhythmia management95,102. The modeling pipeline is rigorously multi-scale, beginning with 
+high-ﬁdelity mathematical representations of cardiac myocyte ion channels, such as the Luo-Rudy models103. 
+These cellular dynamics are then incorporated into the monodomain or bidomain equations, which are 
+continuum approximations for electrical wave propagation in cardiac tissue10. The creation of a patientspeciﬁc cardiac electrophysiology twin hinges on solving the ill-posed inverse problem of determining the 
+spatial distribution of tissue properties from body-surface electrocardiogram (ECG) or invasive electrode 
+mapping data104. 
+ 
+Beyond the central nervous and cardiovascular systems, electrophysiological principles underpin the function 
+of other rhythmic organs. The uterus, for instance, exhibits unique, state-dependent dynamics modulated by 
+hormonal cycles and mechanical stretch105. Computational models of uterine electrophysiology capture the 
+speciﬁc ionic currents of uterine smooth muscle106, with upscaling often addressed through reaction-diﬀusion 
+frameworks or cellular automata approaches70,107. Similarly, the motility of the stomach is coordinated by 
+slow-wave activity generated by interstitial cells of Cajal, simulated using reaction-diﬀusion models to 
+understand dysrhythmias108. Finally, the paradigm extends to endocrine organs like the pancreas and thyroid, 
+where the core functional models are systems of ordinary diﬀerential equations rep-resenting hormonal 
+feedback loops109,110. 
+ 
+3.2 Fluid and Hemodynamics Simulation 
+A second major paradigm addresses the critical physiological role of ﬂuid, encompassing the ﬂow of blood, 
+air, and other bodily ﬂuids. The core physics are derived from the Navier-Stokes equations, with a hierarchy 
+of models employed to balance ﬁdelity against computational cost across vast spatial scales96. In the 
+cardiovascular system, 3D CFD is used to resolve complex, unsteady blood ﬂow in patient-speciﬁc 
+geometries, providing detailed maps of hemodynamic wall shear stress111. For eﬃcient simulation of systemwide hemodynamics, zero-dimensional (0D) lumped-parameter models normally represent the global 
+impedance of the vascular network112. The lungs present a unique challenge where airﬂow must be matched 
+with blood ﬂow for eﬃcient gas exchange (Fig. 4c). CFD models of the airway tree simulate ventilation113, 
+while multi-scale vascular networks model perfusion114. The critical coupling of ventilation-perfusion (V/Q)
+
+--- PAGE 10 [pdf_text] ---
+ratios is fundamental to understanding gas exchange eﬃciency in diseases like COPD and ARDS115. The 
+AirPROM project represents a comprehensive eﬀort to integrate these components into a uniﬁed 
+computational platform116. 
+ 
+In the abdominal organs, ﬂuid dynamics integrates with metabolic function. The ﬁltration and metabolic 
+processing of the liver are modeled using porous media approaches for sinusoidal blood ﬂow coupled with 
+reaction-diﬀusion systems for hepatocyte metabolism117,118. Similarly, the kidney employs multi-scale 
+hemodynamic models that incorporate autoregulatory mechanisms like tubuloglomerular feedback119, with 
+advection-diﬀusion-reaction equations simulating solute transport in the nephron120. 
+ 
+Specialized ﬂuid dynamics applications extend to other organs. Ocular models simulate aqueous humor 
+dynamics to understand glaucoma pathophysiology83. Cochlear models employ CFD to simulate soundinduced ﬂuid motion in the inner ear121. Prostate models use urethral CFD to assess urinary ﬂow dynamics in 
+benign prostatic hyperplasia122. The exocrine pancreas models ductal ﬂuid and bicarbonate secretion using 
+transport equations123. 
+ 
+3.3 Solid Biomechanics and Tissue Mechanics Simulation 
+The third paradigm focuses on the mechanical integrity, deformation, and force-generation of organs and 
+tissues. The musculoskeletal system represents a primary application domain, where bone mechanics are 
+simulated using ﬁnite element method (FEM) derived from CT scans to assess fracture risk and design 
+orthopedic implants97. This structural analysis is complemented by kinematic simulations that use inverse 
+dynamics to calculate muscle and joint forces during movement, personalizable with motion capture and 
+electromyography data124. Dental biomechanics presents unique challenges in modeling hierarchical 
+composite structures. FEM models of teeth must account for the anisotropy of enamel and the non-linear, 
+viscoelastic behavior of the periodontal ligament125. These models are further enhanced through 
+mechanobiological algorithms that simulate bone remodeling in response to orthodontic forces126. 
+ 
+In soft tissue biomechanics, ocular models employ FEM to compute stress-strain distributions in the cornea 
+and sclera, personalizing predictions for glaucoma management and refractive surgery outcomes83. The 
+middle ear uses multi-body dynamics and FEM to simulate sound transmission through the ossicular chain127. 
+Skin models simulate mechanical behavior for wound healing and surgical planning, incorporating complex 
+hyperelastic and viscoelastic material properties43. 
+ 
+3.4 Multi-Physics Simulation 
+While signiﬁcant advances have been made within individual modeling paradigms, the most profound 
+challenge and opportunity lie in their integration. Cardiovascular system provides the most advanced 
+example, where coupled electro-mechanical-ﬂuid models represent the gold standard for comprehensive 
+cardiac digital twinning98 (Fig. 4b). This integration involves linking electrophysiology models that generate 
+activation sequences with active mechanics models that simulate contraction, which then drive 
+hemodynamic models of blood ﬂow in a dynamically deforming geometry. Similar coupling challenges exist
+
+--- PAGE 11 [pdf_text] ---
+across other organ systems: integrating lung tissue mechanics with airﬂow and blood ﬂow128, linking uterine 
+electrophysiology with intrauterine pressure107, and connecting liver hemodynamics with lobular-scale 
+metabolism129. The concept of the Virtual Physiological Human (VPH)130 emphasized the integration from 
+molecular, cellular, tissue, organ to whole-body levels. It originated in 2005 and aims to establish a 
+comprehensive physiological model of the whole body through multi-scale and multi-physics approaches. 
+Although there was no digital twin at this time, its functions and objectives were similar, embodying the 
+fundamental prototype of digital twin. 
+ 
+The path forward requires addressing fundamental computational bottlenecks through advanced numerical 
+methods and model reduction techniques. Machine learning approaches are emerging as powerful tools for 
+creating eﬃcient surrogates of complex physics-based models and for solving challenging inverse 
+problems131. Furthermore, the development of robust validation frameworks and uncertainty quantiﬁcation 
+methods will be crucial for building clinical conﬁdence in digital twin predictions. As these challenges are 
+addressed, the ﬁeld will progressively evolve from single-organ, single-physics models toward 
+comprehensive, multi-scale, multi-physics representations of human physiology, ultimately realizing the 
+vision of truly predictive digital twins in clinical practice. 
+ 
+4 Discussion 
+4.1 Physics-Informed AI Powered Digital Twins 
+ 
+Fig. 4: Functional twining approaches: (a) Physics-informed AI model unifying data-driven and physicsbased approaches; (b) Multi-physics simulation, exempliﬁed by cardiac electro-ﬂuid-mechanics; (c) Multiscale modeling, illustrated with a lung digital twin referring to Lauzon et al.99 under a Creative Commons 
+license CC BY-NC 4.0. 
+Data-Driven Models
+Physics-Based Models
+Physics
+Physics-Informed AI
+Data
+High
+High
+Low
+Low
+(c)
+Latch 
+state
+MLICP
+𝑴
+𝑨𝑴
+𝑴𝒑
+𝑨𝑴𝒑
+?
+MLICK
+X-bridge 
+cycle
+𝑘1
+𝑘2
+𝑘1
+𝑘2
+𝑔(𝑥)
+𝑓𝑝(𝑥)
+𝑔𝑝(𝑥)
+(a)
+(b)
+Organ
+Tissue
+Cell
+Molecule
+Lumen
+Submucosa
+Smooth 
+muscle 
+layer
+Parenchyma
+Airway
+wall
+Lumen
+𝐼𝑃3
+𝐽𝐼𝑃𝑅
+𝐽𝑖𝑛
+𝐽𝑝𝑚
+𝐽𝑠𝑒𝑟𝑐𝑎
+𝐽𝑒𝑟
+𝐽𝑅𝑦𝑅
+𝐶𝑎2+
+𝐶𝑎2+
+leak
+Serca pump
+leak
+ATPase 
+pump
+agonist
+Voltage-gated 
+channels
+Electrophysiology
+Solid Mechanics
+Fluid Mechanics
+Cellular dynamics
+SR
+Myofilaments
+Ca2+
+ECG
+MEF
+RA
+Ve
+PV
+FluidStructure 
+Interaction
+Pulm
+Sys
+Elasticity
+
+--- PAGE 12 [pdf_text] ---
+The integration of AI with mechanistic modeling is catalyzing a paradigm shift in digital twin development, 
+moving beyond purely data-driven or purely physics-based approaches toward hybrid frameworks that 
+enforce physical and biological constraints (Fig. 4a). Physics-Informed Neural Networks (PINNs) and their 
+variants exemplify this trend by embedding governing equations (e.g., Navier-Stokes, monodomain, or 
+continuum mechanics equations) directly into the loss function of a neural network134,135. This allows for the 
+solution of forward and inverse problems even with sparse, noisy clinical data, eﬀectively learning a solution 
+that respects the underlying biophysical laws. For organ digital twins, this approach is particularly powerful 
+for calibrating patient-speciﬁc model parameters from heterogeneous observations, such as estimating 
+regional myocardial stiﬀness from cardiac MRI strain data or inferring blood ﬂow parameters from sparse 4D 
+ﬂow MRI136,137. Moreover, operator learning frameworks, such as Fourier neural operators (FNOs)138 and deep 
+operator networks (DeepONets)139, can learn mappings between inﬁnite-dimensional function spaces, 
+enabling rapid emulation of complex physiological simulations (e.g., predicting hemodynamics across a 
+family of vascular geometries) at a fraction of the computational cost of traditional solvers. These AI-powered 
+surrogates are essential for enabling real-time digital twin applications, such as surgical planning or closedloop control in critical care. 
+ 
+However, the clinical translation of physics-informed AI digital twins faces signiﬁcant computational and 
+methodological bottlenecks. A primary limitation is geometry generalization: standard PINN implementations 
+are typically trained on a single, ﬁxed anatomical mesh. Retraining a new network for the unique geometry of 
+each patient is computationally prohibitive, negating the eﬃciency gains sought through AI. This has spurred 
+research into geometry-agnostic operator learning. For instance, Yin et al.140 introduced the diﬀeomorphic 
+mapping operator learning framework, which learns solution operators for PDEs across diverse geometries. 
+Critically, their work demonstrated scalable application to personalized cardiac electrophysiology, predicting 
+electrical propagation on thousands of cardiac digital twins without retraining, a key capability for clinical 
+deployment. Similarly, graph neural networks operating on un-structured meshes141 and implicit neural 
+representations142 are being explored to handle complex, patient-speciﬁc topologies. Beyond generalization, 
+the computational cost of solving coupled, multi-physics problems (e.g., cardiac electromechanics or hepatic 
+perfusion) in 3D remains a challenge, often leading to unstable training and high memory demands. Future 
+progress hinges on developing robust, multi-scale training schemes, hybrid methods that strategically blend 
+AI emulators with traditional solvers at critical domains and leveraging multi-ﬁdelity data. Overcoming these 
+geometry-transfer and scalability barriers is essential to move from proof-of-concept demonstrations to 
+robust, patient-speciﬁc digital twins that operate within clinically relevant timeframes. 
+ 
+4.2 Towards Integrated Multi-Organ Digital Twins 
+Developing multi-organ digital twins is crucial for capturing the complex inter-organ interactions that underlie 
+systemic diseases143. Stroke represents a prime example, where a comprehensive digital twin should 
+encompass the entire heart-brain axis to enable mechanistic insights and personalized decision support144. 
+Such a model would integrate blood ﬂow and thrombosis dynamics across the left heart, carotid arteries, and 
+cerebral circulation. By further incorporating brain perfusion, metabolism, and cerebrospinal ﬂuid physiology, 
+it can predict penumbra evolution, optimize intervention timing, and assess risks of reperfusion injury and
+
+--- PAGE 13 [pdf_text] ---
+cerebral edema, enabling personalized neuroprotection and recovery strategies. Similarly, cardiac arrest 
+often leads to multi-organ injury, most notably aﬀecting the brain and kidneys145,146. Therefore, developing a 
+digital twin to investigate cardiac arrest and predict its systemic consequences must involve a multi-organ 
+framework that integrates cardiac, cerebral, and renal models to capture the complex cross-organ dynamics 
+driving post-arrest outcomes. 
+ 
+Beyond stroke and cardiac arrest, multi-organ digital twins are essential for modeling complex 
+pathophysiological interactions in systemic diseases. The COVID-19 pandemic highlighted the profound and 
+dynamic coupling between the respiratory and cardiovascular systems, where pulmonary inﬂammation and 
+impaired gas exchange can precipitate secondary cardiac dysfunction. While statistical analyses of raw 
+clinical data have failed to detect subtle COVID-19-related impairments in pulmonary circulation147, integrated 
+mathematical modeling has proven more insightful. For instance, calibrated 0D models of the 
+cardiocirculatory system, when coupled with representations of pulmonary pathophysiology, have 
+successfully quantiﬁed the hemodynamic consequences of COVID-19-related pneumonia, demonstrating the 
+unique power of mechanistic digital twins to reveal hidden cross system hemodynamics148,149. 
+ 
+The principle of cross-system integration extends to other organ pairs. The cardiovascular system critically 
+regulates ocular perfusion, while intraocular pressure (IOP) and retinal blood ﬂow are essential for ocular 
+health. Although retinal vascular characteristics are established indicators of cardiovascular status150,151 and 
+AI-based tools now leverage retinal images for non-invasive cardiovascular risk assessment152, digital twin 
+models of the heart and eye have been developed in isolation. To bridge this gap, frameworks such as the 
+closed-loop Eye2Heart model have been proposed, simulating coupled cardiovascular-ocular dynamics (Fig. 
+5) to explore scenarios like IOP variation or changes in cardiac contractility153. Looking ahead, the potential 
+for even broader integration is signiﬁcant. Preliminary multi-omics analyses reveal strong correlations in 
+ 
+Fig. 5: Multi-organ digital twin. Here, we use the modeling of large scale artery hemodynamics from the 
+heart to the eye as example. Image adopted from Caddy et al.132 under Creative Commons license CC BY 
+4.0. 
+Fundus images Retinal arterioles
+Cerebrovasculature
+and neck arteries 
+Aorta and 
+iliac arteries
+Coronary arteries
+Cardiac CT
+Haemodynamic simulation
+3D arterial network geometry
+CT angiography
+MRI
+
+--- PAGE 14 [pdf_text] ---
+imaging-derived phenotypes, genetics, and proteomics among the brain, heart, and eye154, suggesting that 
+brain-heart-eye digital twins could oﬀer unprecedented insights into their tripartite physiological coupling and 
+shared disease mechanisms. 
+ 
+4.3 Digital Twin-Guided Personalized Medicine 
+The ultimate validation of organ digital twin technology lies in its capacity to improve clinical decision-making 
+and patient outcomes. While widespread adoption is still emergent, several pioneering applications 
+demonstrate the translational potential of this paradigm (Fig. 6). These successes typically involve a closedloop workﬂow: integration of multimodal patient data to personalize a biophysical model, execution of insilico trials to predict treatment response, and translation of the virtual insights into a clinical action. The most 
+mature examples are found in cardiology and neurology, where model personalization is supported by rich 
+functional imaging and electrophysiological data. In cardiovascular medicine, cardiac digital twins have 
+advanced from research to clinical decision support, particularly in complex arrhythmia management133,155,156. 
+The most notable clinical application is the planning of catheter ablation for atrial ﬁbrillation (AF) using patientspeciﬁc electrophysiological models. The optimal ablation strategy is determined through an iterative 
+computational process: the digital twin simulates AF to locate initial ablation sites, perform virtual ablation, 
+and then test the AF inducibility. This virtual ablation-and-test cycle repeats until AF can no longer be 
+sustained, deﬁning a ﬁnal, personalized lesion set. In a proof-of-concept study with ten AF patients, this 
+model-guided approach signiﬁcantly improved procedural success rates and reduced operative time 
+compared to standard strategies156. A second, rapidly advancing application is in transcatheter aortic valve 
+implantation, where biomechanical twins of the aortic root derived from CT are used to simulate device 
+deployment, predict paravalvular leak risk, and optimize valve sizing and positioning preoperatively157. 
+ 
+Fig.6: Illustration of clinical applications of digital twin for personalized healthcare. Here, we use the 
+personalized modeling in drug-resistant epilepsy and personalized sudden cardiac death risk (SCD) 
+prediction as examples. Image adopted from ref. 13 and ref. 133 under Creative Commons license CC 
+BY 4.0. 
+Electrically stimulate 
+virtual brain model
+Surgery Planning
+Epileptogenic zone network 
+(EZN) estimation
+Risk Prediction
+Electrically stimulate
+virtual heart model
+Re-entrant arrhythmias 
+elicited (persisted > 1 s)?
+No
+All locations 
+has been tried
+Yes
+Stimulate at another 
+location
+Re-entrant arrhythmias 
+Scar
+Grey zone
+Pacing site
+High SCD risk
+Low SCD risk
+AHA bull’s eye plot
+1
+7
+13
+17
+15
+4
+10
+2
+6
+5
+3
+12
+11
+8
+9
+18
+19
+14
+16
+Yes
+Virtual surgery: 
+resection of EZN
+Repeat until 
+seizure freedom
+Simulation
+Resection
+
+--- PAGE 15 [pdf_text] ---
+In neurology, epilepsy surgery planning represents a landmark application of digital twinning. Personalized 
+brain network models, or The Virtual Brain instances, are constructed from the structural and diﬀusion MRI 
+of patients to simulate large-scale electrophysiological dynamics158. By incorporating the location of an 
+epileptogenic lesion inferred from electroencephalography (EEG)/ magnetoencephalography (MEG)/ stereoEEG, these models can simulate seizure propagation pathways. This allows neurosurgeons to virtually test 
+the impact of diﬀerent resection strategies on network dynamics, aiming to maximize seizure freedom while 
+preserving critical cognitive function. Prospective clinical validation has shown that model-guided resection 
+strategies can lead to improved surgical outcomes in drug-resistant epilepsy13,159. Beyond epilepsy, similar 
+personalized brain modeling approaches are being explored to optimize deep brain stimulation parameters 
+for Parkinson disease160 and to predict functional recovery after stroke161-163. 
+ 
+Beyond these established examples, digital twins are entering clinical pilot studies across other specialties, 
+especially in terms of oncology1. For example, a triplenegative breast cancer digital twin has been developed 
+to simulate the tumor growth and treatment response to neoadjuvant chemotherapy164. This digital twin 
+framework, validated in a breast cancer cohort (n=105), achieved an AUC of 0.82 in predicting pathological 
+complete response (pCR) and yielded a signiﬁcant improvement in pCR rate of 20.95-24.76%. The common 
+thread across these applications is a shift from a reactive, population-based medicine to a predictive, patientspeciﬁc paradigm, where therapeutic decisions are vetted in a risk-free virtual environment before being 
+applied to the individual. 
+ 
+5 Outlook 
+This survey has outlined the state-of-the-art computational frameworks for building organ-speciﬁc digital 
+twins, charting a path from foundational anatomical modeling to integrative functional simulation. While 
+anatomical twinning has matured signiﬁcantly, powered by medical foundation models and robust image 
+analysis pipelines, the realization of fully functional digital twins remains a profound challenge. Current models 
+are largely static, personalized in anatomy but not yet in dynamic function, due to the immense diﬃculty of 
+acquiring longitudinal, time-series clinical data and the prohibitive computational cost of real-time, highﬁdelity physics-based simulation. Here, AI, particularly in the form of hybrid physics-informed AI, emerges as 
+a pivotal enabler. Such hybrid paradigms elegantly embed known biophysical laws while leveraging datadriven methods to infer unknown or patient-speciﬁc parameters, creating models that are both interpretable 
+and adaptable. Presently, heart and brain digital twins are the most clinically advanced, demonstrating 
+tangible impact in arrhythmia management and epilepsy surgery. However, the vision of a true, dynamically 
+updating digital twin and the even more ambitious goal of an interconnected multi-organ system, remains too 
+ambitious. Bridging this gap will require concerted advances in longitudinal data acquisition, real-time 
+computational surrogates, and robust validation frameworks, ultimately steering the ﬁeld from a promising 
+technological concept toward a cornerstone of precision healthcare.
+
+--- PAGE 16 [pdf_text] ---
+References 
+1. 
+T. Hernandez-Boussard, P. Macklin, E. J. Greenspan, A. L. Gryshuk, E. Stahlberg, T. Syeda-Mahmood, 
+I. Shmulevich, “Digital twins for predictive oncology will be a paradigm shift for precision cancer care,” 
+Nature medicine, vol. 27, no. 12, pp. 2065-2066 (2021). 
+2. 
+C. Tang, W. Yi, E. Occhipinti, Y. Dai, S. Gao, L. G. Occhipinti, “A roadmap for the development of human 
+body digital twins,” Nature Reviews Electrical Engineering, vol. 1, no. 3, pp. 199-207 (2024). 
+3. 
+S. A. Niederer, J. Lumens, N. A. Trayanova, “Computational models in cardiology,” Nature reviews 
+cardiology, vol. 16, no. 2, pp. 100-111 (2019). 
+4. 
+M. Moor, O. Banerjee, Z. S. H. Abad, H. M. Krumholz, J. Leskovec, E. J. Topol, P. Rajpurkar, “Foundation 
+models for generalist medical artiﬁcial intelligence,” Nature, vol. 616, no. 7956, pp. 259-265 (2023). 
+5. 
+X. Wang, J. Zhao, E. Marostica, W. Yuan, J. Jin, J. Zhang, R. Li, H. Tang, K. Wang, Y. Li, F. Wang, “A 
+pathology foundation model for cancer diagnosis and prognosis prediction,” Nature vol. 634, no. 8035, 
+pp. 970-978 (2024). 
+6. 
+Y. Zhou, M. A. Chia, S. K. Wagner, M. S. Ayhan, D. J. Williamson, R. R. Struyven, T. Liu, M. Xu, M. G. 
+Lozano, P. Woodward-Court, Y. Kihara, “A foundation model for generalizable disease detection from 
+retinal images,” Nature vol. 622, no. 7981, pp. 156-163 (2023). 
+7. 
+C. Rudin, “Stop explaining black box machine learning models for high stakes decisions and use 
+interpretable models instead,” Nature machine intelligence, vol. 1, no. 5, pp. 206-215 (2019). 
+8. 
+Y. Liu, L. Zhang, X. Wang, W. K. Liu, “Coupling of Navier-Stokes equations with protein molecular 
+dynamics and its application to hemodynamics,” International Journal for Numerical Methods in Fluids, 
+vol. 46, no. 12, pp. 1237-1252 (2004). 
+9. 
+M. J. Bishop, G. Plank, “Bidomain ECG simulations using an augmented monodomain model for the 
+cardiac source,” IEEE transactions on biomedical engineering, vol. 58, no. 8, pp. 2297-2307 (2011). 
+10. J. Camps, B. Lawson, C. Drovandi, A. Minchole, Z. J. Wang, V. Grau, K. Burrage, B. Rodriguez, 
+“Inference of ventricular activation properties from non-invasive electrocardiography,” Medical Image 
+Analysis vol. 73, p. 102143 (2021). 
+11. M. G. Kapteyn, J. V. Pretorius, K. E. Willcox, “A probabilistic graphical model foundation for enabling 
+predictive digital twins at scale,” Nature Computational Science, vol. 1, no. 5, pp. 337-347 (2021). 
+12. J. I. Orlando, J. Barbosa Breda, K. Van Keer, M. B. Blaschko, P. J. Blanco, C. A. Bulant, “Towards a 
+glaucoma risk index based on simulated hemodynamics from fundus images,” in International 
+Conference on Medical Image Computing and Computer-Assisted Intervention, pp. 65-73 (2018). 
+13. H. E. Wang, B. Dollomaja, P. Triebkorn, G. M. Duma, A. Williamson, J. Makhalova, J. D. Lemarechal, F. 
+Bartolomei, V. Jirsa, “Virtual brain twins for stimulation in epilepsy,” Nature Computational Science vol. 
+5, no. 9, pp. 754-768 (2025). 
+14. L. Li, J. Camps, Z. J. Wang, M. Beetz, A. Banerjee, B. Rodriguez, V. Grau, “Toward enabling cardiac 
+digital twins of myocardial infarction using deep computational models for inverse inference,” IEEE 
+Transactions on Medical Imaging vol. 43, no. 7, pp. 2466-2478 (2024). 
+15. C. Ahn, F. Lotﬁ-Jam, C. Graham, T. Bunnell, S. Marvin, “Critical urban informatics for urban digital twin 
+models,” Nature Cities, pp. 1-3 (2025). 
+16. A. Ferrari, K. Willcox, “Digital twins in mechanical and aerospace engineering,” Nature Computational 
+Science, vol. 4, no. 3, pp. 178-183 (2024). 
+17. F. Tao, H. Zhang, C. Zhang, “Advancements and challenges of digital twins in industry,” Nature 
+Computational Science, vol. 4, no. 3, pp. 169-177 (2024). 
+18. R. Laubenbacher, B. Mehrad, I. Shmulevich, N. Trayanova, “Digital twins in medicine,” Nature 
+Computational Science, vol. 4, no. 3, pp. 184-191 (2024). 
+19. M. Raissi, A. Yazdani, G. E. Karniadakis, “Hidden ﬂuid mechanics: Learning velocity and pressure ﬁelds 
+from ﬂow visualizations,” Science, vol. 367, no. 6481, pp. 1026-1030 (2020). 
+20. X. Jiang, R. Missel, M. Toloubidokhti, K. Gillette, A. J. Prassl, G. Plank, B. M. Horacek, J. L. Sapp, L. 
+Wang, “Hybrid neural state-space modeling for supervised and unsupervised electrocardiographic 
+imaging,” IEEE Transactions on Medical Imaging, vol. 43, no. 8, pp. 2733-2744 (2024). 
+21. S. Vicente, V. Kolmogorov, C. Rother, “Graph cut based image segmentation with connectivity priors,” 
+presented at the 2008 IEEE conference on computer vision and pattern recognition, pp. 1-8 (2008). 
+22. J. E. Iglesias, M. R. Sabuncu, “Multi-atlas segmentation of biomedical images: a survey,” Medical image 
+analysis, vol. 24, no. 1, pp. 205-219 (2015). 
+23. O. Ronneberger, P. Fischer, T. Brox, “U-net: Convolutional networks for biomedical image segmentation,” 
+presented at the International Conference on Medical image computing and computer-assisted 
+intervention, pp. 234-241 (2015). 
+24. F. Isensee, P. F. Jaeger, S. A. A. Kohl, J. Petersen, K. H. Maier-Hein, “nnU-Net: a self-conﬁguring method 
+for deep learning-based biomedical image segmentation,” Nature Methods, vol. 18, no. 2, pp. 203-211
+
+--- PAGE 17 [pdf_text] ---
+(2021). 
+25. J. Chen, J. Mei, X. Li, Y. Lu, Q. Yu, Q. Wei, X. Luo, Y. Xie, E. Adeli, Y. Wang, M. P. Lungren, “TransUNet: 
+Rethinking the U-Net architecture design for medical image segmentation through the lens of 
+transformers,” Medical Image Analysis vol. 97, p. 103280 (2024). 
+26. J. Ma, Y. He, F. Li, L. Han, C. You, B. Wang, “Segment anything in medical images,” Nature 
+Communications, vol. 15, no. 1, p. 654 (2024). 
+27. R. Doste, J. Camps, Z. J. Wang, L. A. Berg, M. Holmes, H. Smith, M. Beetz, L. Li, A. Banerjee, V. Grau, 
+B. Rodriguez, “An Automated Computational Pipeline for Generating Large-Scale Cohorts of PatientSpeciﬁc Ventricular Models in Electromechanical In Silico Trials,” arXiv preprint arXiv:2503.03706 (2025). 
+28. N. Gaggion, B. A. Matheson, Y. Xia, R. Bonazzola, N. Ravikumar, Z. A. Taylor, D. H. Milone, A. F. Frangi, 
+E. Ferrante, “Multi-view hybrid graph convolutional network for volume-to-mesh reconstruction in 
+cardiovascular MRI,” Medical Image Analysis, p. 103630 (2025). 
+29. T. Joyce, S. Buoso, C. T. Stoeck, S. Kozerke, “Rapid inference of personalised left-ventricular meshes 
+by deformation-based diﬀerentiable mesh voxelization,” Medical image analysis, vol. 79, p. 102445 
+(2022). 
+30. Q. Meng, W. Bai, D. P. O’Regan, D. Rueckert, “DeepMesh: Mesh-based cardiac motion tracking using 
+deep learning,” IEEE transactions on medical imaging, vol. 43, no. 4, pp. 1489-1500 (2023). 
+31. S. Yao, W. Jiang, C. Wang, Y. He, C. Wang, L. Huang, “Improvements of tooth movement eﬃciency and 
+torque control in expanding the arch with clear aligners: a ﬁnite element analysis,” Frontiers in 
+Bioengineering and Biotechnology, vol. 11, p. 1120535 (2023). 
+32. A. J. Pokorni, M. Turbucz, R. M. Kiss, P. E. Eltes, A. Lazary, “Comparison of anterior column 
+reconstruction techniques after en bloc spondylectomy: a ﬁnite element study,” Scientiﬁc Reports, vol. 
+13, no. 1, p. 18767 (2023). 
+33. S. R. Lee, Y. J. Kim, K. G. Kim, “A Fast 3-Dimensional Magnetic Resonance Imaging Reconstruction for 
+Surgical Planning of Uterine Myomectomy.” Journal of Korean Medical Science, vol. 33, no. 2, pp. e12e12 (2018). 
+34. D. Bertoli, E. B. Mark, D. Liao, C. Brock, J. B. Frøkjær, A. M. Drewes, “A novel MRI-based threedimensional model of stomach volume, surface area, and geometry in response to gastric ﬁlling and 
+emptying,” Neurogastroenterology & Motility, vol. 35, no. 2, p. e14497 (2023). 
+35. J. Williams, H. Ahlqvist, A. Cunningham, A. Kirby, I. Katz, J. Fleming, J. Conway, S. Cunningham, A. 
+Ozel, U. Wolfram, “Validated respiratory drug deposition predictions from 2D and 3D medical images 
+with statistical shape models and convolutional neural networks,” Plos one, vol. 19, no. 1, p. e0297437 
+(2024). 
+36. B. Christ, U. Dahmen, K.-H. Herrmann, M. Konig, J. R. Reichenbach, T. Ricken, J. Schleicher, L. Ole 
+Schwen, S. Vlaic, N. Waschinsky, “Computational modeling in liver surgery,” Frontiers in Physiology, vol. 
+8, p. 906 (2017). 
+37. T. T. Nguyen, M. S. Thai, Q. T. Chau, R. W. Dobbs, H. Y. Tiong, D. M. Pham, H. T. T. Truong, K. L. Thai, 
+H. D. K. Nguyen, T. T. Huynh, H. P. Le, “Three-dimensional reconstruction of renal tumor anatomy for 
+preoperative planning of robotic partial nephrectomy in renal cell carcinoma cases with duplex kidney: 
+a case report,” Journal of Medical Case Reports vol. 18, no. 1, p. 262 (2024). 
+38. S. Ting-shu, S. Jian, “Intraoral digital impression technique: a review,” Journal of Prosthodontics, vol. 
+24, no. 4, pp. 313-321 (2015). 
+39. V. Roussellet, N. A. Rumman, F. Canezin, N. Mellado, L. Kavan, L. Barthe, “Dynamic implicit muscles 
+for character skinning,” Computers & Graphics, vol. 77, pp. 227-239 (2018). 
+40. K. Zhou, J. Huang, J. Snyder, X. Liu, H. Bao, B. Guo, H.-Y. Shum, “Large mesh deformation using the 
+volumetric graph laplacian,” in ACM SIGGRAPH 2005 Papers, pp. 496-503 (2005). 
+41. Y. Li, L. Zhang, Z. Qiu, Y. Jiang, N. Li, Y. Ma, Y. Zhang, L. Xu, J. Yu, “Nimble: a non-rigid hand model 
+with bones and muscles,” ACM Transactions on Graphics (TOG), vol. 41, no. 4, pp. 1-16 (2022). 
+42. H. Ahmadian, P. Mageswaran, B. A. Walter, D. M. Blakaj, E. C. Bourekas, E. Mendel, W. S. Marras, S. 
+Soghrati, “Toward an artiﬁcial intelligence-assisted framework for reconstructing the digital twin of 
+vertebra and predicting its fracture response,” International journal for numerical methods in biomedical 
+engineering, vol. 38, no. 6, p. e3601 (2022). 
+43. G. Limbert, “Mathematical and computational modelling of skin biophysics: a review,” Proceedings of 
+the Royal Society A: Mathematical, Physical and Engineering Sciences, vol. 473, no. 2203, p. 20170257 
+(2017). 
+44. D. Kim, M. Ko, K. Kim, “Skin tactile surface restoration using deep learning from a mobile image: An 
+application for virtual skincare,” Skin Research and Technology, vol. 27, no. 5, pp. 739-750 (2021). 
+45. L. Lebrat, R. Santa Cruz, R. Chierchia, Y. Arzhaeva, M. A. Armin, J. Goldsmith, J. Oorloﬀ, P. Reddy, C. 
+Nguyen, L. Petersson, M. Barakat-Johnson, “Syn3DWound: a synthetic dataset for 3d wound bed
+
+--- PAGE 18 [pdf_text] ---
+analysis,” in 2024 IEEE International Symposium on Biomedical Imaging (ISBI), pp. 1-5 (2024). 
+46. P. Sanz-Leon, S. A. Knock, A. Spiegler, V. K. Jirsa, “The Virtual Brain: a simulator of primate brain 
+network dynamics,” Frontiers in Neuroinformatics, vol. 7, p. 10 (2013). 
+47. B. Fischl, “FreeSurfer,” Neuroimage, vol. 62, no. 2, pp. 774-781 (2012). 
+48. M. Jenkinson, C. F. Beckmann, T. E. J. Behrens, M. W. Woolrich, S. M. Smith, “Fsl,” NeuroImage vol. 
+62, no. 2, pp. 782-790 (2012). 
+49. R. A. Yotter, R. Dahnke, P. M. Thompson, C. Gaser,“Topological correction of brain surface meshes 
+using spherical harmonics,” Human brain mapping, vol. 32, no. 7, pp. 1109-1124 (2011). 
+50. L. Henschel, S. Conjeti, S. Estrada, K. Diers, B. Fischl, M. Reuter, “Fastsurfer-a fast and accurate deep 
+learning based neuroimaging pipeline,” NeuroImage vol. 219, p. 117012 (2020). 
+51. F. Bongratz, A. M. Rickmann, S. Pölsterl, C. Wachinger, “Vox2Cortex: Fast explicit reconstruction of 
+cortical surfaces from 3D MRI scans with geometric deep neural networks,” in Proceedings of the 
+IEEE/CVF Conference on Computer Vision and Pattern Recognition, pp. 20773-20783 (2022). 
+52. Q. Ma, L. Li, E. C. Robinson, B. Kainz, D. Rueckert, A. Alansary, “CortexODE: Learning cortical surface 
+reconstruction by neural ODEs,” IEEE Transactions on Medical Imaging vol. 42, no. 2, pp. 430-443 
+(2022). 
+53. L. Lebrat, R. Santa Cruz, F. De Gournay, D. Fu, P. Bourgeat, J. Fripp, C. Fookes, O. Salvado, 
+“CorticalFlow: A diﬀeomorphic mesh transformer network for cortical surface reconstruction,” Advances 
+in Neural Information Processing Systems vol. 34, pp. 29491-29505 (2021). 
+54. W. Y. Lam, R. T. Hsung, L. Y. Cheng, E. H. Pow, “Mapping intraoral photographs on virtual teeth model,” 
+Journal of Dentistry vol. 79, pp. 107-110 (2018). 
+55. M. P. Reed, T. R. Vallier, A. C. Bonifas, “Development of a parametric model of adult human ear 
+geometry,” International Journal of Industrial Ergonomics, vol. 107, p. 103738 (2025). 
+56. F. Fu, A. Luximon, Y. Luximon, “3D human ear modelling with parameterization technique and variation 
+analysis,” Ergonomics, vol. 67, no. 5, pp. 638-649 (2024). 
+57. S. Parveen, S. Jain, A. Disawal, C. Singh, P. Deshmukh, S. Gaurkar, S. Ashraf, “Application of Finite 
+Element Model of Middle Ear in the Study of the Middle Ear Biomechanics in Normal and Diseased 
+States,” Indian Journal of Otology, vol. 29, no. 1, pp. 10-16 (2023). 
+58. X. R. Wang, X. Ma, L. X. Jin, Y. J. Gao, Y. J. Xue, J. L. Li, W. X. Bai, M. F. Han, Q. Zhou, F. Shi, J. Wang, 
+“Application value of a deep learning method based on a 3D V-Net convolutional neural network in the 
+recognition and segmentation of the auditory ossicles,” Frontiers in Neuroinformatics vol. 16, p. 937891 
+(2022). 
+59. F. Laumer, M. Amrani, L. Manduchi, A. Beuret, L. Rubi, A. Dubatovka, C. M. Matter, J. M. Buhmann, 
+“Weakly supervised inference of personalized heart meshes based on echocardiography videos,” 
+Medical image analysis, vol. 83, p. 102653 (2023). 
+60. E. J. Malin, C. Ceritoglu, E. Abadi, J. T. Ratnanather, E. Samei, W. P. Segars, “Library of realistic 4D 
+digital beating heart models based on patient CT data,” Medical Physics, vol. 52, no. 7, p. e17945 (2025). 
+61. X. Liu, X. Sheng, X. Zhuang, V. Grau, M. Y. Chan, C.H. Sia, L. Li, “Personalized 4D Whole Heart Geometry 
+Reconstruction from Cine MRI for Cardiac Digital Twins,” presented at the International Workshop on 
+Digital Twin for Healthcare, pp. 130-139 (2025). 
+62. F. Laumer, L. Rubi, M. A. Matter, S. Buoso, G. Fringeli, F. Mach, F. Ruschitzka, J. M. Buhmann, C. M. 
+Matter, “2D echocardiography video to 3D heart shape reconstruction for clinical application,” Medical 
+Image Analysis, vol. 101, p. 103434 (2025). 
+63. Y. Deng, H. Xu, S. Rodrigo, S. E. Williams, M. C. Williams, S. A. Niederer, K. Pushparajah, A. Young, 
+“ModusGraph: automated 3D and 4D mesh model reconstruction from cine CMR with improved 
+accuracy and eﬃciency,” presented at the International Conference on Medical Image Computing and 
+Computer-Assisted Intervention, pp. 173-183 (2023). 
+64. X. Yuan, C. Liu, Y. Wang, “4D myocardium reconstruction with decoupled motion and shape model,” 
+presented at the Proceedings of the IEEE/CVF International Conference on Computer Vision, pp. 2125221262 (2023). 
+65. M. Qiao, J. Zheng, W. Zhang, Q. Ma, L. Li, B. Kainz, D. P. O’Regan, P. M. Matthews, S. Niederer, W. Bai, 
+“Mesh4D: A Motion-Aware Multi-view Variational Autoencoder for 3D+ t Mesh Reconstruction,” 
+presented at the International Conference on Medical Image Computing and Computer-Assisted 
+Intervention, pp. 343-353 (2025). 
+66. H. Wang, Z. Wen, W. Wu, Z. Sun, Z. Kisrieva-Ware, Y. Lin, S. Wang, H. Gao, H. Xu, P. Zhao, Q. Wang, 
+“Noninvasive electromyometrial imaging of human uterine maturation during term labor, ” Nature 
+Communications vol. 14, no. 1, p. 1198 (2023). 
+67. E. Bones, M. Gergolet, C. Bohak, Z. Lesar, M. Marolt, “Automatic segmentation and alignment of uterine 
+shapes from 3D ultrasound data,” Computers in Biology and Medicine, vol. 178, p. 108794 (2024).
+
+--- PAGE 19 [pdf_text] ---
+68. Q. Zhou, Y. Bai, F. Chen, H. Zhang, L. Chen, G. Zhang, Y. Wang, L. Sui, “3D reconstruction of the uterus 
+and automatic segmentation of the uterine cavity on 3D magnetic resonance imaging: A preliminary 
+study,” Heliyon, vol. 10, no. 1 (2024). 
+69. B. Shariﬁmajd, C.-J. Thore, J. Stalhand, “Simulating uterine contraction by using an electro-chemomechanical model,” Biomechanics and modeling in mechanobiology, vol. 15, no. 3, pp. 497-510 (2016). 
+70. Y. Yang, C. Bradley, G. Li, R. Monfort-Ortiz, F. Nieto-del Amor, D. Hao, Y. Ye-Lin, “A computationally 
+eﬃcient anisotropic electrophysiological multiscale uterus model: From cell to organ and myometrium 
+to abdominal surface,” Computer Methods and Programs in Biomedicine, vol. 257, p. 108487 (2024). 
+71. K. M. Myers, C. P. Hendon, Y. Gan, W. Yao, K. Yoshida, M. Fernandez, J. Vink, R. J. Wapner, “A 
+continuous ﬁber distribution material model for human cervical tissue,” Journal of biomechanics, vol. 48, 
+no. 9, pp. 1533-1540 (2015). 
+72. J. Chen, J. Zhang, F. Wang, “A ﬁnite element analysis of diﬀerent postures and intra-abdominal 
+pressures for the uterine ligaments in maintaining the normal position of uterus,” Scientiﬁc Reports, vol. 
+13, no. 1, p. 5082 (2023). 
+73. Z. Xu, N. Chen, B. Wang, J. Yang, H. Liu, X. Zhang, Y. Li, L. Liu, Y. Wu, “Creation of the biomechanical 
+ﬁnite element model of female pelvic ﬂoor supporting structure based on thin-sectional high-resolution 
+anatomical images,” Journal of Biomechanics, vol. 146, p. 111399 (2023). 
+74. S. Acharya, S. Halder, W. Kou, P. J. Kahrilas, J. E. Pandolﬁno, N. A. Patankar, “A fully resolved 
+multiphysics model of gastric peristalsis and bolus emptying in the upper gastrointestinal tract,” 
+Computers in biology and medicine, vol. 143, p. 104948 (2022). 
+75. A. R. Widya, Y. Monno, M. Okutomi, S. Suzuki, T. Gotoda, K. Miki, “Whole stomach 3D reconstruction 
+and frame localization from monocular endoscope video,” IEEE Journal of Translational Engineering in 
+Health and Medicine, vol. 7, pp. 1-10 (2019). 
+76. M. Ferrua, R. Singh, “Modeling the ﬂuid dynamics in a human stomach to gain insight of food digestion,” 
+Journal of food science, vol. 75, no. 7, pp. R151-R162 (2010). 
+77. C. G. Fontanella, C. Salmaso, I. Toniolo, N. de Cesare, A. Rubini, G. M. De Benedictis, E. L. Carniel, 
+“Computational models for the mechanical investigation of stomach tissues and structure,” Annals of 
+biomedical engineering, vol. 47, no. 5, pp. 1237-1249 (2019). 
+78. S. Neelakantan, Y. Xin, D. P. Gaver, M. Cereda, R. Rizi, B. J. Smith, R. Avazmohammadi, “Computational 
+lung modelling in respiratory medicine,” Journal of The Royal Society Interface, vol. 19, no. 191, p. 
+20220062 (2022). 
+79. L. Hong, M. H. Modirrousta, M. Hossein Nasirpour, M. Mirshekari Chargari, F. Mohammadi, S. V. 
+Moravvej, L. Rezvanishad, M. Rezvanishad, I. Bakhshayeshi, R. Alizadehsani, I. Razzak, “GAN-LSTM3D: An eﬃcient method for lung tumour 3D reconstruction enhanced by attention-based LSTM,” CAAI 
+Transactions on Intelligence Technology (2023). 
+80. Y. Huang, K. Thielemans, G. Price, J. R. McClelland, “Surrogate-driven respiratory motion model for 
+projection-resolved motion estimation and motion compensated cone-beam CT reconstruction from 
+unsorted projection data,” Physics in Medicine & Biology, vol. 69, no. 2, p. 025020 (2024). 
+81. D. Shi, B. Liu, Z. Tian, Y. Wu, J. Yang, R. Chen, B. Yang, O. Xiao, M. He, “Fundus2Globe: Generative AIDriven 3D Digital Twins for Personalized Myopia Management,” arXiv preprint arXiv: 2502.13182 (2025). 
+82. M. Moriyama, K. Ohno-Matsui, K. Hayashi, N. Shimada, T. Yoshida, T. Tokoro, I. Morita, “Topographic 
+analyses of shape of eyes with pathologic myopia by high-resolution three-dimensional magnetic 
+resonance imaging,” Ophthalmology, vol. 118, no. 8, pp. 1626-1637 (2011). 
+83. T. Saigre, “Mathematical modeling, simulation and order reduction of ocular ﬂows and their interactions: 
+building the digital twin of the eye,” Ph.D. thesis, Universite de Strasbourg (2024). 
+84. L. Soler, S. Nicolau, P. Pessaux, D. Mutter, J. Marescaux, “Real-time 3D image reconstruction guidance 
+in liver resection surgery,” Hepatobiliary surgery and nutrition, vol. 3, no. 2, p. 73 (2014). 
+85. D. Amparore, F. Piramide, E. Checcucci, P. Verri, S. De Cillis, A. Piana, G. Volpi, G. Busacca, M. Colombo, 
+C. Fiori, F. Porpiglia, “Three-dimensional virtual models of the kidney with colored perfusion regions: a 
+new algorithm-based tool for optimizing the clamping strategy during robot-assisted partial 
+nephrectomy,” European Urology vol. 84, no. 4, pp. 418-425 (2023). 
+86. S. Shit, J. C. Paetzold, A. Sekuboyina, I. Ezhov, A. Unger, A. Zhylka, J. P. W. Pluim, U. Bauer, B. H. 
+Menze, “clDice-a novel topology-preserving loss function for tubular structure segmentation,” presented 
+at the Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR), 
+pp. 16560-16569 (2021). 
+87. L. Maier-Hein, A. Reinke, P. Godau, M. D. Tizabi, F. Buettner, E. Christodoulou, B. Glocker, F. Isensee, 
+J. Kleesiek, M. Kozubek, M. Reyes, “Metrics reloaded: recommendations for image analysis validation,” 
+Nature Methods vol. 21, no. 2, pp. 195-212 (2024). 
+88. E. Yagis, S. Aslani, Y. Jain, Y. Zhou, S. Rahmani, J. Brunet, A. Bellier, C. Werlein, M. Ackermann, D. 
+Jonigk, P. Taﬀoreau, “Deep learning for 3D vascular segmentation in hierarchical phase contrast
+
+--- PAGE 20 [pdf_text] ---
+tomography: a case study on kidney,” Scientiﬁc Reports vol. 14, no. 1, p. 27258 (2024). 
+89. S. Bodduluri, A. Puliyakote, J. M. Reinhardt, E. A. Hoﬀman, J. D. Newell Jr, J. C. Sieren, S. P. Bhatt, G. 
+R. Washko, M. T. Dransﬁeld, “Airway fractal dimension predicts respiratory morbidity and mortality in 
+COPD,” Journal of Applied Physiology, vol. 128, no. 12, pp. 5374-5382 (2018). 
+90. S. Shin, M. W. Kim, K. H. Jin, K. M. Yi, Y. Kohmura, T. Ishikawa, J. H. Je, J. Park, “Deep 3D reconstruction 
+of synchrotron X-ray computed tomography for intact lungs,” Scientiﬁc Reports, vol. 13, no. 1, p. 1738 
+(2023). 
+91. J. D. Tournier, R. Smith, D. Raﬀelt, R. Tabbara, T. Dhollander, M. Pietsch, D. Christiaens, B. Jeurissen, 
+C. H. Yeh, A. Connelly, “MRtrix3: A fast, ﬂexible and open software framework for medical image 
+processing and visualisation,” NeuroImage vol. 202, p. 116137 (2019). 
+92. J. Wasserthal, P. Neher, K. H. Maier-Hein, “ TractSeg-Fast and accurate white matter tract 
+segmentation,” NeuroImage vol. 183, pp. 239-253 (2018). 
+93. T. Proix, F. Bartolomei, M. Guye, V. K. Jirsa, “Individual brain structure and modelling predict seizure 
+propagation,” Brain, vol. 140, no. 3, pp. 641-654 (2017). 
+94. E. Katsoulakis, Q. Wang, H. Wu, L. Shahriyari, R. Fletcher, J. Liu, L. Achenie, H. Liu, P. Jackson, Y. Xiao, 
+T. Syeda-Mahmood, “Digital twins for health: a scoping review,” npj Digital Medicine vol. 7, no. 1, p. 77 
+(2024). 
+95. N. A. Trayanova, A. Lyon, J. Shade, J. Heijman, “Computational modeling of cardiac electrophysiology 
+and arrhythmogenesis: toward clinical translation,” Physiological Reviews, vol. 104, no. 3, pp. 12651333 (2024). 
+96. M. Girfoglio, A. Quaini, G. Rozza, “A hybrid projection/data-driven reduced order model for the NavierStokes equations with nonlinear ﬁltering stabilization,” Journal of Computational Physics, vol. 486, p. 
+112127 (2023). 
+97. K. Aubert, A. Germaneau, M. Rochette, W. Ye, M. Severyns, M. Billot, P. Rigoard, T. Vendeuvre, 
+“Development of digital twins to optimize trauma surgery and postoperative management. A case study 
+focusing on tibial plateau fracture," Frontiers in Bioengineering and Biotechnology, vol. 9, p. 722275 
+(2021). 
+98. W. Sun, C. Martin, T. Pham, “Computational modeling of cardiac valve function and intervention,” Annual 
+review of biomedical engineering, vol. 16, no. 1, pp. 53-76 (2014). 
+99. A.-M. Lauzon, J. H. Bates, G. Donovan, M. Tawhai, J. Sneyd, M. J. Sanderson, “A multi-scale approach 
+to airway hyperresponsiveness: from molecule to organ,” Frontiers in physiology, vol. 3, p. 191 (2012). 
+100. W. Lu, L. Zeng, X. Du, W. Zhang, S. Xiang, H. Wang, J. Wang, M. Ji, Y. Hou, M. Wang, Y. Liu, “Digital 
+Twin Brain: a simulation and assimilation platform for whole human brain, ” arXiv preprint 
+arXiv:2308.01241 (2023). 
+101. V. K. Jirsa, T. Proix, D. Perdikis, M. M. Woodman, H. Wang, J. Gonzalez-Martinez, C. Bernard, C. Bénar, 
+M. Guye, P. Chauvel, F. Bartolomei, “The virtual epileptic patient: individualized whole-brain models of 
+epilepsy spread,” NeuroImage vol. 145, pp. 377-388 (2017). 
+102. M. C. Waight, A. Prakosa, A. C. Li, A. Truong, N. Bunce, A. Marciniak, N. A. Trayanova, M. M. Saba, 
+“Heart Digital Twins Predict Features of Invasive Reentrant Circuits and Ablation Lesions in ScarDependent Ventricular Tachycardia,” Circulation: Arrhythmia and Electrophysiology, vol. 18, no. 8, p. 
+e013660 (2025). 
+103. C. H. Luo, Y. Rudy, “A model of the ventricular cardiac action potential. Depolarization, repolarization, 
+and their interaction.” Circulation research, vol. 68, no. 6, pp. 1501-1526 (1991). 
+104. L. Li, J. Camps, B. Rodriguez, V. Grau, “Solving the inverse problem of electrocardiography for cardiac 
+digital twins: A survey,” IEEE Reviews in Biomedical Engineering (2024). 
+105. Y. Xu, H. Liu, D. Hao, M. Taggart, D. Zheng, “Uterus modeling from cell to organ level: towards better 
+understanding of physiological basis of uterine activity,” IEEE Reviews in Biomedical Engineering, vol. 
+15, pp. 341-353 (2020). 
+106. W. C. Tong, C. Y. Choi, S. Karche, A. V. Holden, H. Zhang, M. J. Taggart, “A computational model of 
+the ionic currents, Ca2+ dynamics and action potentials underlying contraction of isolated uterine 
+smooth muscle,” PloS one, vol. 6, no. 4, p. e18685 (2011). 
+107. M. Yochum, J. Laforet, C. Marque, “An electro-mechanical multiscale model of uterine pregnancy 
+contraction,” Computers in biology and medicine, vol. 77, pp. 182-194 (2016). 
+108. G. O’Grady, P. Du, L. K. Cheng, J. U. Egbuji, W. J. Lammers, J. A. Windsor, A. J. Pullan, “Origin and 
+propagation of human gastric slow-wave activity deﬁned by high-resolution mapping,” American Journal 
+of Physiology-Gastrointestinal and Liver Physiology, vol. 299, no. 3, pp. G585-G592 (2010). 
+109. C. D. Man, F. Micheletto, D. Lv, M. Breton, B. Kovatchev, C. Cobelli, “The UVA/PADOVA type 1 diabetes 
+simulator: new features,” Journal of diabetes science and technology, vol. 8, no. 1, pp. 26-34 (2014). 
+110. L. J. DEGROOT, P. DECOSTRE, R. PHAIR, “A mathematical model of human iodine metabolism,” The
+
+--- PAGE 21 [pdf_text] ---
+Journal of Clinical Endocrinology & Metabolism, vol. 32, no. 6, pp. 757-765 (1971). 
+111. A. M. T. Rojas, S. Lorente, “1D-model of the human liver circulatory system,” Computer Methods and 
+Programs in Biomedicine, vol. 238, p. 107612 (2023). 
+112. P. J. Blanco, L. O. Muller, “One-Dimensional Blood Flow Modeling in the Cardiovascular System. From 
+the Conventional Physiological Setting to Real-Life Hemodynamics,” International Journal for Numerical 
+Methods in Biomedical Engineering, vol. 41, no. 3, p. e70020 (2025). 
+113. L. Berger, R. Bordas, K. Burrowes, V. Grau, S. Tavener, D. Kay, “A poroelastic model coupled to a ﬂuid 
+network with applications in lung modelling,” International journal for numerical methods in biomedical 
+engineering, vol. 32, no. 1 (2016). 
+114. C. A. Taylor, T. A. Fonte, J. K. Min, “Computational ﬂuid dynamics applied to cardiac computed 
+tomography for noninvasive quantiﬁcation of fractional ﬂow reserve: scientiﬁc basis,” Journal of the 
+American College of Cardiology, vol. 61, no. 22, pp. 2233-2241 (2013). 
+115. J. Herrmann, V. Mori, J. H. Bates, B. Suki, “Modeling lung perfusion abnormalities to explain early 
+COVID-19 hypoxemia,” Nature communications, vol. 11, no. 1, p. 4883 (2020). 
+116. K. S. Burrowes, T. Doel, C. Brightling, “Computational modeling of the obstructive lung diseases asthma 
+and COPD,” Journal of Translational Medicine, vol. 12, no. Suppl 2, p. S5 (2014). 
+117. J. Hu, S. Lu , S. Feng, M. Long, “Flow dynamics analyses of pathophysiological liver lobules using porous 
+media theory,” Acta Mechanica Sinica, vol. 33, no. 4, pp. 823-832 (2017). 
+118. Q. Wang, J. Liu, W. Yin, A. Wang, J. Zheng, Y. Wang, J. Dong, “Microscale tissue engineering of liver 
+lobule models: advancements and applications,” Frontiers in Bioengineering and Biotechnology, vol. 11, 
+p. 1303053 (2023). 
+119. P. Xu, S. Darkner, O. Sosnovtseva, N.-H. Holstein-Rathlou, “Toward a full-scale model of renal 
+hemodynamics using a reconstructed vascular tree,” American Journal of Physiology-Renal Physiology, 
+vol. 328, no. 5, pp. F702-F723 (2025). 
+120. A M. Weinstein, “Mathematical models of renal ﬂuid and electrolyte transport: acknowledging our 
+uncertainty,” American Journal of Physiology-Renal Physiology, vol. 284, no. 5, pp. F871-F884 (2003). 
+121. M. Faran, M. Furst, “Inner-hair-cell induced hearing loss: A biophysical modeling perspective,” The 
+Journal of the Acoustical Society of America, vol. 153, no. 3, pp. 1776-1790 (2023). 
+122. T. Ishii, Y. Kambara, T. Yamanishi, Y. Naya, T. Igarashi, “Urine ﬂow dynamics through prostatic urethra 
+with tubular organ modeling using endoscopic imagery,” IEEE journal of translational engineering in 
+health and medicine, vol. 2, pp. 1-9 (2017). 
+123. M. G. Lee, E. Ohana, H. W. Park, D. Yang, S. Muallem, “Molecular mechanism of pancreatic and salivary 
+gland ﬂuid and HCO3- secretion,” Physiological reviews, vol. 92, no. 1, pp. 39-74 (2012). 
+124. H. Dinovitzer, M. Shushtari, A. Arami, “Accurate real-time joint torque estimation for dynamic prediction 
+of human locomotion,” IEEE Transactions on Biomedical Engineering, vol. 70, no. 8, pp. 2289-2297 
+(2023). 
+125. L. S. Munari, T. P. Cornacchia, A. N. Moreira, J. B. Goncalves, E. B. De Las Casas, C. S. Magalhaes, 
+“Stress distribution in a premolar 3D model with anisotropic and isotropic enamel,” Medical & Biological 
+Engineering & Computing, vol. 53, no. 8, pp. 751-758 (2015). 
+126. C. Wang, J. Han, Q. Li, L. Wang, Y. Fan, “Simulation of bone remodelling in orthodontic treatment,” 
+Computer methods in biomechanics and biomedical engineering, vol. 17, no. 9, pp. 1042-1050 (2014). 
+127. G. Volandri, F. Di Puccio, P. Forte, S. Manetti, “Model-oriented review and multi-body simulation of the 
+ossicular chain of the human middle ear,” Medical engineering & physics, vol. 34, no. 9, pp. 1339-1355 
+(2012). 
+128. T. Lam, H. T. Quach, L. Hall, M. Abou Chakra, A. P. Wong, “A multidisciplinary approach towards 
+modeling of a virtual human lung,” npj Systems Biology and Applications, vol. 11, no. 1, p. 38 (2025). 
+129. A. Malka-Markovitz, S. Camara Dit Pinto, M. Cherkaoui, S. M. Levine, S. Anandasabapathy, G. K. Sood, 
+S. Dhingra, Y. Gu, J. M. Vierling, N. R. Gallo, “Multiscale modeling of drug-induced liver injury from organ 
+to lobule,” npj Digital Medicine vol. 8, no. 1, p. 383 (2025). 
+130. M. Viceconti, G. Clapworthy, S. V. S. Jan, “The virtual physiological human - a european initiative for in 
+silico human modelling,” The Journal of Physiological Sciences vol. 58, no. 7, pp. 441-446 (2008). 
+131. L. Xiang, Y. Gu, K. Deng, Z. Gao, V. Shim, A. Wang, J. Fernandez, “Integrating personalized shape 
+prediction, biomechanical modeling, and wearables for bone stress prediction in runners,” npj Digital 
+Medicine, vol. 8, no. 1, p. 276 (2025). 
+132. H. T. Caddy, L. J. Kelsey, L. P. Parker, D. J. Green, B. J. Doyle, “Modelling large scale artery 
+haemodynamics from the heart to the eye in response to simulated microgravity,” npj Microgravity, vol. 
+10, no. 1, p. 7 (2024). 
+133. H. J. Arevalo, F. Vadakkumpadan, E. Guallar, A. Jebb, P. Malamas, K. C. Wu, N. A. Trayanova, 
+“Arrhythmia risk stratiﬁcation of patients after myocardial infarction using personalized heart models,” 
+Nature communications, vol. 7, no. 1, p. 11437 (2016).
+
+--- PAGE 22 [pdf_text] ---
+134. M. Raissi, P. Perdikaris, G. E. Karniadakis, “Physics-informed neural networks: A deep learning 
+framework for solving forward and inverse problems involving nonlinear partial diﬀerential equations,” 
+Journal of Computational physics, vol. 378, pp. 686-707 (2019). 
+135. G. E. Karniadakis, I. G. Kevrekidis, L. Lu, P. Perdikaris, S. Wang, L. Yang, “Physics-informed machine 
+learning,” Nature Reviews Physics, vol. 3, no. 6, pp. 422-440 (2021). 
+136. S. Mu, W. X. Chan, C. H. Yap, “IMC-PINN-FE: A Physics-Informed Neural Network for Patient-Speciﬁc 
+Left Ventricular Finite Element Modeling with Image Motion Consistency and Biomechanical Parameter 
+Estimation,” arXiv preprint arXiv:2506.20696 (2025). 
+137. J. Garay, J. Dunstan, S. Uribe, F. S. Costabal, “Physics-informed neural networks for parameter 
+estimation in blood ﬂow models,” Computers in Biology and Medicine vol. 178, p. 108706 (2024). 
+138. Z. Li, N. Kovachki, K. Azizzadenesheli, B. Liu, K. Bhattacharya, A. Stuart, A. Anandkumar, “Fourier neural 
+operator for parametric partial diﬀerential equations,” arXiv preprint arXiv:2010.08895 (2020). 
+139. S. Goswami, A. Bora, Y. Yu, G. E. Karniadakis, “Physics-informed deep neural operator networks,” in 
+Machine Learning in Modeling and Simulation: Methods and Applications, pp. 219-254 (2023). 
+140. M. Yin, N. Charon, R. Brody, L. Lu, N. Trayanova, M. Maggioni, “A scalable framework for learning the 
+geometry-dependent solution operators of partial diﬀerential equations,” Nature computational science, 
+vol. 4, no. 12, pp. 928-940 (2024). 
+141. T. Pfaﬀ, M. Fortunato, A. Sanchez-Gonzalez, P. Battaglia, “Learning mesh-based simulation with graph 
+networks,” in International Conference on Learning Representations (2020). 
+142. V. Sitzmann, J. Martel, A. Bergman, D. Lindell, G. Wetzstein, “Implicit neural representations with 
+periodic activation functions,” Advances in neural information processing systems, vol. 33, pp. 74627473 (2020). 
+143. J. Wen, “Towards a multi-organ, multi-omics medical digital twin,” Nature Biomedical Engineering, pp. 
+1-4 (2025). 
+144. M. Saiz-Vivo, J. Mill, X. Iriart, H. Cochet, G. Piella, M. Sermesant, O. Camara, “Digital twin integrating 
+clinical, morphological and hemodynamic data to identify stroke risk factors,” npj Digital Medicine, vol. 
+8, no. 1,p. 369 (2025). 
+145. G. D. Perkins, C. W. Callaway, K. Haywood, R. W. Neumar, G. Lilja, M. J. Rowland, K. N. Sawyer, M. B. 
+Skrifvars, J. P. Nolan, “Brain injury after cardiac arrest,” The Lancet, vol. 398, no. 10307, pp. 1269-1278 
+(2021). 
+146. G. Geri, L. Guillemet, F. Dumas, J. Charpentier, M. Antona, V. Lemiale, W. Bougouin, L. Lamhaut, J. P. 
+Mira, C. Vinsonneau, A. Cariou, “Acute kidney injury after out-of-hospital cardiac arrest: risk factors and 
+prognosis in a large cohort,” Intensive Care Medicine vol. 41, no. 7, pp. 1273-1280 (2015). 
+147. R. T. Djoumessi, I. D. Vougmo, J. T. Tegne, F. B. Pelap, “Proposed cardio-pulmonary model to 
+investigate the eﬀects of COVID-19 on the cardiovascular system,” Heliyon vol. 9, no. 1 (2023). 
+148. F. Regazzoni, C. Vergara, L. Dede’, P. Zunino, M. Guglielmo, R. Scrofani, L. Fusini, C. Cogliati, G. 
+Pontone, A. Quarteroni, “Modeling the eﬀect of COVID-19 disease on the cardiac function: a 
+computational study,” bioRxiv, 2020-06 (2020). 
+149. A. Tonini, C. Vergara, F. Regazzoni, L. Dede,’ R. Scrofani, C. Cogliati, A. Quarteroni, “A mathematical 
+model to assess the eﬀects of COVID-19 on the cardiocirculatory system,” Scientiﬁc Reports vol. 14, 
+no. 1, p. 8304 (2024). 
+150. E. L. Michelson, J. Morganroth, C. W. Nichols, H. MacVaugh, “Retinal arteriolar changes as an indicator 
+of coronary artery disease,” Archives of Internal Medicine vol. 139, no. 10, pp.1139-1141 (1979). 
+151. E. Tedeschi-Reiner, M. Strozzi, B. Skoric, and Z. Reiner, “Relation of atherosclerotic changes in retinal 
+arteries to the extent of coronary artery disease,” The American Journal of Cardiology vol. 96, no. 8, pp. 
+1107-1109 (2005). 
+152. W. Hu, Z. Lin, M. Clark, J. Henwood, X. Shang, R. Chen, K. Kiburg, L. Zhang, Z. Ge, P. van Wijngaarden, 
+Z. Zhu, “Real-world feasibility, accuracy and acceptability of automated retinal photography and AIbased cardiovascular disease risk assessment in Australian primary care settings: a pragmatic trial,” 
+NPJ Digital Medicine vol. 8, no. 1, p. 122 (2025). 
+153. L. Sala, M. Zaid, F. Hughes, M. Szopos, V. H. Huxley, A. Harris, G. Guidoboni, S. Lapin, “Eye2Heart: a 
+validated lumped-parameter model bridging cardiovascular and ocular dynamics,” arXiv preprint 
+arXiv:2504.06315 (2025). 
+154. The MULTI Consortium, A. Zalesky, Y. E. Tian, L. Ferrucci, W. Bai, M. S. Raﬁi, P. Aisen, J. Zeng, A. 
+Boquet-Pujadas, F. Anagnostakis, M. R. Duggan, C. M. Joynes, A. W. Toga, Z. Yang, K. A. Walker, C. 
+Davatzikos, J. Wen, “Brain-heart-eye axis revealed by multi-organ imaging genetics and proteomics,” 
+Nature Biomedical Engineering, pp. 1-23 (2025). 
+155. A. Prakosa, H. J. Arevalo, D. Deng, P. M. Boyle, P. P. Nikolov, H. Ashikaga, J. J. Blauer, E. Ghafoori, C. 
+J. Park, R. C. Blake III, F. T. Han, “Personalized virtual-heart technology for guiding the ablation of 
+infarct-related ventricular tachycardia,” Nature Biomedical Engineering vol. 2, no. 10, pp. 732-740 (2018).
+
+--- PAGE 23 [pdf_text] ---
+156. P. M. Boyle, T. Zghaib, S. Zahid, R. L. Ali, D. Deng, W. H. Franceschi, J. B. Hakim, M. J. Murphy, A. 
+Prakosa, S. L. Zimmerman, H. Ashikaga, “Computationally guided personalized targeted ablation of 
+persistent atrial ﬁbrillation,” Nature Biomedical Engineering vol. 3, no. 11, pp. 870-879 (2019). 
+157. M. Abdelkhalek, Z. Keshavarz-Motamed, “The Virtual Transcatheter Aortic Valve Replacement (VTAVR) 
+framework predicts optimal device landing zones tailored to patient-speciﬁc anatomy,” npj Biomedical 
+Innovations, vol. 2, no. 1, p. 40 (2025). 
+158. V. Jirsa, H. Wang, P. Triebkorn, M. Hashemi, J. Jha, J. Gonzalez-Martinez, M. Guye, J. Makhalova, F. 
+Bartolomei, “Personalised virtual brain models in epilepsy,” The Lancet Neurology, vol. 22, no. 5, pp. 
+443-454 (2023). 
+159. H. E. Wang, M. Woodman, P. Triebkorn, J. D. Lemarechal, J. Jha, B. Dollomaja, A. N. Vattikonda, V. Sip, 
+S. Medina Villalon, M. Hashemi, M. Guye, “Delineating epileptogenic networks using brain imaging data 
+and personalized modeling in drug-resistant epilepsy,” Science Translational Medicine vol. 15, no. 680, 
+p. eabp8982 (2023). 
+160. M. Angiolelli, D. Depannemaecker, H. Agouram, J. Régis, R. Carron, M. Woodman, L. Chiodo, P. 
+Triebkorn, A. Ziaeemehr, M. Hashemi, A. Eusebio, “The virtual parkinsonian patient,” npj Systems 
+Biology and Applications vol. 11, no. 1, p. 40 (2025). 
+161. M. I. Falcon, J. D. Riley, V. Jirsa, A. R. McIntosh, A. D. Shereen, E. E. Chen, A. Solodkin, “The virtual 
+brain: modeling biological correlates of recovery after chronic stroke,” Frontiers in neurology, vol. 6, p. 
+228 (2015). 
+162. M. I. Falcon, J. D. Riley, V. Jirsa, A. R. McIntosh, E. E. Chen, A. Solodkin, “Functional mechanisms of 
+recovery after chronic stroke: modeling with the virtual brain,” eneuro, vol. 3, no. 2 (2016). 
+163. M. W. Kurz, J. M. Ospel, R. Advani, E. C. Sandset, A. H. Aamodt, B. Tennøe, H. L. Ersdal, L. Fjetland, S. 
+Ajmi, K. D. Kurz, M. Goyal, “Simulation methods in acute stroke treatment: current state of aﬀairs and 
+implications,” Stroke vol. 51, no. 7, pp. 1978-1982 (2020). 
+164. C. Wu, E. A. Lima, C. E. Stowers, Z. Xu, C. Yam, J. B. Son, J. Ma, G. Rauch, T. E. Yankeelov, “MRIbased digital twins to improve treatment response of breast cancer by optimizing neoadjuvant 
+chemotherapy regimens,” npj Digital Medicine vol. 8, no. 1, p. 195 (2025).

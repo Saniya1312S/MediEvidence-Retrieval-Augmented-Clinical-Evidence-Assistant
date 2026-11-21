@@ -1,0 +1,124 @@
+{
+  "total_evaluated": 75,
+  "total_failures": 13,
+  "failure_rate_percent": 17.3,
+  "failures": [
+    {
+      "id": "Q01",
+      "question": "How are digital twins used in personalized medicine development?",
+      "category": "In-Domain Factual",
+      "expected": "Paper MED-DT-001 Page 2",
+      "actual": "Retrieved Paper MED-DT-002 Page 2",
+      "failure_category": "Top Citation Mismatch",
+      "root_cause": "BM25 or dense score favored competitor paper"
+    },
+    {
+      "id": "Q16",
+      "question": "In what manner do computer-generated patient simulations help tailor healthcare interventions to specific individuals?",
+      "category": "Semantic Retrieval",
+      "expected": "Paper MED-DT-001 Page 2",
+      "actual": "Retrieved Paper MED-DT-001 Page 11",
+      "failure_category": "Page-Level Discrepancy",
+      "root_cause": "Expected page annotated introduction while retriever surfaced detailed methodology section"
+    },
+    {
+      "id": "Q17",
+      "question": "What vision transformer architectures achieve high precision contour tracing in radiological scans?",
+      "category": "Semantic Retrieval",
+      "expected": "Paper MED-IMG-002 Page 1",
+      "actual": "Retrieved Paper MED-IMG-002 Page 3",
+      "failure_category": "Page-Level Discrepancy",
+      "root_cause": "Expected page annotated introduction while retriever surfaced detailed methodology section"
+    },
+    {
+      "id": "Q18",
+      "question": "How do physical autonomous robotic devices assist elderly individuals outside the clinical environment?",
+      "category": "Semantic Retrieval",
+      "expected": "Paper MED-DHM-001 Page 1",
+      "actual": "Retrieved Paper MED-DHM-001 Page 20",
+      "failure_category": "Page-Level Discrepancy",
+      "root_cause": "Expected page annotated introduction while retriever surfaced detailed methodology section"
+    },
+    {
+      "id": "Q19",
+      "question": "How can compact sequence models run locally on personal smart accessories without leaking sensitive medical telemetry?",
+      "category": "Semantic Retrieval",
+      "expected": "Paper MED-IOT-001 Page 1",
+      "actual": "Refused (\ud83d\uded1 Refused (Insufficient Evidence in Literature))",
+      "failure_category": "False Refusal",
+      "root_cause": "Sufficiency threshold exceeded or tokens missing"
+    },
+    {
+      "id": "Q20",
+      "question": "How can retrieval-grounded generative models clarify diagnostic recommendations for attending physicians?",
+      "category": "Semantic Retrieval",
+      "expected": "Paper MED-CDS-001 Page 1",
+      "actual": "Retrieved Paper MED-CDS-004 Page 1",
+      "failure_category": "Top Citation Mismatch",
+      "root_cause": "BM25 or dense score favored competitor paper"
+    },
+    {
+      "id": "Q21",
+      "question": "What is the total page count and chunk count of the primary publication by Saratkar et al. (2025)?",
+      "category": "Numerical Findings",
+      "expected": "Paper MED-DT-001 Page 1",
+      "actual": "Refused (\ud83d\uded1 Refused (Insufficient Evidence in Literature))",
+      "failure_category": "False Refusal",
+      "root_cause": "Sufficiency threshold exceeded or tokens missing"
+    },
+    {
+      "id": "Q27",
+      "question": "How does Fisher-Guided representation learning prevent catastrophic forgetting in medical classification?",
+      "category": "Methodology",
+      "expected": "Paper MED-IMG-004 Page 15",
+      "actual": "Retrieved Paper MED-IMG-004 Page 3",
+      "failure_category": "Page-Level Discrepancy",
+      "root_cause": "Expected page annotated introduction while retriever surfaced detailed methodology section"
+    },
+    {
+      "id": "Q36",
+      "question": "How does deep neural segmentation compare with on-device wearable analytics in digital healthcare?",
+      "category": "Multi-Paper",
+      "expected": "Paper MED-IMG-002 Page 1",
+      "actual": "Refused (\ud83d\uded1 Refused (Insufficient Evidence in Literature))",
+      "failure_category": "False Refusal",
+      "root_cause": "Sufficiency threshold exceeded or tokens missing"
+    },
+    {
+      "id": "Q37",
+      "question": "What are the common explainability techniques used in LLM-based CDSS and radiology decision graphs?",
+      "category": "Multi-Paper",
+      "expected": "Paper MED-CDS-001 Page 1",
+      "actual": "Retrieved Paper MED-CDS-001 Page 3",
+      "failure_category": "Page-Level Discrepancy",
+      "root_cause": "Expected page annotated introduction while retriever surfaced detailed methodology section"
+    },
+    {
+      "id": "Q38",
+      "question": "How do IoT body area networks integrate with cloud and edge systems for elderly healthcare?",
+      "category": "Multi-Paper",
+      "expected": "Paper MED-DHM-004 Page 1",
+      "actual": "Retrieved Paper MED-IOT-005 Page 1",
+      "failure_category": "Top Citation Mismatch",
+      "root_cause": "BM25 or dense score favored competitor paper"
+    },
+    {
+      "id": "Q39",
+      "question": "What specific personalized oncology modeling methods are detailed in MED-DT-001?",
+      "category": "Paper-Specific",
+      "expected": "Paper MED-DT-001 Page 13",
+      "actual": "Retrieved Paper MED-DT-001 Page 19",
+      "failure_category": "Page-Level Discrepancy",
+      "root_cause": "Expected page annotated introduction while retriever surfaced detailed methodology section"
+    },
+    {
+      "id": "Q43",
+      "question": "What is the mean Dice similarity coefficient (DSC) achieved by LeViT-UNet++ on the Synapse multi-organ CT segmentation benchmark?",
+      "category": "Numerical Findings",
+      "expected": "Paper MED-IMG-002 Page 7",
+      "actual": "Retrieved Paper MED-IMG-002 Page 14",
+      "failure_category": "Page-Level Discrepancy",
+      "root_cause": "Expected page annotated introduction while retriever surfaced detailed methodology section"
+    }
+  ]
+}

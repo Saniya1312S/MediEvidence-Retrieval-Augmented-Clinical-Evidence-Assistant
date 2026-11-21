@@ -1,0 +1,783 @@
+--- PAGE 1 [pdf_text] ---
+DocTalk: Enhancing Medical Knowledge Retrieval via Fine-tuned Large 
+Language Models with Chain-of-Thought Reasoning for Robust Clinical 
+Decision Support 
+Asad Gohar, Md Ariful Islam Mozumder, Moon-Il Joo, Hee-Cheol Kim 
+Institute of Digital Anti-Aging HealthCare, Inje University, Gimhae 50834, Republic of 
+Korea; 
+Corresponding Author: heeki@inje.ac.kr 
+ 
+Abstract:- 
+Objective: The rapid advancement of large language models (LLMs) in healthcare has opened new possibilities 
+for AI-assisted clinical decision-making; however, safe and effective deployment remains challenging becasue of 
+hallucination and domain misalignment. This study introduces DocTalk, a doctor-assistive question-answering 
+(QA) system designed to generate concise, chart-grounded responses from de-identified discharge summaries. 
+Methods: We developed a high-fidelity data generation pipeline that produces 500 clinically relevant QA pairs 
+through sentence-level decomposition, chain-of-thought-guided question formulation, and expert review. Six 
+open-source LLMs, including three general-purpose and three biomedical models, were evaluated before and after 
+parameter-efficient instruction tuning using Low-Rank Adaptation (LoRA). The framework integrates prompt 
+engineering, in-context learning, and medically aligned evaluation to support factual and interpretable responses. 
+Results: On DocTalk-QA, instruction tuning produced consistent improvements across lexical, semantic, and 
+clinical fidelity metrics. The best-performing tuned model, Llama-3-Med42-8B, achieved ROUGE-L=0.40, 
+BERTScore-F1=0.76, and UMLS-F1=0.49. To examine external generalization beyond the DocTalk-QA dataset, 
+the two best-performing models, Llama-3.1-8B-Instruct and Llama-3-Med42-8B, were evaluated on PubMedQA 
+before and after instruction tuning. Accuracy improved from 0.931 to 0.977 for Llama-3.1-8B-Instruct and from 
+0.935 to 0.943 for Llama-3-Med42-8B. 
+Conclusion: DocTalk was deployed as a secure web-based platform for interactive EHR querying. These findings 
+suggest that clinically grounded instruction tuning can improve medical QA performance and support practical 
+clinical decision support. 
+Keywords: DocTalk, Chain-of-thought, Clinical decision support, Large language model, Prompt engineering, 
+In-context learning 
+1. Introduction 
+In recent era, a significant shift towards digital systems for managing medical systems has been observed. The 
+electronic health records (EHRs) are most important, which have information of patient’s medical history, 
+including diagnosis, medications, procedures, laboratory test results, and follow-up plans [1]. However, there are 
+vast amount of unstructured medical data, posing challenges for efficient information extraction and using it for 
+the right purpose. These types of documents are generated using complex language, which is difficult to 
+understand for the patients. Therefore, this problem can be solved by generative artificial intelligence (AI) 
+techniques, particularly large language models (LLMs), by automatic retrieval of structured clinical information 
+from unstructured medical reports [2-5]. Recent LLMs have made substantial advancements in medicine,
+
+--- PAGE 2 [pdf_text] ---
+demonstrating admirable performance in answering medical questions [6-8]. 
+The integration of Artificial Intelligence (AI) in healthcare has transformed personal healthcare, enabling 
+advancements in diagnostic accuracy [9], treatment personalization [10], [11], and patient management [12-15]. 
+At the core of this transformation are LLMs, which show exceptional abilities in understanding and generating 
+human-like text. Recently, in healthcare sector, it has become more capable at a growing range of language tasks, 
+which inherently constitute a powerful tool that expands equitable to medical knowledge [16]. 
+LLMs are getting much better across a diverse spectrum of linguistic tasks, and they inherently represent medical 
+information more accessible to everyone. Because of this, people are getting interested in using AI tools based on 
+LLMs in different medical tasks. Such applications encompass diagnosis assistance, the automation of 
+administrative functions, and even helping healthcare professionals take notes. Furthermore, before we can use 
+LLMs in real medical situations, these models need to be checked to make sure they are correct, fair, and safe for 
+patients [17-19]. Nevertheless, prior to the development of LLMs for real medical situations, models designated 
+for healthcare integration must unequivocally demonstrate accuracy, impartiality, and patient safety. A 
+foundational step in the successful evolution of healthcare-specific LLMs necessitates their rigorous evaluation 
+against established medical benchmarks. This evaluation process requires the assessment of performance on 
+multiple-choice questions from an extensive array of sources to determine their accuracy on various tasks and 
+medical topics [20-22]. Much of the existing research has focused on enhancing LLM-based question-answering 
+(QA) capabilities, which are pivotal for delivering timely and accurate responses to patient inquiries. Datasets and 
+benchmarks such as MedQA [23, 24], emrQA [25], MedMCQA [26], PubMedQA [27], and the MMLU [28] have 
+been developed to evaluate the QA abilities of LLMs in healthcare. 
+There are several research studies primarily focused on clinical QA. Systems designed to summarize information 
+for patients, like discharge instructions or brief hospital summaries, are easy for the public to understand. However, 
+they are not effective at answering the detailed questions clinicians require, potentially causing important 
+information to be missed [27]. Moreover, QA systems tested with exam-style questions often use multiple-choice 
+answers or assess explanation quality. These tests typically do not mimic real EHR environments and are often 
+limited to a few medical fields [29]. LLMs for clinical use, trained with specific instructions, perform well on 
+general medical tasks. However, they may encounter difficulties with out-of-distribution (OOD) clinical notes that 
+vary across institutions or templating formats, and must meet strict safety and bias standards [30]. Nevertheless, 
+in recent studies, LLMs evaluated on medical benchmarks showed significant improvement in performance after 
+instruction-tuning or fine-tuning based on few-shot and chain-of-thought (CoT) strategic prompting techniques 
+[31-33]. The models are trained using these techniques to better understand instruction like humans, and produce 
+truthful reasoning in a step-by-step thinking process [34-36]. Therefore, performance optimization of pretrained 
+LLMs can achieve state-of-the-art (SOTA) results on medical QA benchmarks with some specific fine-tuning 
+techniques. 
+In this study, we present the DocTalk prompting platform, a doctor-assistive QA system that is directly based on 
+actual and de-identified discharge and EHR documentation. We processed the clinical-oriented data by splitting 
+the notes into atomic sentences, writing doctor-style questions with a brief CoT prompt. To carry out this analysis, 
+we used six LLMs (i.e., 3 general and 3 biomedical) for evaluation, and each of them is adapted with low-rank
+
+--- PAGE 3 [pdf_text] ---
+adaptation (LoRA) fine-tuning technique [37]. DocTalk aims to relieve the burden on physicians, improve 
+accuracy, and able to scale to non-homogeneous real-world environments by decreasing the amount of time 
+clinicians spend searching charts, standardizing the quality of answers, and basing the results on existing clinical 
+ontologies. The proposed clinical-assistive QA system can return concise and chart-grounded answers from real 
+discharge/EHR notes, optimized for clinical decision support. 
+2. Related Works 
+The application of LLMs in healthcare has rapidly emerged as a central component in modern healthcare AI 
+systems, particularly for clinical QA, information retrieval, and decision support [38-40]. Prior research in this 
+area can be broadly categorized into five streams: 1) general LLM applications in healthcare, 2) clinical QA over 
+EHR narratives, 3) instruction-tuned medical LLMs, 4) prompting and parameter-efficient adaptation strategies, 
+and 5) biomedical QA benchmarks and foundation models. 
+ 
+2.1. LLMs in Healthcare 
+Recently, it has been analyzed that LLMs can generate coherent, context-aware, and clinical-style text, making 
+them attractive for healthcare applications. Early studies like GPT-4 and its successors showed strong performance 
+across diverse medical reasoning tasks, including diagnosis-related questions, treatment planning, and clinical 
+documentation, exceeding human-level performance on standardized benchmarks [41]. However, subsequent 
+analysis revealed important limitations, including skewed memorization effects, factual inconsistency, and 
+vulnerability to distributional shifts in clinical data [42]. To address these challenges, researchers have explored 
+domain-specific pretraining on EHRs. Models trained directly on longitudinal clinical data have demonstrated 
+improved contextual understanding of patient histories and procedural timelines compared to general-purpose 
+LLMs [43]. Despite these advances, deploying LLMs in real-world clinical settings remains difficult due to safety 
+concerns, interpretability requirements, and the highly heterogeneous nature of EHR documentation across 
+institutions. 
+ 
+2.2. Clinical Question Answering over EHR Narratives 
+Clinical QA over EHR narratives differs fundamentally from exam-style or patient-facing QA tasks. Early datasets 
+such as emrQA introduced large-scale question-answer pairs derived from electronic medical records, enabling 
+research on extracting answers from unstructured clinical notes [44]. Traditional sequence models, including 
+LSTM-based architectures, were initially applied to these tasks but struggled with long-context reasoning and 
+document-level coherence [45]. In [46], they mentioned that recent approaches have focused on retrievalaugmented and experience-based QA systems, which influence past patient records to answer discharge-related 
+questions. Moreover, many existing QA systems prioritize patient discharge summarization rather than clinicianoriented decision support, potentially omitting nuanced medical details required by healthcare professionals. 
+ 
+2.3. Instruction-Tuned Clinical LLM 
+In medical tasks, instruction-tuning has emerged as a powerful strategy for adapting LLMs. Models like Med-
+
+--- PAGE 4 [pdf_text] ---
+PaLM demonstrated that targeted instruction fine-tuning can significantly enhance medical reasoning, diagnostic 
+accuracy, and explanation quality [47]. The following work showed that LLMs encode substantial latent clinical 
+knowledge even before fine-tuning, which can be unlocked through carefully designed instructions and domainspecific supervision [35]. More recent medical LLMs, such as LlamaCare and other healthcare-specialized 
+variants, have explored large-scale instruction tuning for medical knowledge sharing and clinician assistance [48]. 
+Although these models perform well on curated benchmarks, they often rely on exam-style data and may not 
+generalize better to real-world EHR narratives. 
+ 
+2.4. Prompting Strategies and Parameter-Efficient Adaptation 
+Prompting-based technique, which offers an alternative to fine-tuning by guiding model behavior through 
+structured inputs. In LLMs, CoT prompting has been shown to produce step-by-step reasoning, improving 
+performance on complex tasks, including medical QA [49]. Self-consistency and multi-sample reasoning further 
+enhance reliability by aggregating multiple reasoning paths [50]. Concurrently, parameter-efficient fine-tuning 
+techniques such as Low-Rank Adaptation (LoRA) enable efficient specialization of large models by updating only 
+a small subset of parameters [51, 52]. Therefore, these techniques significantly reduce computational overhead 
+while preserving model performance. 
+ 
+2.5. LLMs in Biomedical Question Answering 
+Biomedical QA benchmarks have played a crucial role in evaluating language understanding and reasoning in 
+medical contexts. Foundational models, such as BERT, GPT, and T5, established transfer learning paradigms that 
+were later extended to biomedical text through domain-adaptive pretraining [53-55]. Large open-source models, 
+including OPT, BLOOM, PaLM, and LLaMA, further expanded the scale and accessibility of foundation models 
+for biomedical research [56-59]. Recently, the researchers focused on generalist biomedical AI systems capable 
+of reasoning across clinical, molecular, and literature-based tasks [60]. Models such as BioMistral have shown 
+improved performance on biomedical language tasks through targeted pretraining on medical corpora [61]. 
+In contrast to prior research works, our study bridges the gap between benchmark-driven biomedical QA and realworld clinical decision support. By constructing a clinician-verified QA dataset directly from de-identified EHR 
+discharge summaries and integrating CoT reasoning with parameter-efficient instruction tuning, our proposed 
+system, DocTalk-QA, explicitly targets the needs of healthcare professionals. Unlike exam-style QA or patientoriented summarization systems, our approach emphasizes concise, chart-grounded answers that preserve clinical 
+accuracy and interpretability. 
+3. Materials and Methods 
+The overall workflow of the proposed DocTalk framework is illustrated in Figure 1. The framework consists of 
+five major components: construction of the DocTalk-QA dataset from de-identified discharge/EHR notes, unified 
+prompting and hallucination-mitigation strategies, LoRA-based instruction tuning of general-purpose and 
+biomedical LLMs, internal and external evaluation using DocTalk-QA and PubMedQA, and final deployment 
+through a secure DocTalk web platform. This design enables the system to generate concise, chart-grounded 
+answers while supporting both in-domain clinical QA evaluation and out-of-domain biomedical benchmark
+
+--- PAGE 5 [pdf_text] ---
+validation. 
+ 
+ 
+Figure 1: Overall workflow of the DocTalk doctor-assistive question-answering framework. 
+3.1. Datasets and Tasks 
+In this study, two different datasets were utilized for the development and evaluation of our DocTalk QA system. 
+MIMIC-IV [62], which is a publicly available de-identified electronic health record (EHR) dataset compiled by 
+the Beth Israel Deaconess Medical Center (BIDMC) in Boston, in collaboration with the Massachusetts Institute 
+of Technology (MIT) laboratory for computational physiology. PubMedQA [63] is a biomedical QA dataset that 
+is to answer research questions by reasoning over the corresponding abstract as context. We used PubMedQA as 
+an external benchmark to test the generalization of our model on biomedical research questioning tasks. This 
+allowed us to compare model performance across different document types and reasoning settings. 
+3.2. Data Pre-processing and Tokenization 
+All the raw discharge summaries downloaded from the MIMIC-IV database were pre-processed to ensure textual 
+consistency, clinical accuracy, and removal of irrelevant artifacts. The workflow of data pre-processing consists 
+of format standardization, artifact removal, and medical term normalization, which can be expressed as: 
+ 𝐶𝑙𝑒𝑎𝑛𝑡𝑒𝑥𝑡= 𝑁𝑜𝑟𝑚𝑚𝑒𝑑𝑖𝑐𝑎_𝑡𝑒𝑟𝑚𝑠(𝑅𝑒𝑚𝑜𝑣𝑒𝑎𝑟𝑡𝑖𝑓𝑎𝑐𝑡𝑠(𝑆𝑡𝑎𝑛𝑑𝑎𝑟𝑑𝑖𝑧𝑒𝑓𝑜𝑟𝑚𝑎𝑡(𝑟𝑎𝑤_𝑡𝑒𝑥𝑡))) (1)
+
+--- PAGE 6 [pdf_text] ---
+The raw text was standardized to correct irregular text structures, restore line breaks between sections, and unify 
+inconsistent spacing. After standardizing the raw text, irrelevant metadata were eliminated to retain only the 
+clinically meaningful text required for QA generation. Finally, we applied the normalization technique to maintain 
+consistency of medical terminology across the dataset. 
+Furthermore, tokenization was performed on the normalized data to convert it into tokens using a biomedicalspecific tokenizer. We removed rare or noisy words based on a frequency threshold to ensure that only clinical 
+terms were retained. The resulting vocabulary 𝑉 was defined as: 
+ 𝑉= {𝑡𝑜𝑘𝑒𝑛|𝑡𝑜𝑘𝑒𝑛∈𝑚𝑒𝑑𝑖𝑐𝑎𝑙𝑐𝑜𝑟𝑝𝑢𝑠, 𝑓𝑟𝑒𝑞𝑢𝑒𝑛𝑐𝑦(𝑡𝑜𝑘𝑒𝑛) ≥𝑡ℎ𝑟𝑒𝑠ℎ𝑜𝑙𝑑} (2) 
+In addition, special tokens such as <unk>, <pad>, and <eos> were added to manage unknown words and sequence 
+boundaries. This tokenization process prepared the text for model training while preserving the medical meaning 
+of important terms and improving computational efficiency. 
+3.3. DocTalk-QA Dataset from MIMIC-IV 
+We constructed a high-quality clinician-style QA dataset using the pre-processed text generated from discharge 
+summaries of the MIMIC-IV database. A representative discharge summary and CoT prompting technique is 
+shown in Figure 2, illustrating the type of rich narrative content used for question generation. To create the dataset, 
+we followed a multiple-step, CoT-assisted prompting pipeline (Figure 3), designed to enforce stepwise clinical 
+reasoning during both question generation and answer formulation. Each discharge summary was first segmented 
+into semantically coherent sentences to maintain contextual integrity. We used Meta’s Llama-3.3-70B-Instruct 
+model for this task. This particular model was selected based on its linguistic adherence to clinical phrasing and 
+section conventions in discharge notes, its independence of instruction on schema-constrained outputs, and its 
+ability to handle context (i.e., capability of 128K tokens). Compared to traditional sentence splitters such as NLTK, 
+the LLM-based method demonstrated higher accuracy, especially in handling irregular formatting and 
+placeholders introduced during anonymization. To ensure integrity, the LLM was instructed to preserve original 
+sentence structures, and outputs were string-matched against the source for verification. Then, using prompt 
+engineering, the model generated clinically relevant questions aligned with the reasoning style of healthcare 
+professionals. 
+The QA pairs covered six major clinical categories, which include diagnosis (17.8%), medications (18.6%), 
+procedures and tests (20.4%), treatment and hospital course (21.9%), symptoms and complications (16.3%), and 
+post-discharge care and follow-up (5.0%). To ensure reliability and clinical safety, each QA pair was reviewed by 
+a licensed medical expert. They were assessed for clinical correctness, answer completeness, safety (i.e., absence 
+of misleading or potentially harmful information), and alignment with real-world clinician information needs. 
+Moreover, we applied ICD-10 coding checks for diagnostic accuracy and UMLS-based validation to confirm 
+biomedical concept grounding. This quality assurance process produced a curated set of 500 high-quality QA pairs, 
+each pair embeds traceable CoT reasoning steps, facilitating interpretability and structured evaluation. The final 
+dataset was formatted in JSON/JSONL, with each entry structured as a triplet (question, context, answer), ready 
+for model training and inference tasks.
+
+--- PAGE 7 [pdf_text] ---
+Figure 2: A sample de-identified clinical discharge summary and CoT prompting technique, forming the base 
+document for QA generation. 
+ 
+Figure 3: A step-by-step Chain-of-Thought data generation process from raw text to QA pairs, including sentence 
+splitting, question generation, answer extraction, and clinician verification.
+
+--- PAGE 8 [pdf_text] ---
+3.4. Dataset Overview 
+In total, 500 QA pairs were developed using the CoT-assisted pipeline, each grounded in real-world clinical 
+documents and refined through expert verification. PubMedQA was not used for dataset creation or training; it 
+was reserved solely as an external benchmark to evaluate generalization on both patient-focused and literaturebased clinical reasoning tasks. Figure 4 shows the examples of the resulting QA pairs generated from the MIMICIV dataset. 
+Figure 4: Example of QA pairs in the DocTalk-QA dataset. 
+3.5. Pretrained LLMs and Optimization 
+We employed six different open-source models to verify the efficacy of the strategic prompting and CoT reasoning 
+on the DocTalk-QA and PubMedQA datasets. These enable us to examine domain-specific reasoning capabilities 
+under consistent tuning conditions. Llama-3.1-8B-Instruct, Llama-3-8B-Instruct, and Mistral are general-purpose 
+LLMs [64,65], whereas Llama3-Med42-8B, Meditron, and BioMistral are biomedical-specialized BioLLMs 
+[23,66,67]. These models were subsequently fine-tuned using LoRA [68,69], a parameter-efficient fine-tuning 
+method for efficient instruction-tuning in the medical domain. This method allowed us to quickly test various 
+architectures by efficiently specializing large models for medical QA without requiring the entire parameter space. 
+Each model is a causal Transformer with multi-head self-attention and gated MLPs. 
+We applied LoRA to all six models with the following settings: Rank (r) = 16, Alpha = 32, Dropout = 0.05, and 
+Target Modules = q_proj, k_proj, v_proj, o_proj, gate_proj, up_proj, and down_proj. This ensures that clinical 
+knowledge can be effectively incorporated into each model during instruction-tuning without requiring a complete 
+fine-tuning of all parameters. To optimize the model, the learning rate was set to 2e-4 with a cosine decay schedule 
+and a 3% warm-up to stabilize early-stage updates. A gradient accumulation of 8 was employed to simulate a 
+higher batch size while preserving hardware efficiency, and the number of epochs was set to 10. To maximize the 
+memory use on GPU resources, gradient checkpointing was combined with mixed precision (fp16 and bf16). The 
+computation formula for LoRA can be expressed as:
+
+--- PAGE 9 [pdf_text] ---
+𝑦= 𝑊0𝑥+ (𝛼/𝑟)𝐵𝐴𝑥 (3) 
+where x represents input features, W0 denotes frozen pre-trained weights, 𝐴∈ℝ𝑑𝑥𝑟 and 𝐵∈ℝ𝑟𝑥𝑑 are trainable 
+low-rank matrices, 𝛼 is the scaling factor, and 𝑟 represents the adaptation rank. 
+Table 1 summarizes the original model sizes, approximate trainable LoRA parameters, and percentage of total 
+parameters updated during instruction tuning. Across all evaluated models, only approximately 0.36% of the full 
+model parameters were updated, demonstrating that the proposed fine-tuning strategy substantially reduces 
+computational cost while enabling domain adaptation for clinical question answering. 
+Table 1. Parameter efficiency of LoRA-based instruction tuning across the evaluated LLMs. 
+Model 
+Original 
+Parameters 
+Trainable Parameters 
+(LoRA) 
+Model Parameters 
+Tuned (%) 
+Mistral-7B-Instruct-v0.1 
+~7B 
+~25M 
+0.36 
+BioMistral-7B 
+~7B 
+~25M 
+0.36 
+Llama-3-8B-Instruct 
+~8B 
+~29M 
+0.36 
+Llama-3.1-8B-Instruct 
+~8B 
+~29M 
+0.36 
+Llama-3-Med42-8B 
+~8B 
+~29M 
+0.36 
+Meditron-3-8B 
+~8B 
+~29M 
+0.36 
+ 
+3.6. Few-Shot and Chain-of-Thought Strategic Prompting 
+Strategic prompting is essential to enhance the reasoning quality of LLMs and avoid hallucination by grounding 
+decisions in evidence from the text. In this study, we employed strategic prompting approaches that combine CoT 
+and Few-Shot techniques. These approaches present the model with examples having reasoning chains along with 
+input and outputs, which guide the LLM to solve the given problem in a step-by-step manner. Our workflow is 
+structured into two stages: constructing a strategy-based clinical dataset using CoT and performing model training 
+using Few-Shot prompting. 
+Stage 1: In the first stage, we used CoT prompting strategy to generate reasoning-aware QA pairs from preprocessed discharge summaries, shown in Figure 5 (a). This approach guided the model to simulate clinical 
+reasoning processes, linking patients history, investigations, treatments, and outcomes, to produce interpretable 
+and logically structured answers. The CoT design improved transparency, interpretability, and diagnostic 
+consistency during dataset construction. 
+Stage 2: In the second stage, a few-shot (k=2) was employed for model training to improve generalization across 
+unseen clinical questions. Two concise exemplars were provided before each test item, each comprising a 
+discharge summary excerpt (about 4,000-6,000 tokens), a clinician-style question, and a short, chart-grounded 
+answer, shown in Figure 5 (b). Examples were sampled only from the training split, ensuring no overlap with 
+development or test sets. To maintain the diversity, exemplars were chosen to reflect key clinical question types, 
+which include “final diagnosis”, “dated procedures”, “medication changes with dose, route, frequency, and 
+rationale”, “complications”, “microbiology findings with corresponding therapies”, and “discharge disposition or 
+follow-up care”.
+
+--- PAGE 10 [pdf_text] ---
+Figure 5: Illustration of CoT and Few-shot strategic prompting. (a) Chain-of-Thought technique for dataset 
+construction. (b) Few-shot technique for model training. 
+3.7. Evaluation Settings 
+To evaluate the models during training and testing, we used LoRA-Supervised Fine-Tuning (LSFT) masked-loss 
+strategy, with focus only on answer tokens. The loss function is defined as: 
+ 𝐿𝑆𝐹𝑇= −∑𝑙𝑜𝑔 𝑝(𝑦𝑖|𝑦<𝑖, 𝑥𝑐𝑙𝑖𝑛𝑖𝑐𝑎𝑙)
+𝑖
+ (4) 
+where 𝑦 represents the sequence of answer tokens, 𝑦<𝑖 denotes the preceding token, and 𝑥𝑐𝑙𝑖𝑛𝑖𝑐𝑎𝑙 indicates 
+the clinical input context. 
+To evaluate the accuracy scores of the model, we used ROUGE-1, ROUGE-2, ROUGE-L, and BERTScore-F1 
+performance metrics to measure the textual overlap (how closely the generated answers matched the reference 
+answer) [70,71]. ROUGE-1 measures unigram (word-level) overlap between prediction and reference, ROUGE2 measures biggram (two-word sequence) overlap, capturing short-range fluency, ROUGE-L measures the longest 
+common subsequence (LCS) between prediction and reference, reflecting sentence-level structure, and 
+BERTScore-F1 computes semantic similarity using contextual embeddings from a pre-trained BERT model, 
+scoring how meaningfully the generated answer aligns with the reference. While UMLS-F1 is used to measure 
+the clinical accuracy beyond the surface text similarity. These domain-specific metrics ensure that the model’s 
+outputs are not only textually fluent but also clinically valid and semantically aligned with real-world medical 
+knowledge. UMLS-F1 evaluates concept-level correctness by comparing predicted and reference clinical entities 
+mapped to Concept Unique Identifiers (CUIs) in the Unified Medical Language System. 
+4. Experimental Results 
+4.1. Pretrained Model Evaluation on DocTalk-QA 
+In this section, we have evaluated six widely used LLMs on the DocTalk-QA dataset to create a baseline before 
+any task-specific tuning. As shown in Table 2, the comparative analysis of six different models before instruction-
+
+--- PAGE 11 [pdf_text] ---
+tuning and their performances across lexical overlap (ROUGE-1/2/L), semantic similarity (BERTScore-F1), and 
+clinical correctness (UMLS-F1). From the comparative analysis, we can observe that Llama-3.1-8B-Instruct 
+achieved the strongest overall performance, with the highest ROUGE-L, ROUGE-1, BERTScore-F1, and UMLSF1 of 0.24, 0.29, 0.69, and 0.23, respectively. Close behind were the bio-LLMs (Meditron-3-8B and Llama3Med42-8B), which obtained comparable semantic similarity scores (BERTScore-F1=0.66-0.68) and moderate 
+clinical correctness scores (UMLS-F1=0.20-0.22). Moreover, the general-LLMs (Llama-3-8B-Instruct and 
+Mistral-7B-Inst-v0.1) performed reasonably but showed limited clinical grounding. On the other hand, 
+BioMistral-7B, despite being domain-specialized, performed poorly across all metrics, indicating difficulty with 
+answer-only clinical QA without task supervision. 
+Table 2. Baseline performance of pretrained LLMs on the DocTalk-QA 
+We can observe two clear patterns from Table 2: first, among pretrained models, semantic similarity scores remain 
+moderate (BERTScore-F1=0.66-0.69), which shows that answers are generally well-formed but not deeply 
+grounded in the clinical context, and second, all baseline models did not perform well in terms of clinical fidelity 
+(UMLS-F1=0.11-0.23). Therefore, these baselines require task-specific supervision, even though they can 
+generate concise and coherent outputs. 
+4.2. Instruction-Tuned Model Performance on DocTalk-QA 
+In this section, we first fine-tuned all six LLMs using the LoRA-based instruction-tuning configuration and then 
+evaluated the tuned models on the DocTalk-QA dataset, shown in Table 3. After fine-tuning, the models produced 
+substantial improvements across all metrics, especially in clinical correctness scores, demonstrating the 
+effectiveness of DocTalk’s structured supervision. In terms of lexical overlap, semantic similarity, and clinical 
+grounding, the performance consistently increased across all models. The promising overall performance was 
+achieved by bio-LLM (Llama-3-Med42-8B), which improved ROUGE-L from 0.21 to 0.40, BERTScore-F1 from 
+0.67 to 0.76, and UMLS-F1 from 0.21 to 0.49. Moreover, comparable gains for general-LLMs were observed, 
++0.16 ROUGE-L, +0.06 BERTScore, and +0.24 UMLS-F1 for Llama-3.1-8B-Instruct and +0.17 ROUGE-L, 
++0.07 BERTScore, and +0.26 UMLS-F1 for Llama-3-8B-Instruct. At the same time, other bio-LLMs, such as 
+Meditron-3-8B and BioMistral-7B, also improved considerably in ROUGE-L (+0.17 to 0.23) and UMLS-F1 
+(+0.25 to 0.30). The average scores of the finetuned models improved by 0.18 for ROUGE-L, 0.09 for BERTScore, 
+and 0.26 for UMLS-F1, demonstrating that the domain adaptation enhances clinical correctness more than lexical 
+similarity. 
+Model 
+ROUGE-L 
+ROUGE-1 
+ROUGE-2 
+BERTScore-F1 
+UMLS-F1 
+Llama-3.1-8B-Instruct 
+0.24 
+0.29 
+0.10 
+0.69 
+0.23 
+Meditron-3-8B 
+0.21 
+0.27 
+0.08 
+0.66 
+0.22 
+Llama-3-Med42-8B 
+0.21 
+0.26 
+0.08 
+0.67 
+0.21 
+Llama-3-8B-Instruct 
+0.20 
+0.26 
+0.08 
+0.67 
+0.21 
+Mistral-7B-Instruct-v0.1 
+0.21 
+0.26 
+0.08 
+0.67 
+0.20 
+BioMistral-7B 
+0.12 
+0.16 
+0.03 
+0.58 
+0.11
+
+--- PAGE 12 [pdf_text] ---
+Table 3. Performance of Instruction-tuned LLMs on DocTalk-QA 
+ 
+4.3. Performance Evaluation on PubMedQA 
+To assess whether the DocTalk instruction-tuning strategy generalizes beyond discharge-summary question 
+answering, we further evaluated two representative models on the external PubMedQA benchmark. The models 
+were selected based on their performance on DocTalk-QA: Llama-3.1-8B-Instruct, which achieved the strongest 
+pretrained baseline performance, and Llama-3-Med42-8B, which achieved the best overall results after instruction 
+tuning. To examine the effect of DocTalk-based adaptation, both models were evaluated on PubMedQA before 
+and after instruction tuning. PubMedQA requires reasoning over biomedical research abstracts and includes 
+Yes/No/Maybe answers, making it a significantly different challenge from DocTalk’s answer-only clinical format. 
+Although the full benchmark includes Yes/No/Maybe responses, the confusion-matrix analysis presented here 
+focuses on the binary Yes/No classification setting. The evaluation set is markedly imbalanced: [N_yes] "Yes" and 
+[N_no] "No" instances (92.8% positive). A majority-class predictor that always outputs "Yes" therefore attains 
+0.928 accuracy, which limits the informativeness of raw accuracy on this benchmark. We accordingly adopt the 
+Matthews correlation coefficient (MCC) as the primary discrimination metric, since it accounts for performance 
+across both classes, and report accuracy, precision, recall, and F1 as secondary measures. Figure 6 illustrates the 
+confusion matrices for the four evaluation conditions: Llama-3.1-8B-Instruct baseline, Llama-3-Med42-8B 
+baseline, Llama-3.1-8B-Instruct instruction-tuned, and Llama-3-Med42-8B instruction-tuned. Table 4 
+summarizes the corresponding classification results. 
+The baseline models yielded comparable results on PubMedQA (accuracy = 0.931 for Llama-3.1-8B-Instruct 
+0.935 for Llama-3-Med42-8B). Both models were improved after DocTalk-based instruction tuning, but with 
+dramatically different magnitude of improvement. Llama-3.1-8B-Instruct showed the largest gain, improving the 
+accuracy from 0.931 to 0.977, recall from 0.930 to 0.983, F1-score from 0.962 to 0.987, and MCC from 0.661 to 
+0.839. This suggests that discrimination and class-balanced predictive reliability have achieved a significant 
+improvement. The instruction-tuned Llama-3-Med42-8B also had an increase in performance compared to 
+baseline, with accuracy increasing from 0.935 to 0.943, F1-score from 0.964 to 0.968, and MCC from 0.675 to 
+0.707. Although the gain was more modest than that of Llama-3.1-8B-Instruct, the result confirms that DocTalkbased instruction tuning does not only improve performance on the in-domain DocTalk-QA task, but can also 
+transfer positively to biomedical abstract-level reasoning. 
+Model 
+ROUGE-L 
+ROUGE-1 
+ROUGE-2 
+BERTScore-F1 
+UMLS-F1 
+Llama-3-Med42-8B 
+0.40 
+0.44 
+0.23 
+0.76 
+0.49 
+Llama-3.1-8B-Instruct 
+0.40 
+0.44 
+0.21 
+0.75 
+0.47 
+Llama-3-8B-Instruct 
+0.37 
+0.41 
+0.22 
+0.74 
+0.47 
+Meditron-3-8B 
+0.38 
+0.43 
+0.21 
+0.75 
+0.47 
+Mistral-7B-Instruct-v0.1 
+0.37 
+0.42 
+0.20 
+0.75 
+0.44 
+BioMistral-7B 
+0.35 
+0.39 
+0.18 
+0.74 
+0.41
+
+--- PAGE 13 [pdf_text] ---
+Figure 6: The confusion matrices on the PubMedQA benchmark for the selected models before and after 
+instruction tuning. (a) Llama-3.1-8B-Instruct baseline. (b) Llama-3-Med42-8B baseline. (c) Llama-3.1-8BInstruct instruction-tuned (d) Llama-3-Med42-8B instruction-tuned. 
+Table 4. Comparison performance of baseline and instruction-tuned LLMs on PubMedQA. 
+Model 
+Accuracy 
+Precision 
+Recall 
+F1-Score 
+MCC 
+Llama-3.1-8B-Instruct 
+(Baseline) 
+0.931 
+0.995 
+0.930 
+0.962 
+0.661 
+Llama-3-Med42-8B 
+(Baseline) 
+0.935 
+0.995 
+0.935 
+0.964 
+0.675 
+Llama-3.1-8B-Instruct 
+(Instruction-Tuned) 
+0.977 
+0.992 
+0.983 
+0.988 
+0.839 
+Llama-3-Med42-8B 
+(Instruction-Tuned) 
+0.943 
+0.996 
+0.942 
+0.968 
+0.707 
+ 
+These findings reveal two important patterns. First, the DocTalk instruction-tuning framework provides 
+measurable generalization benefits on PubMedQA for both selected models. Second, the model that performs best 
+on DocTalk-QA after instruction tuning, Llama-3-Med42-8B, is not necessarily the strongest model on the 
+external PubMedQA benchmark. This suggests that in-domain clinical QA performance and out-of-domain 
+biomedical reasoning performance are related but not identical, and both should be considered when assessing the
+
+--- PAGE 14 [pdf_text] ---
+practical utility of medical LLMs. To further contextualize the external benchmark performance, the bestperforming DocTalk configuration was compared with previously reported PubMedQA systems in Table 5. 
+Table 5. Comparison performance of DocTalk with other LLMs on PubMedQA. 
+Model 
+Accuracy 
+DocTalk 
+0.977 
+Gyan-4.3 
+0.871 
+SM70 
+0.773 
+Human Expert 
+0.780 
+BioGPT-Large 
+0.630 
+FLAN-PaLM 
+0.790 
+Med-PaLM 2 
+0.750 
+GPT-4 (5-shot) 
+0.752 
+GPT-4-base (5-shot) 
+0.594 
+Alpaca-7b 
+0.380 
+LLaMA-7b 
+0.594 
+5. Discussion 
+In this study, to demonstrate the real-world applicability of our instruction-tuned biomedical QA system, we 
+developed a fully functional web-based platform, DocTalk, enabling clinicians and researchers to interact with 
+large language models directly using electronic health records (EHRs). The system supports secure login, patient 
+report selection, and natural-language questioning, simulating real clinical workflows (Supplementary 
+Information, Figure S1). Unlike most prior research that relies on simulated datasets or benchmark QA pairs 
+separated from practical clinical use [22, 72-74], our work takes a grounded, data-centric approach by curating 
+questions directly from authentic clinical narratives. Our methodology ensures high reliability of the original chart 
+content and reflects realistic physician information needs. We contributed in three major areas. First, we 
+introduced a rigorous dataset construction pipeline that generates QA pairs from atomic sentence-level 
+decomposition with concise CoT prompting, followed by manual quality assurance. This careful design directly 
+addresses weaknesses in existing datasets, such as BioASQ, that often lack clinical relevance, structure, or factual 
+precision [73]. Second, we proposed and implemented a unified prompting strategy incorporating systemgrounding, few-shot in-context examples, and answer-only supervision, fine-tuned via LoRA. This resulted in 
+significant improvements across both textual and clinical metrics. Specifically, our instruction-tuned Llama-3Med42-8B achieved performance that outstripped a strong baseline, especially on clinically meaningful measures 
+like UMLS-F1. Compared with evaluation strategies that rely mainly on surface-level text similarity, our inclusion 
+of clinically grounded metrics provides a more medically meaningful assessment of QA quality. Unlike models 
+such as BioGPT [74] or Med-PaLM [35], which prioritize large-scale pretraining or multi-choice reasoning, 
+DocTalk is optimized for generating short, precise, and chart-grounded answers, crucial for real-time clinical use. 
+Third, we demonstrated that our approach is feasible in real-time settings with limited resources. The use of 
+parameter-efficient tuning (LoRA) is more scalable, and our instruction tuning method is concise enough to be 
+clinically relevant and suitable for point-of-care integration. Previous approaches typically focus on benchmark
+
+--- PAGE 15 [pdf_text] ---
+scores or exam-style QA in a practical manner [35], while our pipeline focuses on interpretability, brevity, and 
+chart fidelity, which are all important for real-world clinical decision support systems. 
+The external PubMedQA evaluation provides further insight into the generalization capacity of the DocTalk 
+instruction-tuning strategy. Both selected models achieved higher performance after instruction tuning, 
+demonstrating that supervision derived from clinician-oriented discharge-summary QA can transfer beyond the 
+original DocTalk-QA task. The improvement was particularly substantial for Llama-3.1-8B-Instruct, whose 
+accuracy increased from 0.931 to 0.977, accompanied by clear gains in recall, F1-score, and MCC. Llama-3Med42-8B also improved after tuning, although by a smaller margin. These findings suggest that DocTalk-based 
+adaptation strengthens biomedical reasoning in a model-dependent manner rather than producing uniform gains 
+across architectures. At the same time, the results show that the best-performing model on the in-domain DocTalkQA dataset is not necessarily the best-performing model on the external PubMedQA benchmark. This distinction 
+is important for clinical AI development, as strong performance on curated clinical QA should be complemented 
+by cross-benchmark validation to assess whether the learned knowledge transfers effectively to broader 
+biomedical reasoning tasks. 
+However, our work has some limitations. First, the QA pairs used for training and evaluation originally stemmed 
+mainly from discharge summaries coming from a single healthcare organization. This raises concerns about the 
+generalizability of our model across different hospital systems, clinical subspecialties, and documentation styles. 
+Furthermore, although our instruction-tuned model shows lower hallucinations and better factual fidelity, it makes 
+errors in some complex scenarios combining multiple comorbidities or sophisticated clinical reasoning. One 
+disadvantage is the model’s exclusive emphasis on single-turn question answering. Second, real-world clinical 
+conversations are multi-turn, which can lead to challenges of contextual recall, follow-up queries, and reasoning 
+from temporally scattered information. Adding multi-hop and dialog-based reasoning capabilities presents a 
+critical avenue for future enhancements. Third, there is the fact that the existing framework is based exclusively 
+on English for development and evaluation. Due to the linguistic variation within the world’s healthcare systems, 
+future studies should examine cross-lingual adaptation and performance in non-English clinical data corpora. 
+While out-of-distribution generalization was partially addressed, the nature of the dynamic biomedical knowledge 
+requires continual refinement and validation in order to ensure further long-term robustness and relevance. 
+Future iterations will focus on extending the DocTalk platform by providing advanced use cases, for example, 
+summarizing patient data, generating diagnostic recommendations, or tracking temporal reports. Moving on to 
+safe and effective deployment with real-world implementations, we will also need feedback from medical 
+professionals and undertake prospective clinical trials at scale. 
+6. Conclusion 
+We present DocTalk, a clinically grounded, instruction-tuned QA system with the aim of improving chart 
+comprehension and helping physicians in real-world EHR review workflows. Our methodology balances 
+efficiency with medical relevance by generating high-fidelity QA pairs from de-identified discharge summaries 
+and fine-tuning open-source LLMs via a lightweight LoRA-based framework. Specifically, our models, such as 
+Llama-3-Med42-8B, outperform others not only on text-based metrics but also on clinically aligned metrics.
+
+--- PAGE 16 [pdf_text] ---
+Assessment on the external PubMedQA benchmark further showed that DocTalk-based instruction tuning can 
+improve biomedical reasoning beyond the original clinical QA setting, although the magnitude of transfer varies 
+across model architectures. More broadly, we have also deployed our QA system as part of a web platform, a 
+platform that also allows interactive clinician engagement, resulting in a system that has proven real-world useful 
+and accessible. Our contributions, ranging from data generation, instruction tuning, innovation for evaluation, and 
+deployment, provide a scalable solution for embedding LLMs in healthcare applications. 
+ 
+References 
+1. R. S. Evans. Electronic Health Records: Then, Now, and in the Future. Yearbook of Medical Informatics, 
+25(S 01):S48–S61, March 2018. ISSN 0943-4747. doi: 10. 15265/IYS-2016-s006. URL http://www.thiemeconnect.com/products/ejournals// 
+2. Jessica Greene and Judith H Hibbard. 2012. Why does patient activation matter? an examination of the 
+relationships between patient activation and health-related outcomes. Journal of general internal medicine, 
+27:520–526. 
+3. Carolyn T Lye, Howard P Forman, Jodi G Daniel, and Harlan M Krumholz. 2018. The 21st century cures act 
+and electronic health records one year later: will patients see the benefits? Journal of the American Medical 
+Informatics Association, 25(9):1218–1220. 
+4. Stephen E Ross and Chen-Tan Lin. 2003. The effects of promoting patient access to medical records: a review. 
+Journal of the American Medical Informatics Association, 10(2):129–138. 
+5. Garcia-Carmona, A. M., Prieto, M. L., Puertas, E., & Beunza, J. J. (2025). Leveraging Large Language 
+Models for Accurate Retrieval of Patient Information From Medical Reports: Systematic Evaluation 
+Study. JMIR AI, 4, e68776. https://doi.org/10.2196/68776. 
+6. H. Touvron, T. Lavril, G. Izacard et al., “Llama: Open and efficient foundation language models,” arXiv 
+preprint arXiv:2302.13971, 2023. 
+7. T. Brown, B. Mann, N. Ryder et al., “Language models are few-shot learners,” Advances in neural 
+information processing systems, vol. 33, pp. 1877–1901, 2020. 
+8. S. Bubeck and et al., “Sparks of artificial general intelligence: Early experiments with gpt-4,” ArXiv, 2023. 
+9. N. Behari, E. Zhang, Y. Zhao, A. Taneja, D. Nagaraj, and M. Tambe, “A decision-language model (dlm) for 
+dynamic restless multi-armed bandit tasks in public health,” Neural Information Processing Systems, 2024. 
+10. Z. Yang, E. Khatibi, N. Nagesh, M. Abbasian, I. Azimi, R. Jain, and A. M. Rahmani, “Chatdiet: Empowering 
+personalized nutrition-oriented food recommender chatbots through an llm-augmented framework,” Smart 
+Health, vol. 32, p. 100465, 2024. 
+11. Z. Yang, I. Azimi, M. J. Zaki, M. Gaur, O. Seneviratne, D. L. McGuinness, S. M. Rashid, and A. M. Rahmani, 
+“Transforming personal health ai: Integrating knowledge and causal graphs with large language models,” 
+Under Review, 2024. 
+12. Z. Wang, Z. Yang, I. Azimi, and A. M. Rahmani, “Differential private federated transfer learning for mental 
+health monitoring in everyday settings: A case study on stress detection,” arXiv preprint arXiv:2402.10862, 
+2024. 
+13. Z. Wang, N. Luo, and P. Zhou, “Guardhealth: Blockchain empowered secure data management and graph 
+convolutional network enabled anomaly detection in smart healthcare,” Journal of Parallel and Distributed 
+Computing, vol. 142, pp. 1–12, 2020. 
+14. M. Cheng, Z. Zhou, B. Zhang, Z. Wang, J. Gan, Z. Ren, W. Feng, Y. Lyu, H. Zhang, and X. Diao, “Efflex: 
+Efficient and flexible pipeline for spatio-temporal trajectory graph modeling and representation learning,” in 
+Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition, 2024, pp. 2546–
+2555. 
+15. X. Zhang, J. Wu, Z. He, X. Liu, and Y. Su, “Medical exam question answering with large-scale reading 
+comprehension,” in Proceedings of the AAAI conference on artificial intelligence, vol. 32, no. 1, 2018. 
+16. Thirunavukarasu, A.J., Ting, D.S.J., Elangovan, K. et al. Large language models in medicine. Nat Med 29, 
+1930–1940 (2023). https://doi.org/10.1038/s41591-023-02448-8. 
+17. Gottlieb, S. & Silvis, L. How to safely integrate large language models into health care. JAMA Health Forum 
+4, e233909 (2023). 
+18. Ramprasad, S., Ferracane, E., Selvaraj, S. Generating more faithful and consistent SOAP notes using 
+attribute-specific parameters. in Proceedings of Machine Learning Research. 2023. 
+19. Moor, M. et al. Foundation models for generalist medical artificial intelligence. Nature 616, 259–265 (2023).
+
+--- PAGE 17 [pdf_text] ---
+20. Jin, D. et al. What disease does this patient have? A large-scale open domain question answering dataset from 
+medical exams. Appl. Sci. 11, 6421 (2021). 
+21. Pal, A., Umapathi, L.K., Sankarasubbu, M. MedMCQA: A large-scale multi-subject multi-choice dataset for 
+medical domain question answering. in Proceedings of the Conference on Health, Inference, and Learning. 
+PMLR, pp. 248–260. 
+22. Jin, Q., Dhingra, B., Liu, Z., et al. PubMedQA: A dataset for biomedical research question answering. Epub 
+ahead of print 13 September 2019. https://doi.org/10.48550/arXiv.1909.06146. 
+23. Chen, Zeming, et al. "Meditron-70b: Scaling medical pretraining for large language models." arXiv preprint 
+arXiv:2311.16079 (2023). 
+24. Yang, Hang, et al. "Llm-medqa: Enhancing medical question answering through case studies in large language 
+models." 2025 International Joint Conference on Neural Networks (IJCNN). IEEE, 2025. 
+25. A. Pampari, P. Raghavan, J. Liang, and J. Peng, “emrqa: A large corpus for question answering on electronic 
+medical records,” arXiv preprint arXiv:1809.00732, 2018. 
+26. A. Pal, L. K. Umapathi, and M. Sankarasubbu, “Medmcqa: A largescale multi-subject multi-choice dataset 
+for medical domain question answering,” in Conference on health, inference, and learning. PMLR, 2022, pp. 
+248–260. 
+27. Jin, Qiao, et al. "Pubmedqa: A dataset for biomedical research question answering." Proceedings of the 2019 
+conference on empirical methods in natural language processing and the 9th international joint conference on 
+natural language processing (EMNLP-IJCNLP). 2019. 
+28. Hendrycks, Dan, et al. "Measuring massive multitask language understanding." arXiv preprint 
+arXiv:2009.03300 (2020). 
+29. Bardhan J, Roberts K, Wang DZ. Question Answering for Electronic Health Records: Scoping Review of 
+Datasets and Models. Journal of Medical Internet Research. 2024 Oct 30;26:e5363. 
+30. Hu, Y., Zuo, X., Zhou, Y., Peng, X., Huang, J., Keloth, V. K., ... & Xu, H. (2024). Information extraction from 
+clinical notes: are we ready to switch to large language models?. arXiv preprint arXiv:2411.10020. 
+31. Liu, Xin, et al. "Large language models are few-shot health learners." arXiv preprint arXiv:2305.15525 (2023). 
+32. Nori, H., Lee, Y.T., Zhang, S., et al. Can generalist foundation models outcompete special-purpose tuning? 
+Case study in medicine. http://arxiv.org/abs/2311.16452 (2023, accessed 18 January 2024). 
+33. Prompt engineering as an important emerging skill for medical professionals: Tutorial. J. Med. Internet Res. 
+25. Epub ahead of print 4 October 2023. https://doi.org/10.2196/50638. 
+34. Manathunga, Supun, and Isuru Hettigoda. "Aligning large language models for clinical tasks." arXiv preprint 
+arXiv:2309.02884 (2023). 
+35. Singhal, K., Azizi, S., Tu, T. et al. Large language models encode clinical knowledge. Nature 620, 172–180 
+(2023). https://doi.org/10.1038/s41586-023-06291-2 
+36. J. Wei, X. Wang, D. Schuurmans, et al., Chain-of-thought prompting elicits reasoning in large language 
+models, Jan. 2023. DOI: 10.48550/arXiv.2201.11903. [Online]. Available: http://arxiv.org/abs/2201.11903 
+(visited on 08/09/2023). 
+37. Hu, Edward J., et al. "Lora: Low-rank adaptation of large language models." Iclr 1.2 (2022): 3. 
+38. Singhal, K. et al. “Towards Expert-Level Medical Question Answering with Large Language Models.” ArXiv 
+abs/2305.09617 (2023): n. pag. 
+39. Chen, Gang et al. “Generative AI for Healthcare: Fundamentals, Challenges, and Perspectives.” ArXiv 
+abs/2510.24551 (2025): n. pag. 
+40. Nazi, Zabir Al and Wei Peng. “Large language models in healthcare and medical domain: A review.” 
+Informatics 11 (2023): 57. 
+41. J. Achiam, S. Adler, S. Agarwal, L. Ahmad, I. Akkaya, F. L. Aleman, D. Almeida, J. Altenschmidt, S. Altman, 
+S. Anadkat et al., “Gpt-4 technical report,” arXiv preprint arXiv:2303.08774, 2023. 
+42. H. Li, D. Huang, Z. Wang, and A. M. Rahmani, “Skewed memorization in large language models: 
+Quantification and decomposition,” arXiv preprint arXiv:2502.01187, 2025. 
+43. X. Yang, A. Chen, N. PourNejatian, H. C. Shin, K. E. Smith, C. Parisien, C. Compas, C. Martin, A. B. Costa, 
+M. G. Flores et al., “A large language model for electronic health records,” NPJ digital medicine, vol. 5, no. 
+1, p. 194, 2022. 
+44. Pampari A, Raghavan P, Liang J, Peng J. emrqa: A large corpus for question answering on electronic medical 
+records. arXiv preprint arXiv:1809.00732. 2018 Sep 3. 
+45. Hochreiter S, Schmidhuber J. Long short-term memory. Neural Computation, 1997, 9: 1735-1780. 
+46. Ou J, Huang T, Zhao Y, Yu Z, Lu P, Ying R. Experience Retrieval-Augmentation with Electronic Health 
+Records Enables Accurate Discharge QA. arXiv preprint arXiv:2503.17933. 2025 Mar 2. 
+47. Singhal K, Tu T, Gottweis J, Sayres R, Wulczyn E, Amin M, Hou L, Clark K, Pfohl SR, Cole-Lewis H, Neal 
+D. Toward expert-level medical question answering with large language models. Nature Medicine. 2025 
+Mar;31(3):943-5.
+
+--- PAGE 18 [pdf_text] ---
+48. Sun M. Llamacare: A large medical language model for enhancing healthcare knowledge sharing. arXiv 
+preprint arXiv:2406.02350. 2024 Jun 4. 
+49. Kojima T, Gu SS, Reid M, Matsuo Y, Iwasawa Y. Large language models are zero-shot reasoners. Advances 
+in neural information processing systems. 2022 Dec 6;35:22199-21. 
+50. Wang X, Wei J, Schuurmans D, Le Q, Chi E, Narang S, Chowdhery A, Zhou D. Self consistency improves 
+chain of thought reasoning in language models. arXiv preprint arXiv:2203.11171. 2022 Mar 2. 
+51. Hu EJ, Shen Y, Wallis P, Allen-Zhu Z, Li Y, Wang S, Wang L, Chen W. Lora: Low-rank adaptation of large 
+language models. ICLR. 2022 Apr 25;1(2). 
+52. Dettmers T, Pagnoni A, Holtzman A, Zettlemoyer L. Qlora: Efficient finetuning of quantized llms. Advances 
+in neural information processing systems. 2023 Dec 15;36:10088-11. 
+53. Devlin J, Chang MW, Lee K, Toutanova K. Bert: Pre-training of deep bidirectional transformers for language 
+understanding. InProceedings of the 2019 conference of the North American chapter of the association for 
+computational linguistics: human language technologies, volume 1 (long and short papers) 2019 Jun (pp. 
+4171-4186). 
+54. Radford A, Narasimhan K, Salimans T, Sutskever I. Improving language understanding by generative pretraining. 
+55. Raffel C, Shazeer N, Roberts A, Lee K, Narang S, Matena M, Zhou Y, Li W, Liu PJ. Exploring the limits of 
+transfer learning with a unified text-to-text transformer. Journal of machine learning research. 
+2020;21(140):1-6. 
+56. Zhang S, Roller S, Goyal N, Artetxe M, Chen M, Chen S, Dewan C, Diab M, Li X, Lin XV, Mihaylov T. Opt: 
+Open pre-trained transformer language models. arXiv preprint arXiv:2205.01068. 2022 May 2. 
+57. Workshop B, Scao TL, Fan A, Akiki C, Pavlick E, Ilić S, Hesslow D, Castagné R, Luccioni AS, Yvon F, Gallé 
+M. Bloom: A176b-parameter open-access multilingual language model. arXiv preprint arXiv:2211.05100. 
+2022 Nov 9. 
+58. Chowdhery A, Narang S, Devlin J, Bosma M, Mishra G, Roberts A, Barham P, Chung HW, Sutton C, 
+Gehrmann S, Schuh P. Palm: Scaling language modeling with pathways. Journal of Machine Learning 
+Research. 2023;24(240):1-1. 
+59. Touvron H, Lavril T, Izacard G, Martinet X, Lachaux MA, Lacroix T, Rozière B, Goyal N, Hambro E, Azhar 
+F, Rodriguez A. Llama: Open and efficient foundation language models. arXiv preprint arXiv:2302.13971. 
+2023 Feb 2. 
+60. Tu T, Azizi S, Driess D, Schaekermann M, Amin M, Chang PC, Carroll A, Lau C, Tanno R, Ktena I, Palepu 
+A. Towards generalist biomedical AI. Nejm Ai. 2024 Feb 22;1(3):AIoa230013. 
+61. Labrak Y, Bazoge A, Morin E, Gourraud PA, Rouvier M, Dufour R. Biomistral: A collection of open-source 
+pretrained large language models for medical domains. arXiv preprint arXiv:2402.10373. 2024 Feb 15. 
+62. Johnson, A.E.W., Bulgarelli, L., Shen, L. et al. MIMIC-IV, a freely accessible electronic health record dataset. 
+Sci Data 10, 1 (2023). https://doi.org/10.1038/s41597-022-01899-x. 
+63. Jin, Qiao, et al. "Pubmedqa: A dataset for biomedical research question answering." Proceedings of the 2019 
+conference on empirical methods in natural language processing and the 9th international joint conference on 
+natural language processing (EMNLP-IJCNLP). 2019. 
+64. Grattafiori A, Dubey A, Jauhri A, et al. The Llama 3 Herd of Models. arXiv:2407.21783, 2024. 
+65. Jiang AQ, Sablayrolles A, Mensch A, et al. Mistral 7B. arXiv:2310.06825, 2023. 
+66. Christophe, C., Kanithi, P. K., Raha, T., Khan, S., & Pimentel, M. A. (2024). Med42-v2: A suite of clinical 
+llms. arXiv preprint arXiv:2408.06142. 
+67. Labrak, Y. et al. Biomistral: a collection of open-source pretrained large language models for medical domains. 
+ArXiv, abs/2402.10373 (2024). 
+68. A. Tiwary, S. D. Sarkar, A. P. Singh, P. K. Agarwal, S. Burman and R. Poddar, "Fine-Tuning Vision 
+Transformer Using LoRA for Image Classification," 2025 8th International Conference on Electronics, 
+Materials Engineering & Nano-Technology (IEMENTech), Kolkata, India, 2025, pp. 1-4, doi: 
+10.1109/IEMENTech65115.2025.10959407 
+69. Hu, E. J., Shen, Y., Wallis, P., Allen-Zhu, Z., Li, Y., Wang, S., ... & Chen, W. (2022). Lora: Low-rank 
+adaptation of large language models. Iclr, 1(2), 3. 
+70. Dalal, A., Ranjan, S., Bopaiah, Y., Chembachere, D., Steiger, N., Burns, C.D., & Daswani, V. (2024). Text 
+summarization for pharmaceutical sciences using hierarchical clustering with a weighted evaluation 
+methodology. Scientific Reports, 14. 
+71. Han, J., Lu, J., Xu, Y., You, J., & Wu, B. (2024). Intelligent Practices of Large Language Models in Digital 
+Government Services. IEEE Access, 12, 8633-8640. 
+72. Tsatsaronis, G., Balikas, G., Malakasiotis, P. et al. An overview of the BIOASQ large-scale biomedical 
+semantic indexing and question answering competition. BMC Bioinformatics 16, 138 (2015). 
+https://doi.org/10.1186/s12859-015-0564-6.
+
+--- PAGE 19 [pdf_text] ---
+73. Pal, A., Umapathi, L.K., & Sankarasubbu, M. (2022). MedMCQA : A Large-scale Multi-Subject MultiChoice Dataset for Medical domain Question Answering. ACM Conference on Health, Inference, and 
+Learning. 
+74. Luo, R., Sun, L., Xia, Y., Qin, T., Zhang, S., Poon, H., & Liu, T. (2022). BioGPT: Generative Pre-trained 
+Transformer for Biomedical Text Generation and Mining. Briefings in bioinformatics.

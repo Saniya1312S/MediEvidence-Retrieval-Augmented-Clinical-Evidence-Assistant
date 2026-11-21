@@ -1,0 +1,2586 @@
+--- PAGE 1 [pdf_text] ---
+FGCARL: Fisher-Guided Continuously Adaptive Representation
+Learning for Medical Image Segmentation
+Xiaobing Yua,c,∗, Jin Yangb,∗, Peijie Qiua, Weiwei Maa and Xiaofeng Liuc
+aMallinckrodt Institute of Radiology, Washington University School of Medicine in St. Louis, St. Louis, 63110, MO, USA
+bDepartment of Radiation Oncology, Icahn School of Medicine at Mount Sinai, New York, 10029, NY, USA
+cDepartments of Radiology and Biomedical Imaging, and Biomedical Informatics and Data Science, Yale University, New Haven, 06519, CT, USA
+A R T I C L E I N F O
+Keywords:
+Incremental learning
+Domain Adaptation
+Medical Image Segmentation
+Representation learning
+A B S T R A C T
+Deep learning (DL) has achieved remarkable success in medical image segmentation by learning
+data-driven representations from large-scale annotated datasets. However, medical images are often
+collected independently across clinical sites, resulting in substantial domain shifts due to differences
+in imaging modalities, acquisition protocols, and intensity distributions. Meanwhile, segmentation
+classes may vary across sites due to differences in annotation standards, leading to class shifts.
+These evolving domains and class definitions can substantially degrade segmentation performance on
+newly encountered data, while sequential adaptation may cause catastrophic forgetting of knowledge
+acquired from previously encountered domains and classes. Existing incremental learning methods
+for medical image segmentation primarily address either domain shifts or class shifts, with these
+two settings largely investigated independently. This separation leaves a critical gap in developing a
+unified approach that can simultaneously adapt to evolving domains and newly introduced classes
+while retaining previously acquired knowledge. To address this challenge, we propose FisherGuided Continuously Adaptive Representation Learning (FGCARL), a unified framework for
+domain- and class-incremental 3D volumetric medical image segmentation. FGCARL comprises
+two key components: Mutual Adaptive Instance Representation (MAIR), which adaptively aligns
+feature distributions across sequentially encountered domains through bidirectional normalization and
+denormalization, and Fisher-Guided Knowledge Retention (FGKR), which selectively preserves
+parameters important for previously learned domains and classes through Fisher-guided regularization. We conducted extensive experiments across six cross-institutional segmentation tasks using
+diverse segmentation architectures. Experimental results demonstrate that FGCARL consistently
+outperformed state-of-the-art continual learning methods, effectively adapting to domain and class
+shifts while mitigating catastrophic forgetting and maintaining strong segmentation performance on
+both previously learned and newly encountered domains.
+1. Introduction
+Segmentation of anatomical structures and pathological
+regions in medical images plays a critical role in supporting diagnosis, prognosis, and treatment planning. It has
+markedly progressed by the development in deep learning
+(DL)-based methods [58, 11, 1, 69, 71]. DL models achieve
+impressive segmentation performance due to their ability to
+capture rich, data-driven features [26, 79, 70, 56]. Typically,
+these models are trained on a specific domain to effectively
+learn features from domain-specific data. However, when
+these models are employed to make zero-shot predictions
+on new domains, they fail to capture domain-specific patterns, thus limiting their generalizability and applicability
+to unseen datasets or tasks [46, 72]. Moreover, in clinical
+practice, DL models are generally developed for specific
+tasks. However, clinical datasets are often constructed and
+developed incrementally across multiple sites, each using
+different imaging modalities and acquisition protocols or
+parameters [40, 44, 41, 43]. Additionally, the set of annotated anatomical structures may expand over time as new
+lesions or structures of interest are introduced, driven by the
+∗Xiaobing Yu and Jin Yang contributed equally to this work and are
+co-first authors
+xiaofeng.liu@yale.edu (X. Liu)
+ORCID(s):
+specific goals of the study, clinical needs, or newly available
+modalities [52, 38]. Specifically, as illustrated in Figure 1,
+a segmentation model was trained to segment enhancing
+tumor (ET) from three modalities, including pre-contrast T1
+weighted (T1w-pre), post-contrast T1-weighted (T1w-post),
+and Fluid-Attenuated Inversion Recovery (FLAIR), in the
+UCSF-BMSR dataset [59]. However, the model was subsequently adapted to segment ET and two additional structures,
+tumor core (TC) and surrounding non-enhancing FLAIR
+hyperintensity (SNFH), with the inclusion of additional T2weighted (T2w) modality in the BraTS-METS 2023 dataset
+[50]. This example highlights the challenges posed by domain shifts and incremental annotation in medical image
+segmentation.
+To enable continual model adaptation to evolving clinical data, incremental learning (IL) frameworks have been
+increasingly explored in medical image segmentation. Existing approaches can be broadly categorized into two paradigms:
+domain-incremental learning (DIL) and class-incremental
+learning (CIL). DIL focuses on adapting segmentation
+models to sequentially encountered domains with different
+data distributions, such as those arising from changes in
+imaging modalities, acquisition protocols, or clinical sites
+[74, 19, 3, 42]. In contrast, CIL addresses the sequential
+introduction of new anatomical structures or pathological
+Xiaobing Yu, Jin Yang: Preprint submitted to Elsevier
+Page 1 of 19
+arXiv:2611.16210v1 [eess.IV] 12 Nov 2026
+
+--- PAGE 2 [pdf_text] ---
+FGCARL for Medical Image Segmentation
+Segmentation 
+Network
+Non-Stationary
+Forward MAIR
+Backward MAIR
+TC: Tumor Core 
+SNFH: Hyperintensity
+ET: Enhanced Tumor
+M = {T1-Pre, T1-Post, FLAIR, Subtraction(T1-Pre –T1-Post}
+M = {T1-Pre, T1-Post, FLAIR, T2}
+𝐷(𝑡)
+𝐷(𝑡+1)
+Y = {ET}
+Y = {ET, TC, SNFH}
+Ƹ𝑧𝑖,𝑐,ℎ,𝑤,𝑑
+(t)
+𝑧𝑖,𝑐,ℎ,𝑤,𝑑
+(t)
+Ƹ𝑧𝑖,𝑐,ℎ,𝑤,𝑑
+(t+1)
+𝑧𝑖,𝑐,ℎ,𝑤,𝑑
+(t+1)
+𝜇𝑖,𝑐
+(t+1), 𝜎𝑖,𝑐
+(t+1)
+𝜇𝑖,𝑐
+(t), 𝜎𝑖,𝑐
+(t)
+𝛾𝑐
+(t+1), 𝛽𝑐
+(t+1)
+Figure 1: A two-stage incremental learning framework for
+medical image segmentation. The segmentation networks were
+adapted from the UCSF-BMSR domain 𝐷𝑡to the BraTSMETS domain 𝐷𝑡+1. The segmentation network was trained
+to segment ET from three modalities, and adapted to segment
+ET, TC, and SNFH from four modalities.
+categories, enabling models to learn additional segmentation
+classes without retraining from scratch [52, 12, 75, 68, 38].
+Although these approaches have advanced continual adaptation for medical image segmentation, several important
+challenges remain.
+First, existing methods predominantly consider domain and class shifts independently. Most DIL and CIL
+approaches are specifically designed for either evolving data
+distributions or expanding label spaces, while real-world
+clinical deployment may involve both changes simultaneously. For example, a model may be sequentially deployed
+across institutions that use different imaging modalities
+while also requiring segmentation of newly introduced
+anatomical structures or lesion types. Although a few classdomain-incremental learning approaches have been explored in natural image recognition [31, 55], their underlying assumptions and learning mechanisms do not directly
+translate to medical image segmentation. In particular, many
+natural-image approaches rely on image-level class representations, prototypes, or classification-oriented objectives,
+whereas medical image segmentation requires dense voxelwise predictions and preservation of spatially structured
+anatomical representations. Consequently, a unified framework specifically designed for simultaneous domain and
+class shifts in volumetric medical image segmentation remains underexplored.
+Second, rehearsal-based strategies for mitigating catastrophic forgetting raise important challenges in clinical
+applications. Rehearsal methods preserve knowledge from
+previous tasks by storing and replaying representative samples or exemplars [19]. However, retaining patient imaging
+data for continual model training can introduce privacy, security, and data-governance concerns, particularly in multiinstitutional clinical settings where patient data may be
+subject to strict access and retention policies [33]. This motivates rehearsal-free approaches that can preserve previously
+acquired knowledge without retaining sensitive patient data.
+Third, existing adaptation mechanisms may be closely
+coupled to specific segmentation architectures and normalization strategies. This issue becomes particularly relevant as modern medical image segmentation increasingly
+incorporates diverse architectures, including convolutional
+neural networks (CNNs) and vision transformers (ViTs).
+For example, ViT-based models commonly employ layer
+normalization (LN) [2], which normalizes feature statistics
+within individual samples and may not explicitly account for
+domain-level distribution differences. Such normalization
+can therefore limit the model’s ability to explicitly adapt its
+feature representations to substantial domain shifts. More
+broadly, architecture-specific adaptation mechanisms may
+hinder the development of a general continual learning strategy that can be consistently applied across heterogeneous
+segmentation architectures.
+These limitations limit the applicability and generalizability of current IL methods on medical image segmentation, and highlight the need for a unified, rehearsal-free, and
+architecture-agnostic framework that can simultaneously accommodate evolving domains and class spaces while preserving previously acquired knowledge. Such a framework
+is particularly important for clinical scenarios in which
+segmentation models must continuously adapt to new institutions, imaging protocols, and anatomical or pathological
+targets without access to historical patient data.
+To address these limitations, we propose Fisher-Guided
+Continuously Adaptive Representation Learning (FGCARL), a unified framework for domain- and class-incremental
+learning in 3D volumetric medical image segmentation. FGCARL is designed to simultaneously accommodate evolving imaging domains, including differences in modalities,
+acquisition protocols, and institutional distributions, and
+expanding or changing segmentation label spaces, without
+requiring access to previously observed patient data. The
+framework consists of two complementary components:
+Mutual Adaptive Instance Representation (MAIR) and
+Fisher-Guided Knowledge Retention (FGKR).
+The MAIR module addresses the representation-level
+challenges arising from domain shifts. It performs bidirectional feature transformation through adaptive normalization and denormalization, enabling the model to establish
+consistent feature representations across previously encountered and newly observed domains. Specifically, MAIR normalizes feature representations during the forward propagation to reduce domain-specific distribution discrepancies and subsequently restores domain-relevant statistics
+through denormalization during backward propagation, allowing domain-specific information to be adaptively incorporated during optimization. Unlike methods that rely on
+storing historical samples or explicitly maintaining domainspecific representations, MAIR performs adaptation directly
+in the feature space and therefore does not require retention
+of raw patient data. Moreover, its feature-level formulation
+Xiaobing Yu, Jin Yang: Preprint submitted to Elsevier
+Page 2 of 19
+
+--- PAGE 3 [pdf_text] ---
+FGCARL for Medical Image Segmentation
+is decoupled from task-specific output spaces and sequencelength dependencies, facilitating integration with heterogeneous segmentation architectures, including both convolutional neural networks (CNNs) and vision transformers
+(ViTs).
+The FGKR strategy addresses catastrophic forgetting
+during sequential adaptation. Rather than relying on rehearsal of historical exemplars, FGKR estimates the importance of model parameters to previously learned tasks
+using Fisher information and selectively constrains updates
+to parameters that carry critical historical knowledge. This
+parameter-level knowledge retention enables the model to
+acquire new domain- and class-specific knowledge while
+preserving information accumulated from previous tasks,
+without requiring storage or replay of sensitive patient data.
+FGCARL therefore provides a unified solution to the
+three key challenges in medical image segmentation continual learning: simultaneous domain and class shifts, privacy constraints associated with rehearsal-based learning,
+and adaptation across heterogeneous segmentation architectures. Unlike conventional domain-specific normalization approaches [7, 39, 13], MAIR performs bidirectional
+statistical adaptation without requiring access to previously
+observed datasets. Furthermore, its non-parametric distribution matching formulation does not impose restrictive Gaussian assumptions on medical imaging feature distributions,
+allowing it to accommodate complex and potentially nonGaussian representations. By combining representationlevel domain adaptation with Fisher-guided parameter-level
+knowledge retention, FGCARL enables continual learning
+across domains with different imaging characteristics and
+evolving anatomical or pathological label spaces while
+mitigating catastrophic forgetting.
+Extensive experiments across multiple cross-institutional
+segmentation tasks and heterogeneous segmentation architectures demonstrate that FGCARL consistently outperforms state-of-the-art incremental learning methods, validating its effectiveness, robustness, and generalizability for
+domain- and class-incremental medical image segmentation.
+Our contributions are summarized as follows:
+• We propose Fisher-Guided Continuously Adaptive
+Representation Learning, a unified framework for
+domain- and class-incremental learning in 3D volumetric medical image segmentation. FGCARL simultaneously addresses evolving imaging domains and
+segmentation label spaces while supporting adaptation across heterogeneous segmentation architectures.
+• We introduce Mutual Adaptive Instance Representation, a feature-level adaptation module that performs bidirectional normalization and denormalization to align feature representations across sequentially encountered domains. MAIR enables effective
+adaptation to distribution shifts without requiring access to previously observed patient data and can be
+integrated with diverse segmentation architectures.
+• We develop Fisher-Guided Knowledge Retention, a
+rehearsal-free optimization strategy that uses Fisher
+information to selectively preserve parameters critical
+to previously learned domains and classes. FGKR
+mitigates catastrophic forgetting while allowing the
+model to acquire new knowledge during incremental
+training without storing historical patient data.
+• We conduct extensive cross-institutional domain- and
+class-incremental experiments across multiple medical image segmentation tasks and architectures. FGCARL consistently outperforms state-of-the-art incremental learning methods, demonstrating its effectiveness and generalizability across diverse segmentation
+settings.
+2. Related Works
+2.1. Class Incremental Learning
+CIL aims to sequentially incorporate newly introduced
+classes while preserving the segmentation performance of
+previously learned classes. Existing CIL approaches can
+be broadly categorized into four main paradigms. First,
+replay-based methods retain a subset of historical data or
+generate synthetic samples and replay them during incremental training to alleviate catastrophic forgetting [3, 57,
+23, 64, 66, 16, 34, 37, 61]. Although effective, storing or
+replaying historical medical images and annotations can
+introduce substantial privacy, security, and data-governance
+concerns in clinical applications. Second, architecture-based
+methods dynamically expand model capacity by introducing
+task-specific branches, sub-networks, or other architectural
+components for newly encountered classes [15, 24, 29, 35,
+45, 76]. While these approaches can isolate newly learned
+knowledge from previously acquired representations, continual network expansion increases model complexity and
+may limit scalability and consistency across incremental
+tasks. Third, regularization-based methods constrain updates to parameters or representations that are important
+for previously learned classes, thereby preserving historical
+knowledge while adapting the model to new classes [8, 28,
+30, 42, 53]. However, existing regularization strategies often
+rely on parameter-importance estimation or optimization
+mechanisms that are closely coupled with specific model
+architectures, which can limit their generalizability across
+heterogeneous segmentation backbones. Fourth, knowledgedistillation-based methods transfer knowledge from a previously trained model to the incrementally updated model by
+encouraging consistency between their predictions or intermediate representations, thereby reducing forgetting of previously learned classes [3, 12, 38, 54, 62, 65, 68, 75]. However, distillation-based approaches typically require maintaining a previous model and designing appropriate distillation objectives to preserve knowledge across changing
+label spaces, which can become challenging when newly
+introduced classes and previously learned classes have substantially different distributions or semantic relationships.
+Xiaobing Yu, Jin Yang: Preprint submitted to Elsevier
+Page 3 of 19
+
+--- PAGE 4 [pdf_text] ---
+FGCARL for Medical Image Segmentation
+2.2. Domain Incremental Learning
+DIL focuses on sequentially adapting models to evolving
+data distributions, enabling segmentation models to accommodate changes in imaging modalities, acquisition protocols, and institutional characteristics. Similar to CIL, however, DIL is inherently susceptible to catastrophic forgetting,
+as adaptation to a newly encountered domain can overwrite
+knowledge acquired from previously observed domains.
+Early DIL approaches commonly employed exemplar-based
+rehearsal, retaining data from previous domains for joint
+training with the current domain [74]. To reduce the dependence on historical data, Li et al. proposed recovering information from previously encountered domains using an auxiliary generative model [33]. However, generating realistic
+and sufficiently representative medical images solely from a
+trained model remains challenging [73] and may introduce
+additional privacy risks if sensitive patient information is
+inadvertently encoded or reproduced [77]. More recently,
+several studies have explored extending DIL toward more
+general continual learning settings. Nevertheless, existing
+approaches remain constrained by important assumptions
+that limit their applicability to medical image segmentation.
+Some methods are primarily developed for natural-image
+classification and therefore do not directly accommodate
+dense, voxel-wise prediction in 3D medical image segmentation [31, 55]. Other approaches are specifically designed for
+conventional convolutional architectures and may not readily
+generalize to transformer-based segmentation models [19,
+42]. In addition, several methods rely on access to previously
+observed data during incremental adaptation [18, 19], which
+is undesirable in clinical settings because historical patient
+data may be inaccessible across institutions or subject to
+strict privacy and data-governance constraints. These limitations become particularly pronounced for high-dimensional,
+multimodal 3D medical images, where effective continual
+adaptation must preserve rich spatial and semantic representations while accommodating substantial distribution shifts.
+Normalization-based approaches have also been explored
+for domain adaptation by adjusting feature statistics to
+reduce distribution discrepancies across domains [51, 49, 4].
+However, conventional instance normalization and related
+approaches primarily focus on aligning representations toward the current target domain and do not explicitly preserve domain-specific knowledge acquired from previously
+encountered domains. Consequently, directly applying such
+approaches to DIL may improve adaptation to the current
+domain at the expense of historical knowledge. This motivates a continual representation adaptation mechanism that
+can not only adapt feature statistics to newly encountered
+domains but also retain and recover knowledge associated
+with previously learned domains without requiring access
+to historical patient data.
+3. Methods
+3.1. Overview of FGCARL
+Let (𝑡) denote the dataset observed at incremental stage
+𝑡, consisting of 𝑁𝑡3D medical images 𝑥𝑖∈ℝ𝐻×𝑊×𝐷×𝐶
+with segmentation annotations 𝑦𝑖∈ℝ𝐻×𝑊×𝐷(where 𝐻,
+𝑊, and 𝐷denote the height, width, and depth of each
+imaging volume, respectively):
+(𝑡) = {(𝑥(𝑡)
+𝑖, 𝑦(𝑡)
+𝑖) ∣𝑦(𝑡)
+𝑖
+∈{0, … , 𝐾(𝑡)}}𝑁𝑡
+𝑖=1,
+(1)
+where 𝐶represents the number of input channels. 𝐾(𝑡) denotes the number of segmentation classes observed at stage
+𝑡. The superscript (𝑡) indicates the incremental stage at which
+the corresponding image and annotation are acquired. At
+each incremental stage, the segmentation model is adapted
+from domain 𝑡to a newly encountered domain 𝑡+ 1. In the
+proposed domain- and class-incremental setting, both the
+feature distributions and the label spaces may change across
+stages, i.e.,
+𝑃(𝑡)(𝑋) ≠𝑃(𝑡+1)(𝑋),
+(2)
+(𝑡) ≠(𝑡+1),
+(3)
+where the former represents domain shift and the latter
+represents class shift. These changes introduce two complementary challenges: the model must acquire new domainand class-specific knowledge while preserving knowledge
+acquired from previously encountered domains and anatomical structures.
+To address these challenges, we propose Fisher-Guided
+Continuously Adaptive Representation Learning, a unified framework that jointly performs feature-level domain
+adaptation and parameter-level knowledge retention (Figure 2). FGCARL consists of two complementary components: Mutual Adaptive Instance Representation and
+Fisher-Guided Knowledge Retention. MAIR reduces domainspecific distributional discrepancies while retaining a connection to previously learned feature representations, whereas
+FGKR selectively constrains parameters that are important
+for previously acquired knowledge. Together, these components establish a stability–plasticity mechanism that enables
+the model to adapt to new domains and classes without
+requiring rehearsal of historical patient data.
+3.2. Mutual Adaptive Instance Representation
+Medical images acquired from different institutions may
+exhibit substantial distributional differences caused by imaging modalities, acquisition protocols, scanners, reconstruction procedures, and intensity characteristics. Such differences can propagate through the segmentation network and
+result in inconsistent intermediate feature representations.
+Directly adapting the model to the newly encountered domain may therefore cause previously learned feature statistics to be overwritten.
+To address this issue, we propose Mutual Adaptive Instance Representation (MAIR) (Figure 3), which separates
+domain-dependent feature statistics from the underlying feature structure and enables bidirectional adaptation between
+Xiaobing Yu, Jin Yang: Preprint submitted to Elsevier
+Page 4 of 19
+
+--- PAGE 5 [pdf_text] ---
+FGCARL for Medical Image Segmentation
+Feature 
+Extractor
+Backward MAIR
+Feature 
+Extractor
+Segmentation Network
+TC
+SNFH
+ET
+Inference
+Forward MAIR
+Decoder
+Stage 1
+Stage 2
+Single Class 𝐷(𝑡)
+Multiple Class 𝐷(𝑡+1)
+𝑋𝑡
+𝑋𝑡+1
+𝑧𝑡
+𝑧𝑡+1
+𝐹𝑡+1
+𝐹𝑡
+𝑌𝑡= {𝐸𝑇}
+𝑌𝑡+1 = {𝐸𝑇, 𝑇𝐶, 𝑆𝑁𝐹𝐻}
+𝜆𝑠𝑒𝑔ℒ𝑆𝑒𝑔
++
+𝜆𝑑𝑖𝑠𝑡ℒ𝑎𝑙𝑖𝑔𝑛
++
+𝜆𝐹𝐺ℒ𝐹𝐺𝐾𝑅
+ℒ𝑡𝑜𝑡𝑎𝑙
+Train
+Update 𝜃
+Figure 2: The overall architecture of FGCARL. FGCARL adapts the segmentation network from a single-class domain to a
+multi-class domain by employing MAIR and FGKR components. The input features 𝑥(𝑡) and 𝑥(𝑡+1) are extracted from the feature
+extractor. Subsequently, MAIR is employed to the segmentation network by incorporating Forward MAIR and Backward MAIR by
+aligning features 𝑥(𝑡) to 𝑥(𝑡+1) across domains and classes. A shared decoder is utilized to generate final segmentation results. FGKR
+is employed as an optimization mechanism by utilizing a loss function 𝐿𝐹𝐺𝐾𝑅which is calculated from the Fisher information
+matrix 𝐹(𝑡) and 𝐹(𝑡+1).
+previously encountered and newly encountered domains.
+MAIR consists of two complementary operations: Forward
+MAIR and Backward MAIR. Forward MAIR normalizes the
+feature representation of the newly encountered domain and
+applies learnable affine transformations to retain the flexibility required for domain-specific adaptation. Backward
+MAIR subsequently reconstructs the representation using
+statistics associated with a previously learned domain. In this
+way, MAIR provides a mechanism for adapting to new feature distributions while maintaining statistical consistency
+with previously acquired representations.
+Importantly, MAIR operates directly on intermediate
+feature representations and therefore does not require storing
+or replaying historical patient images or annotations. Its
+feature-level formulation also makes it applicable to different segmentation architectures, including convolutional
+neural networks (CNNs) and vision transformers (ViTs).
+3.2.1. Forward MAIR
+Given a feature embedding 𝐳(𝑡+1)
+∈ℝ𝐵×𝐶×𝐻×𝑊×𝐷
+extracted from the newly encountered domain 𝑡+1, Forward
+MAIR first computes instance-specific statistics independently for each sample and channel. For the 𝑖-th instance
+and 𝑐-th channel, the mean is calculated over the spatial
+dimensions as
+𝜇(𝑡+1)
+𝑖,𝑐
+=
+1
+𝐻𝑊𝐷
+∑
+ℎ,𝑤,𝑑
+𝑧(𝑡+1)
+𝑖,𝑐,ℎ,𝑤,𝑑,
+(4)
+and the corresponding variance is
+(
+𝜎(𝑡+1)
+𝑖,𝑐
+)2
+=
+1
+𝐻𝑊𝐷
+∑
+ℎ,𝑤,𝑑
+(
+𝑧(𝑡+1)
+𝑖,𝑐,ℎ,𝑤,𝑑−𝜇(𝑡+1)
+𝑖,𝑐
+)2
+.
+(5)
+The feature representation is then normalized as
+̃𝑧(𝑡+1)
+𝑖,𝑐,ℎ,𝑤,𝑑=
+𝑧(𝑡+1)
+𝑖,𝑐,ℎ,𝑤,𝑑−𝜇(𝑡+1)
+𝑖,𝑐
+√(
+𝜎(𝑡+1)
+𝑖,𝑐
+)2
++ 𝜖
+,
+(6)
+where 𝜖is a small constant introduced for numerical stability. The normalization removes instance-specific shifts
+and scales from the feature representation, thereby reducing
+the direct influence of domain-specific statistics. However,
+completely eliminating these statistics may also discard information that is useful for representing the newly encountered domain. Therefore, we subsequently introduce learnable channel-wise affine transformations:
+̂𝑧(𝑡+1)
+𝑖,𝑐,ℎ,𝑤,𝑑= 𝛾(𝑡+1)
+𝑐
+⋅̃𝑧(𝑡+1)
+𝑖,𝑐,ℎ,𝑤,𝑑+ 𝛽(𝑡+1)
+𝑐
+,
+(7)
+where 𝛾(𝑡+1)
+𝑐
+and 𝛽(𝑡+1)
+𝑐
+denote learnable scaling and shifting parameters, respectively. The scaling parameter 𝛾(𝑡+1)
+𝑐
+controls the magnitude of the normalized representation,
+whereas 𝛽(𝑡+1)
+𝑐
+controls its location. Consequently, Forward
+MAIR does not simply eliminate domain-specific information; instead, it provides learnable degrees of freedom that
+allow the model to recover feature statistics beneficial for
+the newly encountered domain. This design balances domain
+invariance and domain adaptability.
+Statistical Stability of Forward MAIR. Forward MAIR
+provides a controlled feature representation regardless of
+the original feature scale. Specifically, because the instancewise mean is explicitly removed, the mean of the normalized
+Xiaobing Yu, Jin Yang: Preprint submitted to Elsevier
+Page 5 of 19
+
+--- PAGE 6 [pdf_text] ---
+FGCARL for Medical Image Segmentation
+features is
+𝔼[̃𝑧(𝑡+1)
+𝑖,𝑐
+] = 𝔼
+⎡
+⎢
+⎢
+⎢
+⎢⎣
+𝑧(𝑡+1)
+𝑖,𝑐
+−𝜇(𝑡+1)
+𝑖,𝑐
+√(
+𝜎(𝑡+1)
+𝑖,𝑐
+)2
++ 𝜖
+⎤
+⎥
+⎥
+⎥
+⎥⎦
+=
+𝔼[𝑧(𝑡+1)
+𝑖,𝑐
+−𝜇(𝑡+1)
+𝑖,𝑐
+]
+√(
+𝜎(𝑡+1)
+𝑖,𝑐
+)2
++ 𝜖
+= 0.
+(8)
+Furthermore, the variance of the normalized feature is
+Var[̃𝑧(𝑡+1)
+𝑖,𝑐
+] =
+Var
+[
+𝑧(𝑡+1)
+𝑖,𝑐,ℎ,𝑤,𝑑−𝜇(𝑡+1)
+𝑖,𝑐
+]
+(
+𝜎(𝑡+1)
+𝑖,𝑐
+)2
++ 𝜖
+=
+(
+𝜎(𝑡+1)
+𝑖,𝑐
+)2
+(
+𝜎(𝑡+1)
+𝑖,𝑐
+)2
++ 𝜖
+≤1.
+(9)
+Thus, Forward MAIR maps the feature representation into
+a controlled statistical range before subsequent network operations. This property is particularly useful under domain
+shifts, where changes in imaging conditions can produce
+substantial variations in feature magnitude and dispersion.
+The subsequent learnable affine transformation restores the
+flexibility necessary for domain-specific adaptation.
+3.2.2. Backward MAIR
+Although Forward MAIR reduces the influence of domainspecific statistics, normalization alone does not explicitly
+preserve the statistical characteristics of previously encountered domains. Consequently, continuous adaptation
+exclusively toward the newly encountered domain may progressively move the feature space away from representations
+that supported previous segmentation performance.
+To address this issue, Backward MAIR reintroduces feature statistics associated with a previously learned domain.
+Let 𝜇(𝑡)
+𝑐and 𝜎(𝑡)
+𝑐denote the reference mean and standard deviation associated with domain 𝑡. Given the affine-transformed
+representation ̂𝑧(𝑡+1), Backward MAIR first removes the
+current-domain affine transformation and then restores the
+reference-domain statistics:
+𝑧(𝑡)
+𝑖,𝑐,back = 𝜎(𝑡)
+𝑐⋅
+⎛
+⎜
+⎜⎝
+̂𝑧(𝑡+1)
+𝑖,𝑐
+−𝛽(𝑡+1)
+𝑐
+𝛾(𝑡+1)
+𝑐
+⎞
+⎟
+⎟⎠
++ 𝜇(𝑡)
+𝑐,
+(10)
+where 𝛾(𝑡+1)
+𝑐
+≠0. Because ̂𝑧(𝑡+1)
+𝑖,𝑐
+= 𝛾(𝑡+1)
+𝑐
+⋅̃𝑧(𝑡+1)
+𝑖,𝑐
++ 𝛽(𝑡+1)
+𝑐
+,
+the Backward MAIR transformation can equivalently be
+expressed as
+𝑧(𝑡)
+𝑖,𝑐,back = 𝜎(𝑡)
+𝑐⋅̃𝑧(𝑡+1)
+𝑖,𝑐
++ 𝜇(𝑡)
+𝑐.
+(11)
+This formulation illustrates the central mechanism of MAIR:
+the normalized representation retains the structural and semantic information extracted from the newly encountered
+input, while its feature statistics are mapped toward those of
+the previously learned domain. Importantly, this operation
+requires only compact feature statistics rather than historical
+patient images or annotations, thereby enabling rehearsalfree continual adaptation.
+Cross-Domain Alignment by Backward MAIR. The
+statistical behavior of Backward MAIR can be characterized
+directly from the properties of the normalized representation. Since 𝔼
+[
+̃𝑧(𝑡+1)
+𝑖,𝑐
+]
+= 0, the mean of the backwardtransformed representation satisfies
+𝔼
+[
+𝑧(𝑡)
+𝑖,𝑐,back
+]
+= 𝜎(𝑡)
+𝑐⋅𝔼
+[
+̃𝑧(𝑡+1)
+𝑖,𝑐
+]
++ 𝜇(𝑡)
+𝑐= 𝜇(𝑡)
+𝑐.
+(12)
+Similarly, its variance is given by
+Var
+[
+𝑧(𝑡)
+𝑖,𝑐,back
+]
+= (𝜎(𝑡)
+𝑐
+)2 ⋅Var
+[
+̃𝑧(𝑡+1)
+𝑖,𝑐
+]
+= (𝜎(𝑡)
+𝑐
+)2 ⋅
+(
+𝜎(𝑡+1)
+𝑖,𝑐
+)2
+(
+𝜎(𝑡+1)
+𝑖,𝑐
+)2
++ 𝜖
+≈(𝜎(𝑡)
+𝑐
+)2 ,
+(13)
+where the approximation becomes increasingly accurate as
+𝜖becomes small relative to the feature variance.
+Therefore, Backward MAIR approximately restores the
+first two moments of the reference domain while preserving the normalized feature structure generated from the
+newly encountered domain. This bidirectional mechanism
+allows FGCARL to simultaneously accommodate distributional changes and maintain statistical continuity with previously learned domains.
+3.3. Non-Gaussian Distribution Alignment
+Although instance normalization and affine transformations regulate the first two moments of feature distributions, medical imaging features may exhibit substantial nonGaussian characteristics, including skewness, heavy tails,
+and multi-modality, due to heterogeneous tissue composition, pathological variations, imaging artifacts, and differences in acquisition protocols. Consequently, aligning only
+the mean and variance may not sufficiently characterize
+distributional discrepancies across domains.
+To address this limitation, FGCARL incorporates higherorder moment matching as a non-parametric distribution
+alignment mechanism. Rather than imposing a specific
+parametric distribution on the learned features, the proposed formulation progressively constrains the statistical
+characteristics of the feature distributions through multiple
+moments.
+3.3.1. Moment-Based Distribution Matching.
+Let 𝑚,𝑐(𝐳) denote the empirical 𝑚-th moment of the
+feature distribution for channel 𝑐, defined as
+𝑚,𝑐(𝐳) = 1
+𝑁
+𝑁
+∑
+𝑛=1
+𝑧𝑚
+𝑛,𝑐,
+(14)
+Xiaobing Yu, Jin Yang: Preprint submitted to Elsevier
+Page 6 of 19
+
+--- PAGE 7 [pdf_text] ---
+FGCARL for Medical Image Segmentation
+Linear 
+Embedding
+Forward 
+MAIR
+W-MSA
+Backward 
+MAIR
+MLP
+Forward 
+MAIR
+SW-MSA
+Backward 
+MAIR
+MLP
+(A)
+Transformer Blocks
+Forward MAIR
+Backward MAIR
+CNN 
+Blocks
+(B)
+𝑧𝑖,𝑐,ℎ,𝑤,𝑑
+(t)
+𝑧𝑖,𝑐,ℎ,𝑤,𝑑
+(t+1)
+𝜇𝑖,𝑐
+(t), 𝜎𝑖,𝑐
+(t)
+𝜇𝑖,𝑐
+(t+1), 𝜎𝑖,𝑐
+(t+1)
+𝛾𝑐
+(t+1), 𝛽𝑐
+(t+1)
+Ƹ𝑧𝑖,𝑐,ℎ,𝑤,𝑑
+(t+1)
+𝑋(𝑡+1)
+𝑌(𝑡+1)
+Figure 3: Transformer-based architecture incorporating MAIR for 3D medical image segmentation. (A) Detailed structure of a
+transformer block equipped with MAIR layers. (B) Overall architecture of the proposed MAIR-equipped transformer framework.
+Given an input 3D medical image 𝑋(𝑡+1), a linear embedding layer first projects the image into feature embeddings, which are
+subsequently normalized by the Forward MAIR module before being processed by the transformer blocks. The resulting feature
+representations are then denormalized by the Backward MAIR module and fed into the CNN decoder blocks for hierarchical
+feature reconstruction. Finally, the decoder generates the segmentation prediction 𝑌(𝑡+1).
+where 𝑁denotes the number of feature observations used to
+estimate the moment. Given the normalized representations
+from the incoming domain 𝑡+ 1 and the reference domain 𝑡,
+we define the higher-order distribution alignment loss as
+(𝑡+1)
+mom =
+𝑀
+∑
+𝑚=1
+𝜆𝑚
+𝐶
+∑
+𝑐=1
+[𝑚,𝑐
+(̃𝐳(𝑡+1)) −𝑚,𝑐
+(̃𝐳(𝑡))]2 ,
+(15)
+where 𝑀denotes the maximum matched moment order and
+𝜆𝑚controls the contribution of the 𝑚-th moment.
+The first and second moments characterize feature location and dispersion, respectively, while higher-order moments provide additional information about the shape of
+the feature distribution. Thus, jointly matching multiple
+moments imposes progressively richer statistical constraints
+without requiring an explicit parametric assumption about
+the underlying feature distribution.
+3.3.2. Interpretation of Higher-Order Moment
+Matching
+Moment matching can be interpreted directly in terms of
+expectations of polynomial functions. Suppose two distributions 𝑃and 𝑄have identical moments up to order 𝑀, such
+that
+𝔼𝑃[𝑋𝑚] = 𝔼𝑄[𝑌𝑚],
+𝑚= 0, … , 𝑀.
+(16)
+For any polynomial 𝑝(𝑥) = ∑𝑀
+𝑚=0 𝑎𝑚𝑥𝑚of degree at most
+𝑀, it follows that
+𝔼𝑃[𝑝(𝑋)] =
+𝑀
+∑
+𝑚=0
+𝑎𝑚𝔼𝑃[𝑋𝑚]
+=
+𝑀
+∑
+𝑚=0
+𝑎𝑚𝔼𝑄[𝑌𝑚] = 𝔼𝑄[𝑝(𝑌)].
+(17)
+Therefore, increasing the number of matched moments constrains the two feature distributions over an increasingly
+rich family of polynomial statistics. Importantly, matching a
+finite number of moments does not imply equality of the underlying distributions. Instead, it provides a practical approximation for reducing higher-order distributional discrepancies, while equality of all moments can uniquely characterize
+a distribution under appropriate moment-determinacy conditions.
+3.4. Embedding-Level Distribution Consistency
+While higher-order moment matching provides a flexible
+mechanism for reducing statistical discrepancies between
+feature distributions, it does not directly measure the overall
+discrepancy between the resulting embeddings. In particular,
+finite-order moment matching constrains only a finite set of
+statistical characteristics and may leave residual representation drift during incremental adaptation.
+To explicitly regularize this residual drift, we introduce
+an embedding-level consistency loss based on the squared
+Xiaobing Yu, Jin Yang: Preprint submitted to Elsevier
+Page 7 of 19
+
+--- PAGE 8 [pdf_text] ---
+FGCARL for Medical Image Segmentation
+Wasserstein-2 (𝑊2
+2 ) distance [47]. This loss serves a complementary role to higher-order moment matching: the latter focuses on progressively richer distributional statistics,
+whereas the Wasserstein term directly constrains the distance between the incoming representation and the representation realigned toward the previously learned domain.
+Let ̃𝐳(𝑡+1) denote the normalized embedding obtained
+from Forward MAIR for the incoming domain 𝑡+ 1, and let
+̂𝐳(𝑡)
+back denote the corresponding embedding after Backward
+MAIR, which is realigned toward the statistics of the previously learned domain 𝑡. We approximate their channel-wise
+embedding distributions as Gaussian distributions:
+̃𝐳(𝑡+1) ∼(𝝁(𝑡+1), 𝚺(𝑡+1)) ,
+(18)
+̂𝐳(𝑡)
+back ∼(𝝁(𝑡), 𝚺(𝑡)) ,
+(19)
+where 𝝁(𝑡) and 𝝁(𝑡+1) denote the corresponding channel-wise
+means, and 𝚺(𝑡) and 𝚺(𝑡+1) denote the covariance matrices.
+This Gaussian approximation is introduced solely to obtain
+a tractable discrepancy measure and does not imply that the
+underlying learned embeddings are inherently Gaussian.
+For two multivariate Gaussian distributions, the squared
+Wasserstein-2 distance has the closed-form expression
+𝑊2
+2
+(
+̃𝐳(𝑡+1), ̂𝐳(𝑡)
+back
+)
+= 𝑊2
+2
+((𝝁(𝑡+1), 𝚺(𝑡+1)), (𝝁(𝑡), 𝚺(𝑡)))
+= |||𝝁(𝑡+1) −𝝁(𝑡)|||
+2
+2 + Tr
+(
+𝚺(𝑡+1) + 𝚺(𝑡) −2
+[
+(𝚺(𝑡))1∕2𝚺(𝑡+1)(𝚺(𝑡))1∕2]1∕2)
+.
+(20)
+where Tr(⋅) denotes the trace operator. In our implementation, the covariance matrices are represented using channelwise variances and are therefore diagonal. Under this assumption, Eq. 20 is reduced to
+𝑊2
+2
+(
+|||𝝁(𝑡+1) −𝝁(𝑡)|||
+2
+2 + |||𝝈(𝑡+1) −𝝈(𝑡)|||
+2
+2
+)
+,
+(21)
+where 𝝈(𝑡) and 𝝈(𝑡+1) contain the channel-wise standard
+deviations. This formulation provides a computationally efficient measure of both location and scale discrepancies
+between the two embedding distributions.
+Accordingly, the embedding consistency loss is defined
+as
+𝐿(𝑡+1)
+align = 𝑊2
+2
+(
+̃𝐳(𝑡+1), ̂𝐳(𝑡)
+back
+)
+.
+(22)
+Minimizing 𝐿(𝑡+1)
+align encourages the incoming-domain embedding to remain close to the representation that has been
+realigned toward the previously learned domain. Thus, the
+Wasserstein term provides an explicit representation-level
+constraint that complements the higher-order moment alignment.
+The proposed alignment loss complements the two
+stages of MAIR by explicitly constraining the residual
+distributional discrepancy between incoming and previously
+learned representations. Forward MAIR first suppresses
+instance-specific intensity and feature-scale variations in
+the incoming domain, thereby providing a more stable
+representation for incremental adaptation. Backward MAIR
+subsequently restores the statistical characteristics associated with the previously learned domain, helping preserve
+historical knowledge while reducing representation drift.
+Building upon these two operations, the proposed alignment
+loss further regularizes the residual discrepancy between
+the incoming and historically aligned representations during
+optimization.
+The proposed framework is particularly relevant to medical image segmentation, where domain shifts can arise
+from differences in imaging modality, acquisition protocols,
+scanner characteristics, and intensity distributions. Importantly, the alignment is performed directly in the learned
+embedding space and does not require storing or replaying
+historical medical images. Thus, the proposed approach provides an additional mechanism for controlling incremental
+representation drift while avoiding direct access to previously collected patient data.
+The two alignment components within the framework
+play distinct but complementary roles. Higher-order moment
+matching characterizes and reduces discrepancies in the
+statistical shape of feature distributions without imposing an
+explicit parametric distributional assumption, making it suitable for capturing non-Gaussian characteristics of medical
+image representations. In contrast, Wasserstein alignment
+explicitly regularizes the residual discrepancy between the
+incoming and historical embeddings, providing a direct consistency constraint during optimization. These two mechanisms therefore operate at complementary levels: moment
+matching focuses on the statistical structure of the feature
+distributions, whereas Wasserstein alignment constrains the
+overall embedding-level discrepancy.
+Overall, the combination of Forward and Backward
+MAIR with the two alignment mechanisms establishes a
+hierarchical adaptation strategy: forward normalization for
+representation stability, backward realignment for historical
+knowledge retention, higher-order moment matching for
+non-Gaussian distribution alignment, and Wasserstein regularization for explicit embedding consistency. This design
+enables the model to simultaneously mitigate instance-level
+variation, preserve previously learned statistical characteristics, and constrain residual representation drift during
+incremental adaptation.
+3.5. Fisher-Guided Knowledge Retention
+While MAIR addresses feature-distribution shifts, feature alignment alone cannot guarantee the preservation of
+previously acquired segmentation knowledge. During incremental optimization, parameters that are important for
+previously learned domains or classes may be substantially
+modified to accommodate new data, resulting in catastrophic
+forgetting.
+We therefore propose Fisher-Guided Knowledge Retention (FGKR), which identifies parameters that are important for previously acquired knowledge and selectively
+Xiaobing Yu, Jin Yang: Preprint submitted to Elsevier
+Page 8 of 19
+
+--- PAGE 9 [pdf_text] ---
+FGCARL for Medical Image Segmentation
+constrains their updates. The underlying principle is to preserve parameters that have a large impact on the previous
+task while allowing less important parameters to remain
+flexible for learning new domains and classes.
+3.5.1. Fisher Information
+Let 𝜃∗denote the parameters obtained after learning
+domain 𝑡, and let ̂𝜃denote the parameters after adapting the
+model to domain 𝑡+ 1 without knowledge-retention regularization. A second-order Taylor expansion of the previousdomain loss around 𝜃∗gives
+𝐿(𝑡)( ̂𝜃) = 𝐿(𝑡)(𝜃∗) + ∇𝐿(𝑡)(𝜃∗)𝑇( ̂𝜃−𝜃∗)
++ 1
+2( ̂𝜃−𝜃∗)𝑇𝐻(𝑡)( ̂𝜃−𝜃∗) + 𝑂(| ̂𝜃−𝜃∗|3) ,
+(23)
+where 𝐻(𝑡) denotes the Hessian of the previous-domain loss.
+Assuming that 𝜃∗is a local optimum, the first-order term is
+approximately zero. Under standard regularity conditions for
+likelihood-based models, the Fisher information provides a
+commonly used approximation to the local curvature of the
+loss:
+𝐻(𝑡) ≈𝐹(𝑡).
+(24)
+Using a diagonal approximation of the Fisher information
+matrix, the expected increase in the previous-domain loss
+can therefore be approximated as
+𝐿(𝑡)( ̂𝜃) −𝐿(𝑡)(𝜃∗) ≈1
+2
+∑
+𝑗
+𝐹(𝑡)
+𝑗
+(
+̂𝜃𝑗−𝜃∗
+𝑗
+)2
+.
+(25)
+The diagonal Fisher information for parameter 𝜃𝑗can be
+estimated empirically as
+̂𝐹(𝑡)
+𝑗
+=
+1
+|(𝑡)|
+∑
+(𝑥,𝑦)∈(𝑡)
+[𝜕log 𝑝(𝑦|𝑥; 𝜃∗)
+𝜕𝜃𝑗
+]2
+.
+(26)
+A larger Fisher value indicates that perturbations to the corresponding parameter are associated with greater sensitivity
+of the previous-task objective. Such parameters are therefore considered more important for preserving previously
+acquired knowledge.
+3.5.2. Fisher-Guided Knowledge Retention
+Based on the estimated parameter importance, FGKR introduces the following Fisher-weighted regularization term:
+(𝑡+1)
+FGKR = 1
+2
+∑
+𝑗
+̂𝐹(𝑡)
+𝑗
+(
+𝜃𝑗−𝜃∗
+𝑗
+)2
+.
+(27)
+The gradient of this regularization term with respect to an
+individual parameter is
+𝜕(𝑡+1)
+FGKR
+𝜕𝜃𝑗
+= ̂𝐹(𝑡)
+𝑗
+(
+𝜃𝑗−𝜃∗
+𝑗
+)
+.
+(28)
+Therefore, parameters with large Fisher information receive
+stronger constraints and remain closer to their previously
+learned values, whereas parameters with small Fisher information can undergo larger updates to accommodate newly
+encountered domains and classes. FGKR consequently establishes an adaptive stability–plasticity trade-off rather than
+uniformly restricting all model parameters.
+For sequential learning across multiple domains and
+classes, the Fisher information and corresponding reference
+parameters can be accumulated across incremental stages
+according to the implementation of the proposed framework.
+This allows historical knowledge to be retained throughout
+successive domain and class transitions without requiring
+replay of the corresponding historical patient data.
+Unlike rehearsal-based approaches, FGKR preserves
+historical knowledge through parameter-level constraints
+rather than storing previous images or annotations. This
+property is particularly advantageous in clinical applications
+where historical patient data may be inaccessible because
+of privacy, security, or institutional data-governance constraints.
+3.6. Unified Incremental Learning Objective
+Function
+FGCARL jointly optimizes segmentation, distribution
+alignment, and knowledge retention at each incremental
+stage. The overall objective is defined as
+(𝑡+1)
+total = 𝜆seg(𝑡+1)
+seg
++ 𝜆dist(𝑡+1)
+align + 𝜆FG(𝑡+1)
+FGKR,
+(29)
+where (𝑡+1)
+seg
+denotes the segmentation loss on the newly
+encountered domain and classes, (𝑡+1)
+align encourages consistency between feature distributions across incremental
+domains via Wasserstein-2 distance, and (𝑡+1)
+FGKR preserves
+parameters that are important for previously acquired knowledge. The coefficients 𝜆dist and 𝜆FGKR control the contributions of the two auxiliary objectives.
+The three terms play complementary roles. The segmentation objective provides the plasticity required to acquire
+knowledge from newly introduced domains and anatomical
+classes. MAIR reduces domain-specific distributional discrepancies and maintains statistical continuity with previously encountered domains. FGKR constrains updates to
+parameters that are important for previously acquired knowledge and thereby improves model stability. Through their
+joint optimization, FGCARL balances adaptation and retention, enabling a segmentation model to continuously learn
+from both evolving imaging domains and newly introduced
+anatomical classes without requiring rehearsal of historical
+patient data.
+4. Experiments
+4.1. Datasets
+We evaluated FGCARL on six publicly available datasets
+covering diverse volumetric medical image segmentation
+tasks. These datasets span multiple imaging modalities,
+anatomical regions, disease types, acquisition settings, and
+Xiaobing Yu, Jin Yang: Preprint submitted to Elsevier
+Page 9 of 19
+
+--- PAGE 10 [pdf_text] ---
+FGCARL for Medical Image Segmentation
+segmentation targets, providing a comprehensive testbed for
+evaluating domain- and class-incremental learning.
+UCSF-BMSR. The UCSF Brain Metastasis Segmentation and Registration (UCSF-BMSR) dataset contains
+560 brain MR scans acquired using three modalities: T1weighted pre-contrast (T1w-pre), T1-weighted post-contrast
+(T1w-post), and FLAIR. It provides voxel-wise annotations
+for 5,136 brain metastases and supports volumetric segmentation of metastatic lesions [59].
+BrainMetShare. BrainMetShare is a multi-institutional
+dataset comprising 156 whole-brain MR scans with four
+modalities: T1w-pre, T1w-post, T2-weighted (T2w), and
+FLAIR. Each scan includes voxel-wise annotations of brain
+metastases. Its multi-institutional nature introduces substantial acquisition and distribution variability, making it suitable for evaluating domain-incremental learning [20].
+BraTS-METS 2023. The BraTS-METS 2023 dataset
+contains 1,303 multi-parametric brain MR scans with T1wpre, T1w-post, T2w, and FLAIR modalities. It provides
+voxel-level annotations for three tumor regions: enhancing tumor (ET), tumor core (TC), and surrounding nonenhancing FLAIR hyperintensity (SNFH), providing a challenging setting for class-incremental segmentation [50].
+Multi-Center, Multi-Vendor and Multi-Disease Cardiac Segmentation (M&Ms). The M&Ms dataset contains
+375 cardiac MR scans acquired from multiple institutions
+using four MRI vendors, with 125, 125, 75, and 50 scans
+from the respective vendors. Voxel-wise annotations are
+provided for the left ventricle (LV), right ventricle (RV), and
+left ventricular myocardium (MYO). The multi-center and
+multi-vendor characteristics introduce substantial domain
+variability for evaluating domain-incremental learning [6].
+Beyond the Cranial Vault (BTCV). The BTCV dataset
+contains 50 abdominal CT volumes with voxel-wise annotations for 13 anatomical structures. The diversity of target
+organs and their anatomical characteristics provides a challenging benchmark for class-incremental segmentation [32].
+Liver Tumor Segmentation (LiTS). The LiTS dataset
+contains 131 abdominal CT volumes with voxel-wise annotations for the liver and liver tumors. The substantial
+variation in tumor size, morphology, and appearance provides an additional challenging benchmark for incremental
+segmentation [5].
+Collectively, these datasets enable evaluation of FGCARL across heterogeneous MR and CT imaging scenarios, multiple anatomical regions, and diverse segmentation
+targets, allowing us to assess its robustness to both domain
+and class shifts.
+4.2. Implementation details
+All experiments were implemented in PyTorch and conducted on a single NVIDIA Tesla A100 PCIe GPU with 40
+GB of memory. We employed Swin UNETR as the vision
+transformer (ViT)-based backbone and nnU-Net as the convolutional neural network (CNN)-based backbone [21, 26].
+Both architectures were evaluated under the same incremental learning settings to assess the architecture-agnostic
+capability of FGCARL. The models were optimized using
+AdamW with an initial learning rate of 1×10−4 and a weight
+decay of 1 × 10−5. We adopted a linear warm-up followed
+by cosine annealing learning-rate scheduler, with a warm-up
+period of 50 epochs. All models were trained for 300 epochs
+with a batch size of 2.
+Raw volumetric images were preprocessed to 3D patches
+of size 96 × 96 × 96 and standardized using Z-score normalization. During training, patches were augmented using
+random flipping, random 90◦rotations, and random intensity
+scaling and shifting. Each dataset was divided into training
+and test sets at a ratio of 70% ∶30%. Unless otherwise specified, all compared methods used the same data splits, preprocessing procedures, augmentation strategies, and training
+settings to ensure a fair comparison.
+Segmentation performance was evaluated using the Dice
+Similarity Coefficient (DSC), reported as a percentage. For
+multi-class segmentation tasks, the DSC was calculated for
+each foreground class and then averaged across the target
+classes.
+4.3. Comparison with state-of-the-art methods
+We compared FGCARL with various state-of-the-art
+(SOTA) CIL and DIL methods for 3D multi-modal medical image segmentation. The methods include replay-,
+regularization-, architectural-, and knowledge-distillationbased approaches, covering both CNN- and ViT-based segmentation architectures. We considered two experimental
+stages to separately assess the segmentation capability before incremental adaptation and the ability to simultaneously
+accommodate domain and class shifts. In Stage 1, segmentation models were trained independently on the UCSF-BMSR
+and BraTS-METS 2023 datasets. These results provided
+a reference for the achievable segmentation performance
+when no incremental adaptation was implemented. In Stage
+2, models were initially trained on UCSF-BMSR to segment
+ET using three modalities, including T1w-pre, T1w-post,
+and FLAIR, and were subsequently adapted to the BraTSMETS 2023 domain, where they were required to segment
+ET, TC, and SNFH using four modalities, including T1wpre, T1w-post, T2w, and FLAIR. Therefore, this setting
+simultaneously introduced substantial domain shifts caused
+by differences in data distributions and modality configurations and class shifts caused by the introduction of
+new segmentation targets. To accommodate the different
+numbers of input modalities between the source and target
+domains, we additionally constructed a subtraction modality
+by computing the difference between T1w-pre and T1w-post
+images, thereby maintaining a consistent number of input
+channels across the two domains.
+Overall segmentation performance. FGCARL consistently achieved superior performance under the unified
+domain- and class-incremental setting (Table 1). With Swin
+UNETR, FGCARL achieved a mean DSC of 68.28% on
+the target BraTS-METS 2023 domain, substantially outperforming the strongest competing method, CLAMTS, which
+achieved 60.94%. This corresponds to an improvement of
+Xiaobing Yu, Jin Yang: Preprint submitted to Elsevier
+Page 10 of 19
+
+--- PAGE 11 [pdf_text] ---
+FGCARL for Medical Image Segmentation
+Table 1
+Performance comparison of FGCARL with SOTA class-incremental learning (CIL) and domain-incremental learning (DIL) methods
+under simultaneous domain and class shifts for 3D multi-modal medical image segmentation. † and ∗indicate CIL and DIL
+methods, respectively. “3D” and “ViT” indicate whether the method supports 3D segmentation and vision transformer (ViT)-
+based architectures, respectively. “3D” and “ViT” indicate whether the method supports 3D segmentation and vision transformer
+(ViT)-based architectures, respectively. DSC (%) is reported for each segmentation class and as mean ± standard deviation. Bold
+and underline indicate the best and the second best results, respectively.
+CIL†
+No Incremental Learning (Stage 1)
+UCSF-BMSR →BraTS-METS 2023 (Stage 2)
+Methods
+or
+3D
+ViT
+UCSF-BMSR
+BraTS-METS 2023
+UCSF-BMSR
+BraTS-METS 2023
+DIL∗
+ET
+TC
+SNFH
+ET
+Mean±SD
+ET
+TC
+SNFH
+ET
+Mean±SD
+PLOP [12]
+†
+×
+×
+49.56
+37.58
+33.76
+30.85
+34.06 ± 2.76
+10.39
+38.66
+35.47
+31.98
+35.37 ± 2.73
+MargExcIL [38]
+†
+×
+×
+51.75
+41.41
+40.47
+48.59
+43.49 ± 3.63
+20.37
+42.17
+43.98
+45.52
+43.89 ± 1.37
+UCD [68]
+†
+×
+×
+56.37
+42.15
+45.72
+41.66
+43.18 ± 1.81
+27.86
+41.41
+47.56
+42.47
+43.81 ± 2.68
+EWC [30]
+† ∗
+×
+×
+55.51
+41.96
+43.65
+47.18
+47.08 ± 1.87
+21.95
+42.48
+44.62
+46.79
+44.63 ± 1.76
+HSI [38]
+† ∗
+×
+×
+65.46
+52.51
+55.28
+51.91
+56.29 ± 1.47
+36.98
+51.39
+57.67
+47.75
+52.27 ± 4.10
+2DHIL [25]
+†
+×
+✓
+53.17
+47.27
+45.89
+50.78
+47.98 ± 2.06
+28.11
+48.31
+47.22
+44.59
+46.71 ± 1.56
+ACLSeg [14]
+†
+✓
+×
+60.79
+47.75
+50.56
+51.82
+52.73 ± 1.70
+31.41
+47.45
+53.97
+49.76
+50.39 ± 2.70
+NeST [67]
+†
+×
+✓
+56.18
+42.01
+40.53
+41.75
+45.12 ± 0.65
+34.79
+42.97
+41.73
+37.77
+40.82 ± 2.22
+Incrementer [60]
+†
+×
+✓
+54.37
+50.10
+47.78
+51.54
+50.95 ± 1.55
+28.57
+51.54
+50.77
+39.85
+47.39 ± 3.03
+MBS [54]
+†
+×
+✓
+57.96
+54.94
+53.15
+57.59
+55.91 ± 1.82
+31.91
+55.82
+54.67
+52.61
+54.37 ± 1.33
+SSIST [62]
+†
+×
+✓
+59.81
+60.33
+62.15
+50.44
+58.18 ± 5.15
+35.43
+61.47
+63.39
+47.81
+57.56 ± 6.94
+InNSeg [65]
+†
+×
+×
+57.64
+45.79
+44.37
+49.89
+49.42 ± 2.34
+35.87
+43.71
+46.58
+45.89
+45.94 ± 1.18
+CLAMTS [78]
+†
+✓
+✓
+67.72
+66.42
+62.91
+53.04
+60.79 ± 5.66
+8.35
+67.29
+64.57
+50.95
+60.94 ± 7.15
+Memory Replay [3]
+† ∗
+✓
+×
+60.45
+47.48
+54.47
+50.31
+50.75 ± 2.87
+41.66
+48.55
+56.09
+45.94
+50.19 ± 4.30
+UNEG [18]
+† ∗
+✓
+×
+72.45
+59.36
+56.31
+50.57
+55.41 ± 3.64
+56.34
+61.57
+60.47
+47.59
+56.54 ± 4.13
+Lifelong-nnUNet [19]
+† ∗
+✓
+×
+77.41
+63.96
+50.25
+65.92
+60.04 ± 4.15
+59.63
+63.27
+52.53
+57.74
+57.84 ± 5.68
+CFIL [10]
+†
+✓
+✓
+69.43
+57.68
+50.44
+60.15
+56.09 ± 4.12
+50.39
+58.02
+51.27
+53.97
+54.42 ± 2.77
+VIL [55]
+† ∗
+×
+×
+56.32
+41.63
+36.87
+40.59
+39.70 ± 1.42
+21.59
+43.77
+38.32
+41.09
+41.06 ± 1.62
+FGCARL + nnU-Net
+† ∗
+✓
+×
+78.41
+64.17
+51.43
+65.66
+60.42 ± 6.56
+67.19
+64.79
+59.94
+58.14
+60.96 ± 6.31
+FGCARL + Swin UNETR
+† ∗
+✓
+✓
+80.13
+73.66
+62.85
+63.02
+66.51 ± 5.06
+70.63
+73.79
+70.37
+60.67
+68.28 ± 5.56
+No Incremental Learning (Stage1)
+UCSF-BMSR → BraTS-METS 2023 (Stage2)
+FCGARL (Ours)
+Lifelong nn-UNet
+CFIL
+Lifelong nn-UNet
+CFIL
+Raw Image
+Ground Truth
+FCGARL (Ours)
+UCSF-BMSR
+BraTS-METS 2023
+Figure 4: Qualitative comparison of FGCARL with representative state-of-the-art incremental learning methods on the original
+and incrementally adapted domains. Examples are shown for the UCSF-BMSR →BraTS-METS 2023 adaptation setting. For
+the previously learned UCSF-BMSR domain, the predictions illustrate the ability of each method to retain previously acquired
+segmentation knowledge after incremental adaptation. For the BraTS-METS 2023 domain, the predictions demonstrate adaptation
+to the new domain and expanded label space, including ET, TC, and SNFH.
+7.34% points. FGCARL also achieved the best performance
+for individual target structures, obtaining DSC scores of
+73.79%, 70.37%, and 60.67% for ET, TC, and SNFH, respectively. These results indicated that FGCARL effectively
+adapted to both newly introduced anatomical/pathological
+classes and substantial changes in the imaging distribution. The advantage of FGCARL was also evident when
+using a CNN-based segmentation architecture, nnU-Net.
+The employment of FGCARL to nnU-Net achieved a mean
+DSC of 60.96% on BraTS-METS 2023, outperforming the
+strongest competing methods under the same incremental
+setting. Notably, FGCARL + nnU-Net achieved a 67.19%
+DSC for the previously learned UCSF-BMSR domain,
+demonstrating that the proposed framework is not restricted
+to transformer-based architectures. The consistent improvements obtained with both nnU-Net and Swin UNETR support the architecture-agnostic design of FGCARL.
+Mitigation of catastrophic forgetting. In addition to
+improving target-domain adaptation, FGCARL substantially
+preserved knowledge acquired from the source domain. Before incremental adaptation, FGCARL + Swin UNETR
+achieved 80.13% mean DSC on UCSF-BMSR, whereas after
+adaptation to BraTS-METS 2023, it retained a DSC of
+70.63%. Similarly, FGCARL + nnU-Net retained 67.19%
+DSC after adaptation compared with 78.41% before incremental training. Although some performance degradation is
+Xiaobing Yu, Jin Yang: Preprint submitted to Elsevier
+Page 11 of 19
+
+--- PAGE 12 [pdf_text] ---
+FGCARL for Medical Image Segmentation
+expected when the model is optimized for a substantially
+different domain and expanded label space, FGCARL maintained considerably stronger source-domain performance
+than competing methods. For example, on UCSF-BMSR
+after adaptation, CLAMTS and Lifelong-nnUNet achieved
+substantially lower performance than FGCARL. These results demonstrate the effectiveness of the FGKR strategy in
+protecting parameters associated with previously acquired
+knowledge and mitigating catastrophic forgetting.
+Robustness to simultaneous domain and class shifts.
+Conventional CIL methods generally assume that the imaging distribution remains relatively stable and focus primarily
+on learning newly introduced classes, whereas DIL methods
+primarily address changes in data distributions. In contrast,
+the Stage 2 setting requires the model to simultaneously
+adapt to a new institution/dataset, different modality configurations, and an expanded label space. Most existing methods exhibited a substantial performance degradation under
+this combined shift. FGCARL consistently maintained high
+segmentation performance across both previously learned
+and newly introduced targets, demonstrating that the proposed combination of MAIR and FGKR provides a unified
+mechanism for feature adaptation and knowledge retention.
+Qualitative comparison. Figure 4 presents qualitative
+comparisons between FGCARL and representative incremental learning methods, including Lifelong-nnUNet and
+CFIL, on both the original and incrementally adapted domains. On the UCSF-BMSR samples, which represent the
+previously learned domain, FGCARL preserves the overall
+morphology and spatial localization of the metastatic lesions after adaptation to BraTS-METS 2023. In contrast,
+Lifelong-nnUNet and CFIL exhibit more pronounced prediction errors, including incomplete lesion delineation, spurious predictions, and deviations from the reference boundaries. These observations are consistent with the quantitative results and indicate that FGCARL better preserves
+previously acquired segmentation knowledge during incremental adaptation. On BraTS-METS 2023, FGCARL produces segmentation masks that more closely follow the
+reference annotations, particularly in delineating the spatial
+extent and boundaries of different tumor subregions. The
+competing methods exhibit greater segmentation discrepancies, including missing regions and inaccurate predictions
+of individual tumor classes. Notably, FGCARL maintains
+relatively coherent predictions for ET, TC, and SNFH despite the simultaneous changes in imaging distribution and
+label space. Overall, the qualitative results demonstrate that
+FGCARL achieves a favorable balance between plasticity,
+i.e., learning new domain and class knowledge, and stability,
+i.e., retaining previously acquired knowledge.
+Overall, the results demonstrate that FGCARL provides a more effective solution for unified domain- and
+class-incremental medical image segmentation than existing
+SOTA methods. Its consistent performance across both
+Swin UNETR and nnU-Net, together with its superior
+target-domain adaptation and source-domain knowledge
+retention, validates the effectiveness, generalizability, and
+architecture-agnostic nature of the proposed framework.
+4.4. Ablation Study
+4.4.1. The effectiveness of MAIR
+We first evaluated the effectiveness of the proposed
+MAIR for domain-incremental learning under unaligned
+modality settings. We compared MAIR with representative
+SOTA DIL methods and several normalization-based approaches, including Batch Renormalization and Continuous
+Batch Renormalization. We also compared the incorporation
+of MAIR with the only forward MAIR. Experiments were
+conducted using both nnU-Net and Swin UNETR, with domain adaptation evaluated in both directions: UCSF-BMSR
+→BrainMetShare and BrainMetShare →UCSF-BMSR.
+This bidirectional evaluation allows us to assess whether
+MAIR provides consistent adaptation benefits across different source-target domain configurations.
+Comparison with existing DIL methods. MAIR consistently achieved the strongest performance among the evaluated methods across both segmentation architectures and
+adaptation directions (Table 2). With Swin UNETR, the proposed Forward & Backward MAIR achieved DSC scores of
+77.32% and 68.27% on UCSF-BMSR and BrainMetShare,
+respectively, when adapting from UCSF-BMSR to BrainMetShare. In the reverse adaptation setting, it achieved
+81.62% and 62.15% DSC on UCSF-BMSR and BrainMetShare, respectively. These results substantially outperformed existing DIL methods, including Lifelong nnUNet,
+UNEG, Mdvit, and CFIL. In particular, for UCSF-BMSR
+→BrainMetShare, Forward & Backward MAIR improved
+the BrainMetShare DSC from 65.11% achieved by Lifelong
+nnUNet to 68.27%, while simultaneously retaining substantially higher performance on the previously learned UCSFBMSR domain (77.32%).
+Effect of bidirectional MAIR. The ablation results
+demonstrate that the the combination of Forward and Backward components is critical to the effectiveness of MAIR.
+For nnU-Net, Forward MAIR alone achieved only 50.13%
+DSC on UCSF-BMSR after adaptation from UCSF-BMSR
+to BrainMetShare, whereas incorporating both Forward and
+Backward MAIR increased the DSC to 72.47%. A similar
+improvement was observed for the reverse adaptation direction, where the UCSF-BMSR DSC increased from 77.98%
+with Forward MAIR alone to 78.96% with Forward &
+Backward MAIR, while the BrainMetShare DSC increased
+from 47.99%to 56.27%. These results indicate that forward
+normalization alone can facilitate feature adaptation to the
+incoming domain but is insufficient to preserve the feature
+statistics associated with previously learned domains. The
+backward alignment mechanism provides the complementary capability of restoring domain-specific feature characteristics, thereby improving the stability of previously
+acquired representations during incremental adaptation.
+Comparison with conventional normalization strategies. Forward & Backward MAIR also consistently outperformed Batch Renormalization and Continuous Batch
+Xiaobing Yu, Jin Yang: Preprint submitted to Elsevier
+Page 12 of 19
+
+--- PAGE 13 [pdf_text] ---
+FGCARL for Medical Image Segmentation
+Table 2
+Performance comparison of MAIR with SOTA domain-incremental learning methods and normalization-based approaches under
+unaligned modality settings. Models are evaluated on UCSF-BMSR and BrainMetShare in both adaptation directions. Stage
+1 reports performance without incremental adaptation, while Stage 2 reports performance after adaptation between the two
+domains. Bold and underline indicate the best and second-best results, respectively.
+Methods
+No Incremental Learning (Stage 1)
+UCSF-BMSR →BrainMetShare (Stage 2)
+BrainMetShare →UCSF-BMSR (Stage 2)
+UCSF-BMSR
+BrainMetShare
+UCSF-BMSR
+BrainMetShare
+UCSF-BMSR
+BrainMetShare
+ProCA [27]
+56.25
+41.38
+40.41
+42.69
+57.61
+24.85
+EWC [30]
+55.51
+42.99
+38.42
+44.67
+56.88
+25.41
+MAS-LR [53]
+55.38
+43.15
+41.08
+47.92
+57.21
+28.89
+Msmt-medseg [63]
+71.61
+58.43
+53.47
+60.01
+72.13
+40.64
+MDIL-SS [17]
+53.38
+39.02
+36.93
+40.19
+54.19
+24.57
+HSI [42]
+65.46
+52.73
+49.73
+53.58
+66.27
+32.54
+CGR [34]
+54.63
+43.31
+41.44
+45.17
+55.04
+27.82
+Style-Oriented [33]
+57.29
+45.59
+43.79
+46.57
+58.94
+30.22
+Memory Replay [3]
+60.45
+49.88
+56.75
+46.91
+61.73
+41.60
+UNEG [18]
+72.45
+59.47
+66.75
+62.38
+73.07
+49.39
+Lifelong nnUNet [19]
+77.41
+63.96
+69.89
+65.11
+78.68
+54.44
+CFIL [10]
+69.43
+57.91
+65.47
+59.01
+71.72
+50.47
+Mdvit [13]
+73.59
+56.67
+60.57
+61.94
+77.19
+52.57
+nnU-Net
+77.41
+63.96
+45.42
+65.74
+77.63
+44.11
+nnU-Net + Batch Renormalization
+77.41
+63.96
+65.71
+64.48
+77.69
+44.40
+nnU-Net + Continuous Batch Renormalization
+77.41
+63.96
+68.44
+65.97
+77.91
+52.88
+nnU-Net + Forward MAIR
+77.49
+62.14
+50.13
+65.33
+77.98
+47.99
+nnU-Net + Forward & Backward MAIR
+77.93
+64.11
+72.47
+66.15
+78.96
+56.27
+Swin UNETR
+74.68
+63.31
+40.31
+66.29
+75.93
+41.08
+Swin UNETR + Batch Renormalization
+63.51
+45.19
+56.98
+47.77
+64.09
+39.51
+Swin UNETR + Continuous Batch Renormalization
+63.51
+45.19
+60.85
+51.55
+66.29
+42.88
+Swin UNETR + Forward MAIR
+72.14
+60.27
+39.55
+67.60
+73.59
+38.57
+Swin UNETR + Forward & Backward MAIR
+80.13
+65.63
+77.32
+68.27
+81.62
+62.15
+Original (Stage1)
+Ours (MAIR)
+Lifelong nnUNet
+UCSF-BMSR →BrainMet (Stage2)
+Input Image
+Label
+UCSF-BMSR
+ET
+BrainMet →UCSF-BMSR (Stage2)
+Original (Stage1)
+Ours (MAIR)
+Ours (MAIR)
+Lifelong nnUNet
+Lifelong nnUNet
+Ours (MAIR) 
+Lifelong nnUNet 
+UCSF-BMSR → BrainMet (Stage2)
+Input Image
+Label
+BrainMetShare
+Ours (MAIR)
+Lifelong nnUNet
+Ours (MAIR) Lifelong nnUNet 
+BrainMet → UCSF-BMSR (Stage2)
+Figure 5: Qualitative comparison of MAIR with Lifelong nnU-Net on the original (Stage 1) and incrementally adapted domains
+(UCSF-BMSR →BrainMetShare, BrainMetShare →UCSF-BMSR). The highlighted regions (green, ET) represent effective tumor
+boundary segmentation, demonstrating MAIR’s robustness in handling domain shifts and incremental tasks.
+Renormalization. For nnU-Net under UCSF-BMSR →BrainMetShare adaptation, Continuous Batch Renormalization
+achieved 68.44% and 65.97% DSC on UCSF-BMSR and
+BrainMetShare, respectively, whereas Forward & Backward
+MAIR achieved 72.47% and 66.15%. The advantage was
+more pronounced for Swin UNETR, where Forward &
+Backward MAIR achieved 77.32% and 68.27%, compared
+with 60.85% and 51.55% obtained using Continuous Batch
+Renormalization. These results suggest that simply updating normalization statistics is insufficient for handling
+substantial cross-domain distribution shifts, particularly for
+transformer-based architectures. In contrast, the bidirectional normalization and denormalization mechanism of
+MAIR provides more effective feature adaptation while
+maintaining previously learned representations.
+Generalization across segmentation architectures.
+The consistent improvements obtained with both nnU-Net
+and Swin UNETR further demonstrate that MAIR is not
+tied to a particular segmentation architecture. Notably, the
+improvement was particularly substantial for Swin UNETR,
+where conventional Batch Renormalization and Continuous
+Batch Renormalization substantially degraded performance
+Xiaobing Yu, Jin Yang: Preprint submitted to Elsevier
+Page 13 of 19
+
+--- PAGE 14 [pdf_text] ---
+FGCARL for Medical Image Segmentation
+Table 3
+Ablation study of FGKR under class-incremental learning. Results are averaged across all classes, with DSC (%) further averaged
+across the corresponding sub-regions. Stage 1 represents the initial non-incremental learning setting, while Stage 2 denotes
+incremental adaptation from LiTS to BTCV. Bold and underline indicate the best and second-best results, respectively.
+Methods
+No Incremental Learning (Stage 1)
+BTCV →LiTs (Stage 2)
+BTCV
+LiTs
+BTCV
+LiTs
+LwF
+88.90±1.33
+43.17±5.38
+77.02±2.48
+45.65±4.43
+EWC
+88.90±1.33
+43.17±5.38
+79.04±2.28
+45.94±4.18
+Synaptic Intelligence
+88.90±1.33
+43.17±5.38
+79.61±3.39
+45.32±6.01
+CWR
+88.90±1.33
+43.17±5.38
+80.24±1.65
+46.30±3.97
+FGKR + nnUNet
+88.90±1.33
+43.17±5.38
+79.67±2.71
+46.48±5.08
+FGKR + Swin UNETR
+88.90±1.33
+43.17±5.38
+83.08±1.58
+47.59±4.12
+relative to the original model, whereas Forward & Backward MAIR improved both source- and target-domain performance. Without incremental adaptation, Swin UNETR
+achieves 74.68% and 63.31% DSC on UCSF-BMSR and
+BrainMetShare, respectively; after incorporating Forward
+& Backward MAIR, these values increased to 80.13% and
+65.63%, respectively. This observation supports the ability
+of MAIR to provide stable feature representations under
+domain shifts while remaining compatible with both CNNand ViT-based segmentation architectures.
+Qualitative comparison. Figure 5 presents qualitative
+comparisons between FGCARL and Lifelong-nnUNet on
+both the original and incrementally adapted domains. In the
+previously learned domain, FGCARL preserved the overall
+morphology and spatial localization of the metastatic lesions
+after adaptation to the new domain. In contrast, LifelongnnUNet exhibit more pronounced prediction errors, including incomplete lesion delineation, spurious predictions, and
+deviations from the reference boundaries.
+Overall, these experiments demonstrate that the effectiveness of MAIR arises from the combination of its forward and backward operations rather than from normalization alone. Forward MAIR facilitates the stabilization of
+incoming domain representations, while Backward MAIR
+restores domain-specific feature characteristics and supports
+retention of previously learned representations. Their combination enables robust adaptation in both directions and
+across distinct segmentation architectures, providing an effective foundation for domain-incremental medical image
+segmentation.
+4.4.2. The effectiveness of FGKR
+To further evaluate the effectiveness of FGKR under class-incremental learning, we conduct experiments on
+BTCV and LiTS using a stage-wise incremental learning
+setting, where new classes are introduced sequentially across
+domains. All methods achieved identical performance at
+Stage 1, providing a consistent starting point for evaluating
+their ability to adapt to the subsequent incremental stage
+(Table 3).
+After introducing the new classes in Stage 2, FGKR
+consistently achieved competitive or superior performance
+compared with existing class-incremental learning methods. In particular, FGKR combined with Swin UNETR
+achieved the best performance on both BTCV and LiTS,
+reaching 83.08%and 47.59% DSC, respectively. On BTCV,
+this corresponded to a substantial improvement over the
+strongest competing baseline, demonstrating the effectiveness of FGKR in preserving and adapting semantic knowledge when new classes are introduced. FGKR also achieved
+the best performance on LiTS when paired with either
+nnUNet or Swin UNETR, with the latter providing the
+strongest overall results.
+The consistent improvements across the two datasets
+and segmentation architectures demonstrate that the effectiveness of FGKR is not restricted to a particular network or dataset. Notably, the stronger performance obtained
+with Swin UNETR suggests that FGKR can effectively
+complement different segmentation architectures and facilitate knowledge retention and adaptation during classincremental learning. Overall, these results provide further
+evidence that FGKR is robust to sequential class expansion
+and domain variation in realistic incremental segmentation
+scenarios.
+4.5. The analysis on MAIR configurations
+We further investigate the effectiveness of MAIR by
+incorporating it into two representative segmentation architectures, nnU-Net and Swin UNETR, and evaluating
+their performance on UCSF-BMSR, BrainMetShare, and
+BraTS-METS 2023. MAIR consistently improves segmentation performance across both architectures, with more
+pronounced gains observed for Swin UNETR (Table 4).
+For nnU-Net, incorporating MAIR improves performance across all three datasets, and applying MAIR to all
+layers consistently outperforms the single-layer configuration. On BraTS-METS 2023, for example, the mean DSC
+across TC, SNFH, and ET increases from 61.34% for the
+original nnU-Net to 64.14% with all-layer MAIR. These
+results demonstrate that MAIR can effectively enhance conventional convolutional segmentation networks and that its
+benefits are further strengthened when integrated throughout
+the network.
+Xiaobing Yu, Jin Yang: Preprint submitted to Elsevier
+Page 14 of 19
+
+--- PAGE 15 [pdf_text] ---
+FGCARL for Medical Image Segmentation
+Table 4
+Performance comparison of different MAIR configurations incorporated into nnU-Net and Swin UNETR on the UCSF-BMSR,
+BrainMetShare, and BraTS-METS 2023 datasets. DSC (%) is reported for the indicated tumor regions. For BraTS-METS 2023,
+TC, SNFH, and ET denote the corresponding tumor subregions, and the mean ± SD is computed across the three regions. Bold
+and underline indicate the best and second-best results, respectively.
+Methods
+UCSF-BMSR
+BrainMetShare
+BraTS-METS 2023
+ET
+ET
+TC
+SNFH
+ET
+Mean ± SD
+3D U-Net [11]
+72.45
+59.47
+49.36
+56.31
+50.57
+52.08 ± 3.03
+3D TransUNet [9]
+79.35
+64.44
+52.31
+67.11
+71.43
+63.62 ± 8.19
+V-Net [48]
+73.56
+62.99
+56.12
+59.72
+60.14
+58.66 ± 1.80
+UNETR [22]
+72.72
+60.38
+62.35
+57.51
+56.93
+58.93 ± 2.43
+nnFormer [79]
+73.98
+61.73
+48.34
+64.17
+67.73
+60.08 ± 8.43
+nnU-Net
+77.41
+63.96
+50.25
+65.92
+67.86
+61.34 ± 7.88
+nnU-Net + MAIR (Single Layer)
+78.15
+64.41
+54.63
+65.71
+68.59
+62.98 ± 6.02
+nnU-Net + MAIR (All Layers)
+79.07
+64.87
+57.28
+66.21
+68.92
+64.14 ± 4.97
+Swin UNETR
+74.68
+63.31
+69.35
+60.62
+59.48
+63.15 ± 4.41
+Swin UNETR + BN
+63.51
+52.10
+59.55
+51.26
+57.25
+56.02 ± 3.49
+Swin UNETR + IN
+65.41
+56.34
+62.17
+56.52
+59.25
+59.31 ± 2.31
+Swin UNETR + MAIR (Single Layer)
+80.13
+65.63
+73.66
+62.85
+63.02
+66.51 ± 5.06
+Swin UNETR + MAIR (2 Layers)
+80.65
+65.91
+73.79
+62.88
+64.11
+66.93 ± 4.88
+Swin UNETR + MAIR (All Layers)
+81.34
+66.42
+74.48
+63.18
+65.05
+67.57 ± 4.95
+The improvement is more pronounced for Swin UNETR.
+The baseline model achieves a mean DSC of 63.15% across
+the three BraTS-METS 2023 tumor regions, which increases
+to 67.57% with all-layer MAIR. Moreover, the performance
+consistently improves as MAIR is incorporated into more
+layers, from single-layer to two-layer and finally all-layer
+integration. The all-layer configuration achieves the best
+performance across the three tumor regions and also obtains
+the highest DSC on both UCSF-BMSR and BrainMetShare.
+These results suggest that distributing MAIR throughout
+the network enables Swin UNETR to better accommodate
+variations in data distributions across different datasets.
+We further compare MAIR with alternative normalization strategies. Replacing the original normalization with
+batch normalization (BN) or instance normalization (IN)
+substantially degrades performance, whereas MAIR consistently improves upon the original Swin UNETR. In particular, BN and IN achieve mean DSCs of only 56.02%
+and 59.31%, respectively, compared with 67.57% for alllayer MAIR. This comparison indicates that the performance gains are not simply attributable to changing the normalization strategy. Instead, the progressive improvement
+from single-layer to all-layer MAIR suggests that integrating
+MAIR throughout the network is important for effectively
+mitigating distribution shifts and improving segmentation
+robustness.
+Overall, these results demonstrate that MAIR is compatible with both convolutional and transformer-based segmentation architectures and provides consistent performance
+improvements under heterogeneous data distributions. The
+superior performance of the all-layer configuration further
+supports the effectiveness of applying MAIR across multiple
+normalization layers rather than restricting it to a single
+layer.
+4.6. Generalization of MAIR on 2D medical
+images
+To further evaluate the generalizability of MAIR beyond the primary experimental setting, we conducted experiments on the M&Ms dataset, which comprised cardiac
+MRI data acquired from multiple vendors. MAIR consistently improved segmentation performance across all four
+vendors, demonstrating its robustness to vendor-induced domain shifts (Table 5). When combined with nnU-Net, MAIR
+outperformed all competing continual domain adaptation
+methods across vendors, with particularly notable gains over
+the strongest baseline on Vendor C.
+We further combined MAIR with Swin UNETR to examine its compatibility with different segmentation backbones. MAIR + Swin UNETR achieved the best performance on three of the four vendors and remained highly
+competitive on the remaining vendor. The consistent performance of MAIR with both nnU-Net and Swin UNETR
+demonstrate that its effectiveness is not dependent on a specific segmentation architecture. Overall, these results highlight the strong generalization capability of MAIR across
+heterogeneous vendors and different backbone architectures
+for 2D medical image segmentation.
+4.7. Generalization across network architecture
+To evaluate the architecture generalization of FGCARL,
+we incorporated FGCARL into two representative 3D segmentation architectures, nnU-Net and Swin UNETR, and
+evaluated their performance under the UCSF-BMSR →
+BraTS-METS 2023 incremental learning setting (Table 6).
+Xiaobing Yu, Jin Yang: Preprint submitted to Elsevier
+Page 15 of 19
+
+--- PAGE 16 [pdf_text] ---
+FGCARL for Medical Image Segmentation
+0.0 0.1
+0.3
+0.5
+0.7
+1.0
+1.2
+1.5
+seg
+30
+35
+40
+45
+50
+55
+60
+65
+70
+75
+DSC [%]
+ET (UCSF-BMSR)
+TC (BraTS-METS 2023)
+SNFH (BraTS-METS 2023)
+ET (BraTS-METS 2023)
+0.0 0.1
+0.3
+0.5
+0.7
+1.0
+1.2
+1.5
+dist
+30
+35
+40
+45
+50
+55
+60
+65
+70
+75
+ET (UCSF-BMSR)
+TC (BraTS-METS 2023)
+SNFH (BraTS-METS 2023)
+ET (BraTS-METS 2023)
+0.0 0.1
+0.3
+0.5
+0.7
+1.0
+1.2
+1.5
+FG
+30
+35
+40
+45
+50
+55
+60
+65
+70
+75
+ET (UCSF-BMSR)
+TC (BraTS-METS 2023)
+SNFH (BraTS-METS 2023)
+ET (BraTS-METS 2023)
+(A)
+(B)
+(C)
+Figure 6: Parameter sensitivity analysis of loss regularization weights by evaluating DSC scores in the UCSF-BMSR →BraTSMETS 2023 setting. Impact of varying (A) 𝜆𝑠𝑒𝑔, (B) 𝜆𝑑𝑖𝑠𝑡, (C) 𝜆𝐹𝐺across evaluation subregions in the BraTS-METS 2023.
+Table 5
+Evaluation of the generalization of MAIR across vendors and
+segmentation backbones on the M&Ms dataset. DSC (%) is
+reported for each vendor. Bold and underline indicate the best
+and second-best results, respectively.
+Methods
+Vendor A
+Vendor B
+Vendor C
+Vendor D
+MAS-LR [53]
+84.89
+88.36
+86.57
+84.62
+LwF [36]
+85.42
+88.78
+86.22
+85.14
+EWC [30]
+84.74
+88.86
+86.79
+85.33
+GR [61]
+85.11
+89.04
+86.44
+85.24
+Style-Oriented [33]
+85.91
+89.12
+86.85
+85.44
+MAIR + nnU-Net
+87.57
+89.41
+87.69
+86.04
+MAIR + Swin UNETR
+87.95
+89.73
+87.51
+86.17
+FGCARL can be directly integrated into different network
+architectures as an adaptive normalization mechanism, without requiring architecture-specific modifications.
+FGCARL consistently improved segmentation performance for both architectures. In Stage 1, where the networks
+were trained and evaluated within the same domain, incorporating FGCARL improved the baseline performance of both
+nnU-Net and Swin UNETR on UCSF-BMSR and BraTSMETS 2023. Notably, the improvement is particularly pronounced for Swin UNETR, indicating that the adaptive
+normalization provided by FGCARL can also enhance the
+representation learned by transformer-based segmentation
+networks even in the absence of domain shifts.
+More importantly, FGCARL maintained its effectiveness during continual adaptation from UCSF-BMSR to
+BraTS-METS 2023. In Stage 2, FGCARL achieved the highest performance among the evaluated incremental learning
+methods on both the source and target domains for both
+network architectures. For nnU-Net, FGCARL substantially
+improved retention of the previously learned UCSF-BMSR
+knowledge while simultaneously achieving the strongest
+performance on BraTS-METS 2023. A similar trend was
+observed with Swin UNETR, where FGCARL considerably
+outperformed the competing incremental learning methods
+on both domains. These results demonstrate that the benefits
+of FGCARL are not tied to a particular segmentation architecture and that its adaptive normalization and knowledge
+retention mechanisms can be effectively combined with both
+convolutional and transformer-based networks.
+4.8. Parameter sensitivity analysis
+We evaluated the sensitivity of segmentation performance, measured by DSC, to the regularization weighting
+hyperparameters in the UCSF-BMSR →BraTS-METS 2023
+setting. Specifically, we independently varied the weights
+of the three regularization components, 𝜆seg, 𝜆dist, and 𝜆FG
+(Figure 6 (A)–(C)), respectively.
+Overall, the three regularization terms exhibit similar
+trends across the evaluated tumor subregions. Increasing
+the regularization weight from 𝜆= 0 generally improves
+segmentation performance, indicating that each component
+contributes to effective continual adaptation and knowledge
+retention. Across the evaluated components and tumor subregions, 𝜆= 1.0 provides a favorable balance between
+retaining previously learned knowledge and adapting to the
+target domain, yielding consistently strong performance on
+both the source and target datasets. We therefore set the regularization weight to 𝜆= 1.0 in the remaining experiments.
+5. Conclusion
+In this work, we presented Fisher-Guided Continuously
+Adaptive Representation Learning (FGCARL), a unified
+framework for continual 3D medical image segmentation
+under evolving domain and class shifts. By integrating Mutual Adaptive Instance Representation (MAIR) for adaptive
+domain alignment with Fisher-Guided Knowledge Retention
+(FGKR) for selective preservation of previously acquired
+knowledge, FGCARL enables continuous adaptation while
+mitigating catastrophic forgetting. Extensive experiments
+across multiple cross-institutional segmentation tasks and
+diverse segmentation architectures demonstrated that FGCARL consistently outperforms existing continual learning
+approaches, achieving effective adaptation to newly encountered domains and classes while maintaining knowledge of
+previously learned ones. These results highlight the potential
+of FGCARL as a unified and generalizable solution for
+continual medical image segmentation in dynamic clinical
+environments.
+Xiaobing Yu, Jin Yang: Preprint submitted to Elsevier
+Page 16 of 19
+
+--- PAGE 17 [pdf_text] ---
+FGCARL for Medical Image Segmentation
+Table 6
+Performance comparison of FGCARL and other incremental learning methods using nnU-Net and Swin UNETR for 3D multi-modal
+medical image segmentation. Stage 1 evaluates in-domain performance without incremental learning, whereas Stage 2 evaluates
+continual adaptation from UCSF-BMSR to BraTS-METS 2023. DSC (%) is reported for single-class segmentation and as mean
+± standard deviation for multi-class segmentation. Bold and underline indicate the best and second-best results, respectively.
+Networks
+Incremental Methods
+No Incremental Learning (Stage 1)
+UCSF-BMSR →BraTS-METS 2023 (Stage 2)
+UCSF-BMSR
+BraTS-METS 2023
+UCSF-BMSR
+BraTS-METS 2023
+nnU-Net
+CWR + Batch Renormalization
+77.41
+60.04±4.15
+58.18
+60.21±4.59
+CoFit
+77.41
+60.04±4.15
+56.94
+59.71±4.01
+Lifelong
+77.41
+60.04±4.15
+59.63
+57.84±2.77
+FGCARL
+78.41
+60.42±6.56
+67.19
+60.96±6.31
+Swin UNETR
+CWR + Batch Renormalization
+63.51
+49.36±6.57
+60.46
+51.48±7.16
+CoFit
+63.51
+49.36±6.57
+62.61
+51.39±6.97
+FGCARL
+80.13
+66.51±5.06
+70.63
+68.28±5.56
+Declaration of competing interests
+The authors declare that they have no known competing
+financial interests or personal relationships that could have
+appeared to influence the work reported in this paper.
+CRediT authorship contribution statement
+XY: conceptualization, methodology, writing the original draft, reviewing, and editing; JY: conceptualization,
+methodology, writing the original draft, reviewing, and editing, visualization; PQ: conceptualization, writing the original draft, reviewing, and editing; WM: reviewing, and editing; XL: reviewing, and editing.
+References
+[1] Azad, R., Aghdam, E.K., Rauland, A., Jia, Y., Avval, A.H., Bozorgpour, A., Karimijafarbigloo, S., Cohen, J.P., Adeli, E., Merhof, D.,
+2024.
+Medical image segmentation review: The success of u-net.
+IEEE Transactions on Pattern Analysis and Machine Intelligence 46,
+10076–10095.
+[2] Ba, J.L., Kiros, J.R., Hinton, G.E., 2016. Layer normalization. stat
+1050, 21.
+[3] Bera, S., Ummadi, V., Sen, D., Mandal, S., Biswas, P.K., 2023.
+Memory replay for continual medical image segmentation through
+atypical sample selection, in: International Conference on Medical
+Image Computing and Computer-Assisted Intervention, Springer. pp.
+513–522.
+[4] Bi, Q., You, S., Gevers, T., 2024. Learning content-enhanced mask
+transformer for domain generalized urban-scene segmentation, in:
+Proceedings of the AAAI Conference on Artificial Intelligence, pp.
+819–827.
+[5] Bilic, P., Christ, P., Li, H.B., Vorontsov, E., Ben-Cohen, A., Kaissis,
+G., Szeskin, A., Jacobs, C., Mamani, G.E.H., Chartrand, G., et al.,
+2023. The liver tumor segmentation benchmark (lits). Medical image
+analysis 84, 102680.
+[6] Campello, V.M., Gkontra, P., Izquierdo, C., Martin-Isla, C., Sojoudi,
+A., Full, P.M., Maier-Hein, K., Zhang, Y., He, Z., Ma, J., et al., 2021.
+Multi-centre, multi-vendor and multi-disease cardiac segmentation:
+the m&ms challenge. IEEE Transactions on Medical Imaging 40,
+3543–3554.
+[7] Chang, W.G., You, T., Seo, S., Kwak, S., Han, B., 2019. Domainspecific batch normalization for unsupervised domain adaptation, in:
+Proceedings of the IEEE/CVF conference on Computer Vision and
+Pattern Recognition, pp. 7354–7362.
+[8] Chaudhry, A., Dokania, P.K., Ajanthan, T., Torr, P.H., 2018. Riemannian walk for incremental learning: Understanding forgetting
+and intransigence, in: Proceedings of the European conference on
+computer vision (ECCV), pp. 532–547.
+[9] Chen, J., Mei, J., Li, X., Lu, Y., Yu, Q., Wei, Q., Luo, X., Xie, Y.,
+Adeli, E., Wang, Y., et al., 2024a. Transunet: Rethinking the u-net
+architecture design for medical image segmentation through the lens
+of transformers. Medical Image Analysis 97, 103280.
+[10] Chen, X., Zheng, H., Xie, Y., Ma, Y., Li, T., 2024b. A classifier-free
+incremental learning framework for scalable medical image segmentation. arXiv preprint arXiv:2405.16328 .
+[11] Çiçek, Ö., Abdulkadir, A., Lienkamp, S.S., Brox, T., Ronneberger, O.,
+2016. 3d u-net: learning dense volumetric segmentation from sparse
+annotation, in: International conference on medical image computing
+and computer-assisted intervention, Springer. pp. 424–432.
+[12] Douillard, A., Chen, Y., Dapogny, A., Cord, M., 2021. Plop: Learning
+without forgetting for continual semantic segmentation, in: Proceedings of the IEEE/CVF conference on computer vision and pattern
+recognition, pp. 4040–4050.
+[13] Du, S., Bayasi, N., Hamarneh, G., Garbi, R., 2023. Mdvit: Multidomain vision transformer for small medical image segmentation
+datasets, in: International Conference on Medical Image Computing
+and Computer-Assisted Intervention, Springer. pp. 448–458.
+[14] Elskhawy, A., Lisowska, A., Keicher, M., Henry, J., Thomson, P.,
+Navab, N., 2020. Continual class incremental learning for ct thoracic
+segmentation, in: MICCAI Workshop on Domain Adaptation and
+Representation Transfer, Springer. pp. 106–116.
+[15] Fernando, C., Banarse, D., Blundell, C., Zwols, Y., Ha, D., Rusu,
+A.A., Pritzel, A., Wierstra, D., 2017.
+Pathnet: Evolution channels gradient descent in super neural networks.
+arXiv preprint
+arXiv:1701.08734 .
+[16] Gao, Q., Zhao, C., Ghanem, B., Zhang, J., 2022. R-dfcil: Relationguided representation learning for data-free class incremental learning, in: European Conference on Computer Vision, Springer. pp. 423–
+439.
+[17] Garg, P., Saluja, R., Balasubramanian, V.N., Arora, C., Subramanian, A., Jawahar, C., 2022. Multi-domain incremental learning for
+semantic segmentation, in: Proceedings of the IEEE/CVF Winter
+Conference on Applications of Computer Vision, pp. 761–771.
+[18] Gonzalez, C., Lemke, N., Sakas, G., Mukhopadhyay, A., 2020. What
+is wrong with continual learning in medical image segmentation?
+arXiv preprint arXiv:2010.11008 .
+[19] González, C., Ranem, A., Pinto dos Santos, D., Othman, A.,
+Mukhopadhyay, A., 2023. Lifelong nnu-net: a framework for standardized medical continual learning. Scientific Reports 13, 9381.
+[20] Grøvik, E., Yi, D., Iv, M., Tong, E., Rubin, D., Zaharchuk, G., 2020.
+Deep learning enables automatic detection and segmentation of brain
+metastases on multisequence mri. Journal of Magnetic Resonance
+Imaging 51, 175–182.
+[21] Hatamizadeh, A., Nath, V., Tang, Y., Yang, D., Roth, H.R., Xu, D.,
+2021. Swin unetr: Swin transformers for semantic segmentation of
+brain tumors in mri images, in: International MICCAI brainlesion
+Xiaobing Yu, Jin Yang: Preprint submitted to Elsevier
+Page 17 of 19
+
+--- PAGE 18 [pdf_text] ---
+FGCARL for Medical Image Segmentation
+workshop, Springer. pp. 272–284.
+[22] Hatamizadeh, A., Tang, Y., Nath, V., Yang, D., Myronenko, A.,
+Landman, B., Roth, H.R., Xu, D., 2022. Unetr: Transformers for 3d
+medical image segmentation, in: Proceedings of the IEEE/CVF winter
+conference on applications of computer vision, pp. 574–584.
+[23] Hou, S., Pan, X., Loy, C.C., Wang, Z., Lin, D., 2019. Learning a
+unified classifier incrementally via rebalancing, in: Proceedings of the
+IEEE/CVF conference on computer vision and pattern recognition,
+pp. 831–839.
+[24] Hung, C.Y., Tu, C.H., Wu, C.E., Chen, C.H., Chan, Y.M., Chen, C.S.,
+2019. Compacting, picking and growing for unforgetting continual
+learning. Advances in neural information processing systems 32.
+[25] Imran, M., Akram, M.U., Tiwana, M.I., Salam, A.A., Hassan, T.,
+Greco, D., 2024.
+Two-dimensional hybrid incremental learning
+(2dhil) framework for semantic segmentation of skin tissues. Image
+and Vision Computing 148, 105147.
+[26] Isensee, F., Jaeger, P.F., Kohl, S.A., Petersen, J., Maier-Hein, K.H.,
+2021.
+nnu-net: a self-configuring method for deep learning-based
+biomedical image segmentation. Nature methods 18, 203–211.
+[27] Jiang, Z., Li, Y., Yang, C., Gao, P., Wang, Y., Tai, Y., Wang, C.,
+2022. Prototypical contrast adaptation for domain adaptive semantic
+segmentation, in: European conference on computer vision, Springer.
+pp. 36–54.
+[28] Joseph, K., Khan, S., Khan, F.S., Anwer, R.M., Balasubramanian,
+V.N., 2022. Energy-based latent aligner for incremental learning, in:
+Proceedings of the IEEE/CVF Conference on Computer Vision and
+Pattern Recognition, pp. 7452–7461.
+[29] Kanakis, M., Bruggemann, D., Saha, S., Georgoulis, S., Obukhov, A.,
+Van Gool, L., 2020. Reparameterizing convolutions for incremental
+multi-task learning without task interference, in: European conference
+on computer vision, Springer. pp. 689–707.
+[30] Kirkpatrick, J., Pascanu, R., Rabinowitz, N., Veness, J., Desjardins,
+G., Rusu, A.A., Milan, K., Quan, J., Ramalho, T., Grabska-Barwinska,
+A., et al., 2017. Overcoming catastrophic forgetting in neural networks. Proceedings of the national academy of sciences 114, 3521–
+3526.
+[31] Kundu, J.N., Venkatesh, R.M., Venkat, N., Revanur, A., Babu, R.V.,
+2020. Class-incremental domain adaptation, in: European conference
+on computer vision, Springer. pp. 53–69.
+[32] Landman, B., Xu, Z., Igelsias, J., Styner, M., Langerak, T., Klein,
+A., 2015.
+Miccai multi-atlas labeling beyond the cranial vault–
+workshop and challenge, in: Proc. MICCAI Multi-Atlas Labeling
+Beyond Cranial Vault—Workshop Challenge, p. 12.
+[33] Li, K., Yu, L., Heng, P.A., 2022. Domain-incremental cardiac image
+segmentation with style-oriented replay and domain-sensitive feature
+whitening. IEEE Transactions on Medical Imaging 42, 570–581.
+[34] Li, W., Zhang, J., Heng, P.A., Gu, L., 2024. Comprehensive generative
+replay for task-incremental segmentation with concurrent appearance
+and semantic forgetting, in: International Conference on Medical
+Image Computing and Computer-Assisted Intervention, Springer. pp.
+80–90.
+[35] Li, X., Zhou, Y., Wu, T., Socher, R., Xiong, C., 2019. Learn to grow:
+A continual structure learning framework for overcoming catastrophic
+forgetting, in: International conference on machine learning, PMLR.
+pp. 3925–3934.
+[36] Li, Z., Hoiem, D., 2017. Learning without forgetting. IEEE transactions on pattern analysis and machine intelligence 40, 2935–2947.
+[37] Liu, H., Gu, L., Chi, Z., Wang, Y., Yu, Y., Chen, J., Tang, J., 2022a.
+Few-shot class-incremental learning via entropy-regularized data-free
+replay, in: European Conference on Computer Vision, Springer. pp.
+146–162.
+[38] Liu, P., Wang, X., Fan, M., Pan, H., Yin, M., Zhu, X., Du, D., Zhao, X.,
+Xiao, L., Ding, L., et al., 2022b. Learning incrementally to segment
+multiple organs in a ct image, in: International Conference on Medical
+Image Computing and Computer-Assisted Intervention, Springer. pp.
+714–724.
+[39] Liu, Q., Dou, Q., Yu, L., Heng, P.A., 2020. Ms-net: multi-site network
+for improving prostate segmentation with heterogeneous mri data.
+IEEE transactions on medical imaging 39, 2713–2724.
+[40] Liu, X., Liu, X., Hu, B., Ji, W., Xing, F., Lu, J., You, J., Kuo,
+C.C.J., El Fakhri, G., Woo, J., 2021a. Subtype-aware unsupervised
+domain adaptation for medical diagnosis, in: Proceedings of the
+AAAI conference on artificial intelligence, pp. 2189–2197.
+[41] Liu, X., Prince, J.L., Xing, F., Zhuo, J., Reese, T., Stone, M., El Fakhri,
+G., Woo, J., 2023a. Attentive continuous generative self-training for
+unsupervised domain adaptive medical image translation. Medical
+image analysis 88, 102851.
+[42] Liu, X., Shih, H.A., Xing, F., Santarnecchi, E., El Fakhri, G., Woo,
+J., 2023b. Incremental learning for heterogeneous structure segmentation in brain tumor mri, in: International Conference on Medical
+Image Computing and Computer-Assisted Intervention, Springer. pp.
+46–56.
+[43] Liu, X., Xing, F., El Fakhri, G., Woo, J., 2023c. Memory consistent
+unsupervised off-the-shelf model adaptation for source-relaxed medical image segmentation. MedIA 83, 102641.
+[44] Liu, X., Xing, F., Shusharina, N., Lim, R., Jay Kuo, C.C., El Fakhri,
+G., Woo, J., 2022c. Act: Semi-supervised domain-adaptive medical
+image segmentation with asymmetric co-training, in: International
+conference on medical image computing and computer-assisted intervention, Springer. pp. 66–76.
+[45] Liu, Y., Schiele, B., Sun, Q., 2021b. Adaptive aggregation networks
+for class-incremental learning, in: Proceedings of the IEEE/CVF
+conference on Computer Vision and Pattern Recognition, pp. 2544–
+2553.
+[46] Ma, J., He, Y., Li, F., Han, L., You, C., Wang, B., 2024. Segment
+anything in medical images. Nature Communications 15, 654.
+[47] Mallasto, A., Feragen, A., 2017.
+Learning from uncertain curves:
+The 2-wasserstein metric for gaussian processes. Advances in Neural
+Information Processing Systems 30.
+[48] Milletari, F., Navab, N., Ahmadi, S.A., 2016. V-net: Fully convolutional neural networks for volumetric medical image segmentation,
+in: 2016 fourth international conference on 3D vision (3DV), Ieee.
+pp. 565–571.
+[49] Mirza, M.J., Micorek, J., Possegger, H., Bischof, H., 2022. The norm
+must go on: Dynamic unsupervised domain adaptation by normalization, in: Proceedings of the IEEE/CVF conference on computer vision
+and pattern recognition, pp. 14765–14775.
+[50] Moawad, A.W., Janas, A., Baid, U., Ramakrishnan, D., Saluja, R.,
+Ashraf, N., Maleki, N., Jekel, L., Yordanov, N., Fehringer, P., et al.,
+2024. The brain tumor segmentation-metastases (brats-mets) challenge 2023: Brain metastasis segmentation on pre-treatment mri.
+ArXiv , arXiv–2306.
+[51] Nam, H., Kim, H.E., 2018. Batch-instance normalization for adaptively style-invariant neural networks. Advances in Neural Information Processing Systems 31.
+[52] Ozdemir, F., Fuernstahl, P., Goksel, O., 2018.
+Learn the new,
+keep the old: Extending pretrained models with new anatomy and
+images, in: International Conference on Medical Image Computing
+and Computer-Assisted Intervention, Springer. pp. 361–369.
+[53] Özgün, S., Rickmann, A.M., Roy, A.G., Wachinger, C., 2020. Importance driven continual learning for segmentation across domains, in:
+International Workshop on Machine Learning in Medical Imaging,
+Springer. pp. 423–433.
+[54] Park, G., Moon, W., Lee, S., Kim, T.Y., Heo, J.P., 2024a. Mitigating
+background shift in class-incremental semantic segmentation, in:
+European Conference on Computer Vision, Springer. pp. 71–88.
+[55] Park, M.Y., Lee, J.H., Park, G.M., 2024b.
+Versatile incremental
+learning: Towards class and domain-agnostic incremental learning,
+in: European Conference on Computer Vision, Springer. pp. 271–288.
+[56] Qiu, P., Yang, J., Kumar, S., Ghosh, S.S., Sotiras, A., 2026.
+Agileformer: Spatially agile and scalable transformer for medical image segmentation. Biomedical Signal Processing and Control 112,
+108842.
+[57] Rebuffi, S.A., Kolesnikov, A., Sperl, G., Lampert, C.H., 2017. icarl:
+Incremental classifier and representation learning, in: Proceedings of
+the IEEE conference on Computer Vision and Pattern Recognition,
+Xiaobing Yu, Jin Yang: Preprint submitted to Elsevier
+Page 18 of 19
+
+--- PAGE 19 [pdf_text] ---
+FGCARL for Medical Image Segmentation
+pp. 2001–2010.
+[58] Ronneberger, O., Fischer, P., Brox, T., 2015. U-net: Convolutional
+networks for biomedical image segmentation, in: International Conference on Medical image computing and computer-assisted intervention, Springer. pp. 234–241.
+[59] Rudie, J.D., Saluja, R., Weiss, D.A., Nedelec, P., Calabrese, E., Colby,
+J.B., Laguna, B., Mongan, J., Braunstein, S., Hess, C.P., et al., 2024.
+The university of california san francisco brain metastases stereotactic
+radiosurgery (ucsf-bmsr) mri dataset. Radiology: Artificial Intelligence 6, e230126.
+[60] Shang, C., Li, H., Meng, F., Wu, Q., Qiu, H., Wang, L., 2023. Incrementer: Transformer for class-incremental semantic segmentation
+with knowledge distillation focusing on old class, in: Proceedings of
+the IEEE/CVF Conference on Computer Vision and Pattern Recognition, pp. 7214–7224.
+[61] Shin, H., Lee, J.K., Kim, J., Kim, J., 2017. Continual learning with
+deep generative replay. Advances in neural information processing
+systems 30.
+[62] Tan, Y., Zhou, Q., Xiang, X., Wang, K., Wu, Y., Li, Y., 2024.
+Semantically-shifted incremental adapter-tuning is a continual vitransformer, in: Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition, pp. 23252–23262.
+[63] Tian, M., Yang, Q., Gao, Y., 2022. Multi-scale multi-task distillation
+for incremental 3d medical image segmentation, in: European Conference on Computer Vision, Springer. pp. 369–384.
+[64] Tiwari, R., Killamsetty, K., Iyer, R., Shenoy, P., 2022. Gcr: Gradient coreset based replay buffer selection for continual learning, in:
+Proceedings of the IEEE/CVF Conference on Computer Vision and
+Pattern Recognition (CVPR), pp. 99–108.
+[65] Wang, H., Wu, H., Qin, J., 2024.
+Incremental nuclei segmentation from histopathological images via future-class awareness and
+compatibility-inspired distillation, in: Proceedings of the IEEE/CVF
+conference on computer vision and pattern recognition, pp. 11408–
+11417.
+[66] Wang, Z., Liu, L., Duan, Y., Kong, Y., Tao, D., 2022. Continual learning with lifelong vision transformer, in: 2022 IEEE/CVF Conference
+on Computer Vision and Pattern Recognition (CVPR), pp. 171–181.
+doi:10.1109/CVPR52688.2022.00027.
+[67] Xie, Z., Lu, H., Xiao, J.w., Wang, E., Zhang, L., Liu, X., 2024. Early
+preparation pays off: New classifier pre-tuning for class incremental
+semantic segmentation, in: European conference on computer vision,
+Springer. pp. 183–201.
+[68] Yang, G., Fini, E., Xu, D., Rota, P., Ding, M., Nabi, M., AlamedaPineda, X., Ricci, E., 2022. Uncertainty-aware contrastive distillation
+for incremental semantic segmentation. IEEE Transactions on Pattern
+Analysis and Machine Intelligence 45, 2567–2581.
+[69] Yang, J., Marcus, D.S., Sotiras, A., 2025a.
+Dmc-net: Lightweight
+dynamic multi-scale and multi-resolution convolution network for
+pancreas segmentation in ct images. Biomedical Signal Processing
+and Control 109, 107896.
+[70] Yang, J., Qiu, P., Zhang, Y., Marcus, D.S., Sotiras, A., 2026.
+Dnet: Dynamic large kernel with dynamic feature fusion for volumetric
+medical image segmentation.
+Biomedical Signal Processing and
+Control 113, 108837. URL: https://www.sciencedirect.com/science/
+article/pii/S1746809425013485, doi:https://doi.org/10.1016/j.bspc.
+2025.108837.
+[71] Yang, J., Yang, J., Yu, X., Qiu, P., Prajapat, S., 2025b.
+D2-mlp:
+Dynamic decomposed mlp mixer for medical image segmentation,
+in: ICASSP 2025-2025 IEEE International Conference on Acoustics,
+Speech and Signal Processing (ICASSP), IEEE. pp. 1–5.
+[72] Yang, J., Yu, X., Qiu, P., Marcus, D., Sotiras, A., 2025c.
+Active
+source-free cross-domain and cross-modality adaptation for volumetric medical image segmentation by image sensitivity and organ heterogeneity sampling, in: International Conference on Medical Image
+Computing and Computer-Assisted Intervention, Springer. pp. 3–12.
+[73] Yin, H., Molchanov, P., Alvarez, J.M., Li, Z., Mallya, A., Hoiem, D.,
+Jha, N.K., Kautz, J., 2020. Dreaming to distill: Data-free knowledge
+transfer via deepinversion, in: Proceedings of the IEEE/CVF conference on computer vision and pattern recognition, pp. 8715–8724.
+[74] You, C., Xiang, J., Su, K., Zhang, X., Dong, S., Onofrey, J., Staib,
+L., Duncan, J.S., 2022. Incremental learning meets transfer learning:
+Application to multi-site prostate mri segmentation, in: International
+Workshop on Distributed, Collaborative, and Federated Learning,
+Springer. pp. 3–16.
+[75] Yu, L., Liu, X., Van de Weijer, J., 2022.
+Self-training for classincremental semantic segmentation.
+IEEE Transactions on Neural
+Networks and Learning Systems 34, 9116–9127.
+[76] Zhang, C.B., Xiao, J.W., Liu, X., Chen, Y.C., Cheng, M.M., 2022.
+Representation compensation networks for continual semantic segmentation, in: Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition, pp. 7053–7064.
+[77] Zhang, H., Zhang, Y., Jia, K., Zhang, L., 2021. Unsupervised domain
+adaptation of black-box source models, in: BMVC.
+[78] Zhang, Y., Li, X., Chen, H., Yuille, A.L., Liu, Y., Zhou, Z., 2023.
+Continual learning for abdominal multi-organ and tumor segmentation, in: International conference on medical image computing and
+computer-assisted intervention, Springer. pp. 35–45.
+[79] Zhou, H.Y., Guo, J., Zhang, Y., Han, X., Yu, L., Wang, L., Yu, Y.,
+2023. nnformer: Volumetric medical image segmentation via a 3d
+transformer. IEEE transactions on image processing 32, 4036–4045.
+Xiaobing Yu, Jin Yang: Preprint submitted to Elsevier
+Page 19 of 19

@@ -1,0 +1,709 @@
+--- PAGE 1 [pdf_text] ---
+Wearable Data Profiling for NDN-Based Smart
+Healthcare: Performance Comparison with an IP
+Baseline
+Mohammad R. Shakournia1, Nasser Yazdani1, and Carlos T. Calafate2
+1 Department of Electrical and Computer Engineering, University of Tehran,
+Tehran, Iran
+{shakournia,yazdani}@ut.ac.ir
+2 Department of Computer Engineering, Universitat Politècnica de València,
+Valencia, Spain
+calafate@disca.upv.es
+Abstract. Smart healthcare IoT requires low-latency and reliable delivery of patient data, yet IP-based communication remains host-centric
+and offers limited support for mobility, caching, and request aggregation. This paper evaluates a smartphone-centric Named Data Networking (NDN) approach in which a patient’s smartphone aggregates sensor
+streams and publishes a stable “latest profile” under a consistent name,
+enabling effective in-network caching. Using ndnSIM simulations on a
+realistic medical IoT topology, we compare NDN and IP under identical traffic and link conditions. Results show that per-sample naming
+provides little benefit, but smartphone aggregation with stable naming
+allows NDN caching to reduce delay after cache warm-up and achieve
+significantly higher delivery ratios under congestion compared to IP.
+Keywords: Named Data Network · Smart Healthcare · IoHT · Mobile
+Health.
+1
+Introduction
+The growing use of wearable sensors, home medical devices, and mobile health
+(mHealth) applications is moving healthcare from occasional, hospital-centered
+visits to continuous, patient-centered monitoring. In these systems, body-worn
+and ambient sensors measure vital signs and other physiological parameters and
+send them, often over short-range and multi-hop wireless links, to a nearby
+gateway such as a smartphone, which must then forward the data to healthcare staff with low delay and high reliability [11, 2]. Many smart-hospital and
+remote-monitoring platforms already combine IoT, edge, and cloud components
+to provide such continuous services [13]. However, most of these platforms are
+built on the traditional TCP/IP protocol stack and therefore inherit its known
+limits in terms of scalability, mobility support, and efficient, secure data delivery in dense and dynamic IoT environments [8, 3]. Beyond performance concerns,
+arXiv:2610.20215v1 [cs.NI] 14 Oct 2026
+
+--- PAGE 2 [pdf_text] ---
+2
+M. R. Shakournia et al.
+the underlying networking substrate can also influence how efficiently data and
+resources are shared across stakeholders, i.e., whether the network itself can facilitate a form of network-level collective intelligence by enabling reuse and local
+sharing of previously retrieved medical information.
+The traditional Internet architecture is host-centric: routers forward packets
+toward IP addresses that identify endpoints rather than the data itself. This
+model is not well suited for data-intensive smart environments and IoT systems, where applications are mainly interested in named content (for example,
+the latest ECG of a given patient) instead of a specific server. Recent surveys
+on NDN in smart environments and IoT report several limitations of the IP
+model in this setting, including complex address management, limited mobility
+support, and lack of pervasive in-network caching, which are especially problematic in dense and dynamic IoT healthcare environments. This paper focuses on
+smartphone-centric IoT healthcare and demonstrates how NDN can overcome
+these challenges in such settings by offloading much of the traffic management to
+in-network caches and enabling faster, more efficient data retrieval. In this sense,
+repeated clinical queries (e.g., by a physician, a clinic system, or an authorized
+service) can benefit from data that the network has already fetched, effectively
+turning the network into a shared pool of reusable content. By eliminating the
+need for traditional IP-based address resolution and supporting mobility, NDN
+proves to be a better fit for healthcare IoT systems where real-time data from
+wearable sensors is crucial [8, 12, 1, 3]. These studies argue that simply running
+application-layer protocols such as MQTT or CoAP over IP cannot fully solve
+these structural problems; instead, the network layer itself must evolve toward
+a data-centric design.
+Named Data Networking has been proposed as a prominent informationcentric networking (ICN) architecture to address these limitations [14]. In NDN,
+applications request content by hierarchical names rather than by host addresses;
+routers forward Interest packets according to name prefixes and return Data
+packets that can be cached at any hop. This leads to a stateful forwarding plane,
+based on Pending Interest Tables (PITs), Forwarding Information Bases (FIBs),
+and Content Stores (CSs), which natively supports in-network caching, multipath retrieval, and efficient multicast, while data-centric security is achieved by
+cryptographically binding each Data packet to its producer, independent of the
+delivery path [14]. As a result, the distributed CS across routers can be viewed
+as a continuously updated, network-wide knowledge pool: once data is retrieved,
+it becomes locally available for subsequent consumers without requiring them to
+know the original producer. Moreover, the cooperative behavior of PIT aggregation and CS hits enables decentralized coordination of data retrieval, allowing
+the network as a whole to efficiently satisfy repeated requests without a central
+controller. Surveys on NDN for smart environments and on hierarchical naming
+for NDN-IoT conclude that these properties align well with the requirements
+of smart cities, buildings, and health spaces, but also emphasize open issues in
+naming scalability, resource constraints, and security [8, 12].
+
+--- PAGE 3 [pdf_text] ---
+Wearable Data Profiling for NDN-Based Smart Healthcare
+3
+Recent work suggests NDN can improve performance and security in healthcare IoT [13, 6, 7, 9], but many studies focus on architecture/security/caching
+strategies rather than a clean baseline comparison against IP under matched conditions [3, 8, 12, 1]. This paper isolates the effect of NDN’s caching and request
+aggregation in a realistic smartphone-centric healthcare topology and compares
+delay and delivery reliability to IP.
+This work focuses on an underexplored but highly relevant scenario in healthcare IoT, namely a smartphone-centric system, where the patient’s smartphone
+serves as the data aggregation point for multiple wearable sensors, and acts as
+the NDN data producer for the patient’s health profile. While the literature
+has demonstrated the potential of NDN for healthcare, few studies have explicitly tested NDN in small-scale, smartphone-centric topologies that simulate
+real-world, patient-centric monitoring systems. To address this limitation, we
+present a comprehensive comparison of NDN and IP in a smartphone-centric
+healthcare scenario, evaluating their performance under identical experimental
+conditions. Our study demonstrates that NDN can improve real-time data delivery by exploiting data-centric communication and in-network caching while
+requiring only minimal modifications to existing infrastructure. Experimental
+results further indicate that this architecture reduces communication latency
+and better accommodates user mobility, highlighting the potential of NDN as a
+practical networking solution for future smart healthcare systems.
+The rest of this paper is organized as follows. Section II reviews background
+on NDN and summarizes related work on NDN-based healthcare and smart
+environments. Section III presents the proposed system model, including node
+roles, naming scheme, and traffic types. Section IV describes the simulation setup
+and performance metrics. Section V discusses the numerical results comparing
+NDN and IP. Finally, Section VI concludes the paper and outlines directions for
+future work.
+2
+Related Work
+Early IP-based BAN/WSN healthcare systems forward sensor data via gateways over TCP/IP (often 6LoWPAN), but the host-centric model offers limited
+support for mobility, in-network caching, and data-centric security.[11, 2].
+Information-centric networking, and in particular NDN, has been proposed to
+better match the data-oriented nature of IoT and smart environments. Amadeo
+et al. review ICN for the Internet of Things and argue that name-based access,
+in-network caching, and data-centric security can address many of the scalability
+and mobility issues that arise under IP [1]. Zhang et al. present the NDN architecture, in which consumers issue Interests for named content and Data packets
+can be served from any node that holds a copy, whether the original producer
+or an intermediate cache [14]. Recent surveys extend this perspective to smart
+environments and NDN-IoT deployments. Islam et al. show that NDN’s hierarchical naming, stateful forwarding, and built-in caching align well with the needs
+of smart cities, buildings, and health spaces, but also highlight practical barriers
+
+--- PAGE 4 [pdf_text] ---
+4
+M. R. Shakournia et al.
+such as interoperability with IP and limited testbeds [8]. Shah et al. focus on
+hierarchical and hybrid naming schemes for NDN-based IoT, including e-health
+scenarios, and discuss how naming choices interact with access control, content
+protection, and the resource constraints of IoT devices [12]. Azamuddin et al.
+provide a broad overview of NDN architecture, applications, and open research
+problems, further motivating its use in emerging IoT and edge-computing settings [3]. On the caching side, Jafari et al. propose ECLAT-LRU, a predictive
+caching policy that improves NDN cache performance [10].
+On top of this architectural groundwork, several NDN-based frameworks for
+healthcare and related IoT domains have been proposed. Wang and Cai introduce SHNIE, a secure healthcare monitoring framework that integrates clustered
+IoT devices with an NDN-based edge cloud [13]. SHNIE uses hash-based ciphertext names, encryption, and signatures to protect medical data and exploits
+request aggregation and in-network caching to reduce communication latency
+and message cost compared with an IP-based smart hospital system. Dudeja et
+al. design an NDN-based data communication framework for IoT–edge ecosystems in which edge nodes act as cluster heads and assign priorities to periodic sensor data; these priorities are then mapped to different caching strategies
+(e.g., Leave-Copy-Everywhere versus Leave-Copy-Down) in the NDN core [6].
+In a follow-up work, they propose a secure and pervasive NDN communication framework for connected healthcare that supports both consumer-initiated
+and producer-initiated data dissemination and evaluate its performance under
+various network conditions [7]. Demir and Manap implement a Named Data
+Networking of Things (NDNoT) stack on the Contiki-NG operating system and
+demonstrate the feasibility of NDN-based medical data retrieval on constrained
+IoT devices using Cooja simulations [5]. Islam et al. outline an NDN-aided edge–
+cloud architecture for continuous smart healthcare, where NDN is used at the
+edge and an NDN edge gateway bridges local NDN domains to IP-based cloud
+services such as AWS IoT [9].
+These efforts collectively illustrate the potential benefits of NDN in healthcare and IoT-edge settings, including improved content delivery efficiency, flexible data dissemination patterns, and stronger data-centric security. However,
+most existing works either focus on security mechanisms and naming schemes,
+on architectural integration with edge and cloud platforms, or on NDN-only
+performance tuning. SHNIE does include an analytical and simulation-based
+comparison with an IP smart-hospital baseline, but its design centers on a relatively complex edge-cloud security framework rather than on a minimal end-toend communication model [13]. Other proposals evaluate NDN-based healthcare
+or IoT frameworks in isolation, without constructing a matching IP reference
+system over the same topology and traffic patterns [6, 7, 5, 9]. Despite recent
+advances, controlled side-by-side comparisons between NDN and IP under identical experimental conditions remain limited, particularly in smartphone-centric
+medical IoT scenarios where the patient’s smartphone serves as both the edge
+device and the primary data producer. In such environments, remote caregivers
+retrieve up-to-date patient information directly by name, making it possible to
+
+--- PAGE 5 [pdf_text] ---
+Wearable Data Profiling for NDN-Based Smart Healthcare
+5
+evaluate the practical benefits and limitations of NDN relative to conventional
+IP networking.
+3
+System Model and Proposed Architecture
+We study the use of NDN in a smart healthcare system where patients are
+equipped with wearable IoT sensors. Our goal is to evaluate whether NDN can
+provide communication performance comparable to, or better than, a traditional
+IP-based solution when delivering medical data from patients to remote caregivers. In addition to end-to-end performance, we are interested in whether
+NDN’s data-centric mechanisms enable efficient reuse of previously retrieved
+health information across multiple authorized stakeholders, effectively leveraging the network as a shared substrate for data access.
+3.1
+Overall Scenario and Node Types
+We consider a hospital or clinic scenario in which each patient is continuously
+monitored by a set of body-worn sensors. These sensors periodically generate
+physiological measurements such as heart rate, SpO2, and blood pressure. A
+patient’s smartphone acts as a local gateway and edge device that collects sensor
+data and makes it available to remote caregivers.
+In our evaluation, we model six patients, each with one smartphone. The
+smartphones and caregivers are interconnected by a fixed multi-hop network.
+On the caregiver side, we consider six monitoring consumers representing clinics,
+physicians, or hospital monitoring stations. This multi-consumer setting naturally captures repeated access to the same patient state from different monitoring points, which is precisely where in-network caching can provide network-wide
+reuse by serving subsequent requests from nearby nodes. Between smartphones
+and consumers, the network includes nine routers (e.g., access routers and intermediate/core routers), resulting in a 21-node topology. The same topology, node
+roles, and traffic patterns are used in both NDN and IP scenarios (Section IV
+will detail link capacities, propagation delays, and traffic parameters).
+The medical traffic of interest consists primarily of periodic monitoring flows
+(vital signs) and time-critical updates (e.g., alarms or abrupt changes). We focus
+on end-to-end delay and packet loss as the main performance metrics; all security
+mechanisms (encryption, signatures) are abstracted away and not modeled in the
+simulations.
+3.2
+Baseline NDN Design: Direct Sensor-to-Consumer
+Communication
+As an initial baseline, we consider a straightforward NDN design in which each
+body-worn sensor acts as an NDN data producer. Every new measurement generated by the sensor (e.g., once per second, once per minute, or at any other
+
+--- PAGE 6 [pdf_text] ---
+6
+M. R. Shakournia et al.
+configured sampling interval) is published as a distinct NDN Data packet with
+a unique name that encodes the generation time. In this model, clinics, doctors,
+or hospital servers act as NDN consumers and retrieve samples directly from
+the sensors by issuing Interests for these time-stamped names over a multi-hop
+topology, similar to IP-based body area network designs where sensors forward
+data to a sink or gateway [11, 2]. For such time-critical flows, where each sample
+is unique and must be delivered as soon as it is produced, in-network caching and
+request aggregation offer little benefit, because each measurement is requested
+exactly once and is not reused by other consumers. As a result, this baseline
+intentionally represents a setting where the network cannot exploit reuse across
+stakeholders, since there is no shared, repeatedly requested content to retain in
+the forwarding plane.
+To better isolate this effect, we also conduct a micro-benchmark in a minimal topology consisting of a single producer (modeling a body-worn sensor), one
+intermediate router, and a single consumer. In this setup, the producer generates 1000 distinct packets, each carrying a unique name (or, in the IP case, a
+unique sequence identifier), and we transmit the same 1000 packets over both
+an IP and an NDN stack under identical link settings, measuring the end-to-end
+request–response delay. Since all packets are strictly non-reusable, this experiment intentionally removes the main performance advantages of NDN, namely
+in-network caching and request aggregation. Intermediate NDN routers still perform per-packet lookups in CS and PIT, in addition to FIB lookups, whereas
+the IP baseline only maintains a routing table and forwards packets without
+per-request state. In our ns-3/ndnSIM implementation, the additional CS/PIT
+processing overhead is modeled at a logical level and therefore manifests as only
+a small difference in simulated delay; however, in a real implementation with
+non-negligible lookup and memory costs, this overhead can become more pronounced and may make NDN slower than a stateless IP forwarder under purely
+time-critical, non-cacheable traffic. The numerical results of this sanity-check
+experiment, summarized in Table 1, confirm that under these conditions NDN
+does not provide a delay advantage over IP.
+3.3
+Proposed Smartphone-Centric NDN Architecture
+To enable NDN to exploit its strengths in this setting, we propose a smartphonecentric architecture in which the patient’s smartphone acts as an edge device and
+the primary NDN data producer.
+Body-Worn Sensors and Smartphone Edge Device In the proposed architecture, each patient wears multiple body-mounted sensors that measure physiological parameters such as heart rate, SpO2, and blood pressure. These sensors
+communicate wirelessly with the patient’s smartphone, which acts as a local
+edge device and data aggregator. In line with current commercial practice, we
+assume that body-worn sensors use Bluetooth Low Energy (BLE) to connect to
+the smartphone, which plays the role of the BLE central device and periodically
+
+--- PAGE 7 [pdf_text] ---
+Wearable Data Profiling for NDN-Based Smart Healthcare
+7
+Table 1. Simulation parameters and RTT results for the single-hop baseline scenario
+(a) Simulation parameters
+Parameter
+Value
+Link data rate 10 Mbps
+Link delay
+1 ms
+Queue size
+50 packets
+Traffic Size
+1000
+(b) RTT statistics at consumer
+Metric
+IP (Request–Response) NDN (Interest–Data)
+Samples
+1000
+1000
+Mean [ms]
+4.736
+5.447
+Median [ms]
+4.736
+5.448
+95th perc. [ms]
+4.736
+5.448
+99th perc. [ms]
+4.736
+5.448
+Fig. 1. System architecture of the proposed NDN-enabled IoHT environment. The
+patient’s smartphone acts as the data producer, aggregating sensor readings and serving
+named profile data to healthcare consumers (clinics, physicians, hospitals) through the
+Named Data Network.
+collects measurements from multiple BLE peripherals [15, 4]. This reflects how
+many consumer-grade wearable healthcare and fitness devices (e.g., chest straps,
+smartwatches, and glucose monitors) deliver physiological data to mobile phones
+in real deployments.
+In our system model, the details of the BLE link (pairing, GATT services,
+etc.) are abstracted into a single logical low-power link from the sensor set to
+the smartphone. We focus on the end-to-end delivery of aggregated medical data
+from the smartphone to remote caregivers over either NDN or IP.
+NDN Naming and Personal Health Profile The smartphone continuously
+aggregates the incoming sensor readings into a personal health profile that is
+updated whenever new data arrive. Instead of publishing every raw sample as a
+separate NDN object, the smartphone exposes a single named NDN Data object
+that always represents the latest state of the patient’s vital signs. For a patient
+with identifier patientID, the current profile may be published under a stable
+
+--- PAGE 8 [pdf_text] ---
+8
+M. R. Shakournia et al.
+name of the form
+/hospital/patientID/vital/latest.
+The smartphone therefore acts as the sole NDN producer for this profile, while
+clinics, doctors, and hospital servers act as NDN consumers that issue Interests
+for this name whenever they need the most recent health status.
+Because all monitoring systems use the same content name to retrieve the
+patient’s latest profile, intermediate NDN routers and edge nodes can cache the
+Data packet and satisfy subsequent Interests from nearby caches. This is particularly relevant for smart-healthcare monitoring, where multiple monitoring points
+(e.g., ward dashboards, nurse stations, physician terminals) repeatedly request
+the same patient’s current status. In this way, the distributed caches collectively
+act as a shared pool of recently retrieved patient profiles, enabling consumers
+to obtain the closest available copy without needing to target a particular host.
+In our evaluation (Section IV), we consider several such monitoring consumers
+that periodically retrieve the profile of each patient; once a profile is fetched the
+first time, subsequent requests can be served from caches, and NDN’s in-network
+caching begins to provide a clear benefit.
+3.4
+Consistency and Freshness Semantics
+A key requirement in this architecture is that caregivers must receive up-todate information. NDN provides built-in mechanisms to express freshness requirements. Each Data packet includes a FreshnessPeriod indicating how long
+cached copies should be considered valid, and consumers may set the MustBeFresh
+selector in their Interests to request only fresh Data.
+In our design, we align the FreshnessPeriod of the health-profile Data with
+the sensor update period. As a result, cached copies of the profile automatically
+expire in routers roughly when new data are produced, and Interests marked as
+MustBeFresh are forwarded toward the smartphone if cached content has become
+stale. This ensures that doctors and monitoring systems obtain a consistent
+and up-to-date view of the patient’s vital signs while still benefiting from innetwork caching between updates. Put differently, freshness semantics help keep
+the shared cached pool reliable by preventing stale profiles from being served
+beyond their validity window.
+A high-level representation of the proposed architecture is shown in Fig. 2.
+Wearable sensors attached to each patient send data to the patient’s smartphone,
+which acts as an edge device and NDN producer. A set of intermediate routers
+connects the smartphones to multiple monitoring consumers (clinics, doctors,
+and hospital servers). NDN runs from the edge devices to the consumers, using
+hierarchical names and in-network caching, while the specific low-power protocol
+between sensors and the smartphone is abstracted away in the system model.
+3.5
+IP Reference Architecture
+For a fair comparison, we also construct an IP reference architecture that uses the
+same physical topology, node roles, and traffic patterns as the NDN architecture.
+
+--- PAGE 9 [pdf_text] ---
+Wearable Data Profiling for NDN-Based Smart Healthcare
+9
+In the IP baseline, each patient’s smartphone still collects sensor data via BLE
+and maintains an internal health profile, but communication with caregivers
+follows the conventional host-centric model.
+Specifically, the smartphone transmits monitoring data to caregiver nodes
+using UDP over IP. Intermediate routers maintain IP routing tables and forward packets based on destination IP addresses. There is no in-network content
+caching in the network: routers do not store application-layer data, and each
+monitoring request must be served by the smartphone or a backend server every
+time. Consequently, the network does not accumulate reusable content state on
+the path, and repeated monitoring requests cannot benefit from previously retrieved data at intermediate nodes. No NDN-specific state (such as PIT or CS) is
+present. This IP baseline allows us to quantify the impact of NDN’s name-based
+forwarding and in-network caching on end-to-end delay and packet loss under
+identical network and traffic conditions.
+4
+Simulation Setup and Metrics
+We compare the proposed smartphone-centric NDN architecture with an IP
+baseline in ns-3, using the standard Internet stack for IP and ndnSIM for NDN.
+Both scenarios share the same physical topology, node roles, and traffic patterns;
+only the network layer (IP vs. NDN with name-based forwarding and caching)
+differs.
+4.1
+Topology and Traffic Overview
+We use the 21-node topology from Section III: six monitoring consumers, six
+patient-side producer/server nodes (smartphones), and nine routers connected
+through a constrained core. All consumer–producer traffic traverses the same
+core bottleneck, enabling controlled congestion and loss experiments.
+Each consumer is associated with one patient. In IP, consumers send UDP
+traffic to the corresponding patient-side server; in NDN, they issue Interests to
+the corresponding producer. Applications run over the same time interval in both
+cases, and packet/payload sizes are matched for fairness. Table 2 summarizes the
+main simulation parameters.
+Unless otherwise stated, NDN uses ndnSIM’s MulticastStrategy; we also
+tested BestRoute. In this static, tree-like topology, both yield nearly identical
+RTT and delivery ratio, indicating that the observed gains mainly come from
+in-network caching rather than path diversity.
+4.2
+Metrics
+We use two primary performance metrics:
+– Round-trip delay (RTT): Both IP and NDN follow a request–response
+model. In IP, RTT is measured from sending a probe packet to receiving its
+
+--- PAGE 10 [pdf_text] ---
+10
+M. R. Shakournia et al.
+C1
+C2
+C3
+C4
+C5
+C6
+R1
+R2
+R3
+ER1
+ER2
+ER3
+ER4
+ER5
+ER6
+P1
+P2
+P3
+P4
+P5
+P6
+Smartphones / NDN producers
+Clinic/Doctor/Hospital(NDN consumers)
+Fig. 2. 21-node topology with six monitoring consumers, nine routers (two edge routers,
+one core, six patient-side routers), and six patient smartphones acting as NDN producers.
+acknowledgment; in NDN, from issuing an Interest to receiving the corresponding Data. We report RTT under normal conditions and under packet
+loss induced by core-link congestion.
+– Delivery ratio: In IP, this is the fraction of probes that receive acknowledgments; in NDN, it is the Interest satisfaction ratio (Data received / Interests
+sent). This metric captures the impact of congestion, loss, and in-network
+caching.
+Using identical topology, traffic roles, and packet sizes, these metrics enable
+a fair, side-by-side comparison of IP and NDN performance in the smartphonecentric healthcare scenario.
+5
+Results and Discussion
+We compare end-to-end performance of IP and NDN under (i) sensor-level, persample naming and (ii) a smartphone-centric, profile-based naming model that
+enables in-network caching.
+5.1
+Baseline Sensor-Level Traffic
+Table I compares IP and NDN when each sensor reading is sent as a separate
+packet and each NDN Data packet carries a unique time-stamped name. Be-
+
+--- PAGE 11 [pdf_text] ---
+Wearable Data Profiling for NDN-Based Smart Healthcare
+11
+Table 2. Comparison of IP and NDN Simulation Parameters
+Parameter
+IP
+NDN
+Total traffic
+1M packets 1M Interests/Data
+Application model
+OnOff
+ConsumerCbr
+Payload size
+900 bytes
+900 bytes
+Traffic rate per consumer 72 Kbps
+10 Interests/s
+Forwarding strategy
+Default
+Best-route / Multicast
+Interest lifetime
+–
+2 s
+CS size
+–
+1000 Data packets
+Link bandwidth
+10 Mbps
+10 Mbps
+Link delay
+2 ms
+2 ms
+Queue size
+1000
+1000
+cause every measurement is distinct, caches cannot be reused and each Interest
+must reach the producer; moreover, NDN routers incur extra per-packet PIT/CS
+processing. Consequently, NDN does not outperform IP in this sensor-level setting and may show a small processing penalty. This suggests that for strictly
+time-critical traffic with non-reusable samples, exposing every measurement as
+an independent NDN object is ineffective.
+Based on this observation, the main experiments use a profile-based model:
+the smartphone aggregates sensor readings into a continuously updated personal health profile and publishes it under a stable name (e.g., /HospitalID/
+patientID/vital/latest). As summarized in Table 2, repeated queries for the
+same patient map to the same name and can benefit from in-network caching.
+5.2
+Short-Term Cache Warm-Up Behavior
+Figure 3 shows a 10-packet rolling mean RTT over the first 2500 packets. In both
+loss and no-loss runs, NDN exhibits a short initial RTT spike corresponding to
+cache warm-up, when early Interests traverse the full multi-hop path to the
+smartphone.
+After a few requests, the profile Data are cached near the monitoring stations,
+and subsequent Interests are satisfied locally, causing NDN RTT to drop quickly
+to a low, nearly constant value. IP shows no such warm-up effect: RTT stays
+roughly constant without loss, but grows and oscillates under congestion. These
+results confirm that NDN gains here are driven by caching profiles close to
+consumers.
+5.3
+Delay Under Packet Loss
+To induce congestion and loss, core links are set to 200 kbps, making the core
+the dominant bottleneck and causing frequent queue drops. As shown in the
+upper plots of Figs. 3 and 4, IP exhibits unstable RTT with pronounced oscillations and values often exceeding 103 ms, due to repeated queue overflows and
+retransmissions in the request–response exchange.
+
+--- PAGE 12 [pdf_text] ---
+12
+M. R. Shakournia et al.
+NDN remains consistently low, with chunk-averaged RTT on the order of
+102 ms under the same conditions. Because requests target the same named
+profile, fetched Data are cached on the consumer side of the bottleneck, so subsequent Interests are satisfied locally without crossing the congested core. As a
+result, the rolling-mean curve flattens after warm-up and Fig. 4 shows a narrow
+RTT band throughout the one-million-packet run.
+5.4
+Delay Without Packet Loss
+Without loss, both architectures are stable but differ in absolute RTT. In the
+lower plots of Figs. 3 and 4, IP remains near 10–12 ms, reflecting fixed queuing
+and propagation along the multi-hop path.
+NDN converges to about 5–6 ms after a brief cache warm-up. Once the profile
+is cached near consumers, Interests are satisfied over shorter effective paths and
+repeated upstream traversal through the core is avoided, yielding persistently
+lower RTT over the one-million-packet run.
+5.5
+Delivery Ratio
+Table 3 reports end-to-end delivery. In the no-loss scenario, both IP and NDN
+achieve near-perfect delivery. Under packet loss on the 200 kbps core, IP delivery
+drops sharply to about 3%, whereas NDN remains close to 99%, because caching
+reduces the amount of traffic that must traverse the lossy core. This shows that
+NDN caching improves both delay and robustness under congestion.
+Overall, NDN is not inherently faster than IP for per-packet, time-critical
+sensor traffic because unique names prevent cache reuse and PIT/CS processing
+adds overhead. In contrast, the smartphone-centric, profile-based model maps
+repeated monitoring to a stable name, enabling routers near monitoring stations
+to serve requests from cache. This yields lower and more stable RTT and much
+higher delivery ratios than IP in lossy or resource-limited settings, consistent
+with continuous remote monitoring where caregivers primarily require an up-todate patient profile rather than every raw sample.
+Table 3. End-to-end delivery ratio for IP and NDN under loss-free and packet-loss
+conditions.
+Scenario
+IP delivery ratio NDN delivery ratio
+No-loss
+1.00
+1.00
+Packet-loss (200 kbps core)
+0.03
+0.99
+6
+Conclusion
+This paper revisited the role of Named Data Networking in smartphone-centric
+healthcare systems by contrasting a baseline, sensor-level traffic model with
+
+--- PAGE 13 [pdf_text] ---
+Wearable Data Profiling for NDN-Based Smart Healthcare
+13
+Fig. 3. Rolling-mean RTT (window 10) over the first 2500 packets for IP and NDN
+under packet loss (top) and no loss (bottom), highlighting cache warm-up in NDN.
+a profile-based design in which the patient’s smartphone aggregates measurements into an abstract, continuously updated health profile published under
+a stable NDN name. The baseline results showed that NDN is not inherently
+faster than IP for strictly time-critical, per-packet sensor traffic, because unique
+names limit cache reuse and PIT/CS processing does not translate into lower
+delay. Under congestion with loss, our NDN approach maintains low, stable
+RTT and near-unity delivery, whereas IP degrades to second-scale delays and
+only a few percent delivery; in the loss-free case, NDN halves RTT after a brief
+cache warm-up. Taken together, the results indicate that NDN’s key strength
+in smartphone-centric healthcare lies in the combination of data-centric naming,
+
+--- PAGE 14 [pdf_text] ---
+14
+M. R. Shakournia et al.
+Fig. 4. Chunk-averaged RTT (mean per 2000 delivered packets) for IP and NDN under
+packet loss (top) and no loss (bottom) over one million packets.
+smartphone-level profile aggregation, and in-network caching. These mechanisms
+reduce communication latency and improve resilience under network congestion,
+making them well suited for continuous remote patient monitoring. In addition,
+caching and Interest aggregation enable authorized healthcare providers to reuse
+nearby profile replicas and coordinate data retrieval without relying on a centralized controller, thereby improving scalability and communication efficiency.
+Future work will focus on evaluating larger mobile topologies, incorporating
+more realistic wireless channel models and traffic patterns, and investigating the
+integration of NDN’s trust-based security and privacy mechanisms.
+
+--- PAGE 15 [pdf_text] ---
+Wearable Data Profiling for NDN-Based Smart Healthcare
+15
+References
+1. Amadeo, M., Campolo, C., Quevedo, J., Corujo, D., Molinaro, A., Iera, A.,
+Aguiar, R.L., Vasilakos, A.V.: Information-centric networking for the internet
+of things: Challenges and opportunities. IEEE Network 30(2), 92–100 (2016).
+https://doi.org/10.1109/MNET.2016.7437030
+2. Ayatollahitafti, V., Ngadi, M.A., Sharif, J.M., Abdullahi, M.: An efficient next hop
+selection algorithm for multi-hop body area networks. PLOS ONE 11(1), e0146464
+(2016). https://doi.org/10.1371/journal.pone.0146464
+3. Azamuddin, W.M.H., Abdullah, A.H., Ariffin, S.H.S., et al.: The emerging of
+named data networking: Architecture, application, and technology. IEEE Access
+11, 23620–23633 (2023). https://doi.org/10.1109/ACCESS.2023.3243006
+4. Chang, C.S., Wu, T.H., Wu, Y.C., Han, C.C.: Bluetooth-based healthcare information and medical resource management system. Sensors 23(12), 5389 (2023).
+https://doi.org/10.3390/s23125389
+5. Demir, A.K., Manap, G.: Medical data retrieval by named data networking of
+things architecture in contiki NG OS. In: 2022 IEEE 11th International Conference
+on Communication Systems and Network Technologies (CSNT). pp. 533–538. IEEE
+(2022). https://doi.org/10.1109/CSNT54456.2022.9787679
+6. Dudeja,
+R.K.,
+Bali,
+R.S.,
+Aujla,
+G.S.:
+An
+efficient
+data
+communication
+framework
+for
+named
+data
+networking
+in
+IoT-edge
+ecosystem.
+In:
+2021
+IEEE
+Globecom
+Workshops
+(GC
+Wkshps).
+pp.
+1–6.
+IEEE
+(2021).
+https://doi.org/10.1109/GCWkshps52748.2021.9681976
+7. Dudeja,
+R.K.,
+Bali,
+R.S.,
+Aujla,
+G.S.:
+Secure
+and
+pervasive
+communication
+framework
+using
+named
+data
+networking
+for
+connected
+healthcare.
+Computers
+&
+Electrical
+Engineering
+100,
+107806
+(2022).
+https://doi.org/10.1016/j.compeleceng.2022.107806
+8. Islam, R.U., Savaglio, C., Fortino, G.: Leading smart environments towards the
+future internet through name data networking: A survey. Future Generation Computer Systems 167, 107754 (2025). https://doi.org/10.1016/j.future.2025.107754
+9. Islam,
+R.U.,
+Savaglio,
+C.,
+Fortino,
+G.:
+A
+NDN-aided
+edge-cloud
+architecture
+for
+continuous
+smart
+healthcare.
+In:
+2025
+International
+Conference
+on
+Future
+Internet
+of
+Things
+and
+Cloud
+(FiCloud).
+IEEE
+(2025).
+https://doi.org/10.1109/FiCloud66139.2025.00051
+10. Jafari, A.K., Afkar, H., Shakournia, M.R., Yazdani, N., Calafate, C.T.: Eclatlru predictive caching: A novel approach to optimizing cache performance in
+named data networking. In: 2025 International Conference on Modeling, Analysis and Simulation of Wireless and Mobile Systems (MSWiM). pp. 134–139 (2025).
+https://doi.org/10.1109/MSWiM67937.2025.11309195
+11. Ko, J., Lu, C., Srivastava, M.B., Stankovic, J.A., Terzis, A., Welsh, M.: Wireless
+sensor networks for healthcare. Proceedings of the IEEE 98(11), 1947–1960 (2010).
+https://doi.org/10.1109/JPROC.2010.2065210
+12. Shah,
+M.S.M.,
+Leau,
+Y.,
+Yan,
+Z.,
+Anbar,
+M.:
+Hierarchical
+naming
+scheme
+in
+named
+data
+networking
+for
+internet
+of
+things:
+A
+review
+and
+future
+security
+challenges.
+IEEE
+Access
+10,
+19958–19970
+(2022).
+https://doi.org/10.1109/ACCESS.2022.3151864
+13. Wang, X., Cai, S.: Secure healthcare monitoring framework integrating NDN-based
+IoT with edge cloud. Future Generation Computer Systems 112, 320–329 (2020).
+https://doi.org/10.1016/j.future.2020.05.042
+
+--- PAGE 16 [pdf_text] ---
+16
+M. R. Shakournia et al.
+14. Zhang, L., Afanasyev, A., Burke, J., Jacobson, V., Crowley, P., Papadopoulos, C.,
+Wang, L., Zhang, B.: Named data networking. ACM SIGCOMM Computer Communication Review 44(3), 66–73 (2014). https://doi.org/10.1145/2656877.2656887
+15. Zhang, T., Lu, J., Hu, F., Hao, Q.: Bluetooth low energy for wearable sensor-based
+healthcare systems. In: Proc. 2014 IEEE Healthcare Innovation Conference (HIC).
+pp. 251–254 (2014). https://doi.org/10.1109/HIC.2014.7038922

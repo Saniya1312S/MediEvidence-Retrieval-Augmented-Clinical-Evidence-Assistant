@@ -1,0 +1,1773 @@
+--- PAGE 1 [pdf_text] ---
+Graphical Abstract
+HAPI-EP: Towards Hybrid, Adaptive, and Predictive Digital Twins
+of Cardiac Electrophysiology
+Sumeet Vadhavkar, Xiajun Jiang, Yubo Ye, Maryam Toloubidokhti, Linwei
+Wang
+arXiv:2606.15637v1 [cs.LG] 14 Jun 2026
+
+--- PAGE 2 [pdf_text] ---
+Highlights
+HAPI-EP: Towards Hybrid, Adaptive, and Predictive Digital Twins
+of Cardiac Electrophysiology
+Sumeet Vadhavkar, Xiajun Jiang, Yubo Ye, Maryam Toloubidokhti, Linwei
+Wang
+• We pinpoint the challenges towards realizing the dynamic adaptation
+as well as predictive capability of a digital twin (DT) from its two
+building blocks: model formulation and optimization strategies.
+• We introduce HAPI, a novel framework for building hybrid, adaptive,
+and predictive DTs, to enable rapid, on-the-fly adaptation of a DT
+through few-shot integration of live observations with predictiveness
+guaranteed by the theoretical identifiability of the adapted DT.
+• We demonstrate the proof-of-concept of HAPI in cardiac electrophysiology using a hybrid monodomain model with mechanistic reaction
+kinetics and neural graph diffusion, and demonstrate its strong predictive and out-of-distribution capabilities across synthetic and real-data
+studies.
+
+--- PAGE 3 [pdf_text] ---
+HAPI-EP: Towards Hybrid, Adaptive, and Predictive
+Digital Twins of Cardiac Electrophysiology
+Sumeet Vadhavkar, Xiajun Jiang, Yubo Ye, Maryam Toloubidokhti, Linwei
+Wang
+Computational Biomedicine Lab Rochester Institute of Technology Rochester New York
+USA
+Abstract
+A digital twin (DT) of a patient-specific heart offers significant potential in
+personalized medicine. However, its rapid and dynamic adaptation to an
+individual’s live data and its predictive capability after adaptation remains
+a central challenge. We examine this challenge from its two building blocks:
+DT formulation where mechanistic and data-driven models show competing
+merits and limitations, and DT optimization strategies that are largely driven
+by a reconstruction objective leading to un-identifiable models. We address
+both bottlenecks via HAPI — an AI framework for building hybrid, adaptive,
+and predictive DTs with three key enablers. First, HAPI constructs a physicsintegrated gray-box model in which an interpretable mechanistic backbone is
+augmented by a neural component that models its residual to the observed
+data. Second, rather than attempting to pre-encode all possible variations
+in a static hybrid model, HAPI enables rapid on-the-fly adaptation of the
+hybrid model to few-shot live data, achieved by feedforward meta-learners
+realizing amortized inference of both mechanistic and neural parameters of
+the hybrid model trained with predictive objectives. Finally, we show that
+this adaptivity corresponds to the construction of a conditional generative
+model (i.e., the hybrid DT) that endows it with theoretical identifiability and
+thus strong performance in predictive scenarios. We demonstrate the proofof-concept of HAPI in cardiac electrophysiology using a hybrid monodomain
+model with mechanistic reaction kinetics and neural graph diffusion. Across
+synthetic and real-data studies, we show that HAPI’s mechanistic-neural
+Email address: sv6234@rit.edu (Sumeet Vadhavkar)
+
+--- PAGE 4 [pdf_text] ---
+hybridization and predictive adaptation are critical for obtaining identifiable
+DTs with strong predictive and out-of-distribution capabilities.
+Keywords:
+Digital Twin, Cardiac Electrophysiology, Hybrid and
+Physics-Integrated AI, Meta-Learning, Identifiability
+1. Introduction
+Personalized in-silico heart models, such as those describing its electrophysiology (EP), have shown promises in improving personalized cardiac care
+such as risk stratification, diagnosis, and treatment planning [39, 18, 11]. Towards their utility as a digital twin (DT) of the heart, there are two longstanding challenges. First, a DT needs to be dynamically and rapidly updated to
+the live data of an individual, especially in their functional parameters. Second, once updated to the available data, the DT not only needs to be able
+to explain the observed data but, more crucially, to support decision making
+by predicting in scenarios beyond what are observed. Significant challenges
+exist towards these two goals, which we summarize below from the lens of
+DT formulation and DT optimization strategies.
+In terms of DT formulation, earlier works have focused on physics-based
+mechanistic models which, with their encoded principle of biophysics,
+are adept at extrapolation in predictive scenarios [14, 6, 38, 17, 44, 32, 2,
+53]. However, their computational cost raises challenges for rapid adaptation/personalization [40, 48]; furthermore, due to simplifications and imperfect knowledge, mechanistic models are often associated with a myriad of
+assumptions that cannot be resolved by optimizing model parameters alone,
+leaving significant challenges for uncertainty quantification [30, 26]. Alternatively, machine learning (ML) and deep learning (DL) offer computationallyefficient data-driven surrogates to approximate the input-output relationship in mechanistic models directly from data [20, 28, 54, 25]: due to the unavailability of in-vivo measurements of the quantities of interest, e.g., tissue
+properties or spatiotemporal electrical activity of the heart [11, 5, 19], there
+has been increasing efforts in learning these surrogates from data generated
+from in-silico mechanistic models. While these data-driven surrogates are
+much faster to deploy, they face significant challenges of generalizability and
+interpretability: this includes both the simulation-to-reality gap they inherit
+from the in-silico models used to train them, and their inherent struggle
+to generalize and extrapolate due to bypassing the underlying biophysics.
+2
+
+--- PAGE 5 [pdf_text] ---
+Figure 1: Overview of HAPI-EP with 1) its hybrid and adaptive hybrid generative process
+(in light blue box), and 2) learn-to-predict meta-learning strategy for DT adaptation that
+ensures predictive-ness with identifiability of the DT’s latent parameters (in red box).
+Physics-informed neural networks (PINNs) have emerged to bridge the
+gap [16] by governing the neural network with a mechanistic partial differential equation (PDE) representing new knowledge about the systems of
+interest [16, 50, 42]. In other words, the mechanistic PDE informs the PINN
+as a training loss which at the same time reduces data demands. While the
+resulting PINN is faster to deploy and adapt, it is fundamentally still a blackbox that is impacted by interpretability and generalizability while inheriting
+imperfect knowledge in the governing PDE.
+In terms of strategies to optimize the DT, two general approaches exist. Most physics- and PINN-based DTs are optimized per-instance: i.e., the
+specific parameters of the DTs are optimized to minimize the discrepancy
+between the DT outputs and the specific measurements available [14, 6, 38,
+17, 16, 50]. This often requires iterative optimization for adaptation (which
+we refer to as per-instance inference), which makes them computationally unsuitable for clinical use. More recently, amortized inference—training
+an inference network to directly estimate the parameters of the DT—has
+emerged as a replacement of the traditional process of iterative optimizations, achieved by training across many data samples with which to enable
+rapid adaptation at deployment time [42, 19].
+3
+
+--- PAGE 6 [pdf_text] ---
+However, current approaches predominantly trains the amortized inference network with a reconstruction objective: i.e., the inference network is
+trained to infer the DT parameters from a data sample such that the adapted
+DT can reconstruct this input sample. We will show that—unless the DT
+is directly supervised—this reconstruction-based training objective (which
+we refer to as amortized reconstructive-inference) can result in a nonidentifiable DT with limited predictive capabilities. While well appreciated
+in mechanistic DTs [36, 47, 8], this hurdle of identifiability and its impact
+on the predictiveness of DTs is under-recognized as neural components are
+increasingly appearing in DT formulations.
+In this paper, we address these fundamental roadblocks with HAPI, a
+novel framework for building hybrid, adaptive, and predictive DTs. At the
+core of HAPI is our intention to move away from attempting to pre-encode
+all possible variations in a static DT, but instead to enable rapid, on-thefly adaptation of a DT through few-shot integration of live observations that
+directly inform and correct its residual errors, and to do so with predictiveness
+of the DT guaranteed by its identifiability. This is enabled by the following
+three novel contributions within HAPI outlined in Fig. 1:
+• Hybrid: In DT formulation, we hybridize mechanistic and data-driven
+models in a physics-integrated gray-box DT, such that an interpretable
+and generalizable physiological model provides the central mechanistic
+backbone, while its residual to reality is modeled by a flexible neural component. This hybrid mechanistic-neural design retains interpretability and generalizability offered by our central know-hows about
+the mechanisms of interest, while allowing flexible data-driven correction targeting the gap in prior knowledge.
+• Adaptive: In DT optimization strategies, we depart from the prevalent practice of reconstruction-based optimization objectives which is
+equivalent to the optimization of a non-identifiable generative model.
+Instead, we condition the DT on few-shot indirect observations, realized
+as a feedforward meta-model that is trained to 1) use few-shot observations to identify latent mechanistic and neural parameters of the DT,
+and 2) use the adapted DT to predict new data samples. Through
+this amortized learn-to-predict meta-learner, we obtain a hybrid DT
+that can be adapted to live data via rapid feedforward computation at
+deployment.
+4
+
+--- PAGE 7 [pdf_text] ---
+• Predictive: We further show that this adaptivity, enabled by metalearning, is equivalent to the construction of a conditional hybrid-DT
+with theoretical identifiability in its latent parameters, which translates
+to its predictiveness beyond reconstructing what is observed.
+We demonstrated the proof-of-concept of HAPI in cardiac EP, which we
+refer to hereafter as HAPI-EP, in a hybrid monodomain model of action potential consisting of neural graph diffusion and mechanistic reaction terms.
+In synthetic and real-data experiments, we systematically evaluated the importance of 1) the hybrid formulation and 2) the learn-to-predict inference
+strategy in ensuring the identifiability, predictiveness, and out-of-distribution
+generalization capabilities.
+2. Background & Related Works
+2.1. Background on Cardiac Electrophysiology Processes
+A common mathematical framework for modeling cardiac EP is the monodomain reaction–diffusion system, in which the transmembrane potential
+u(r, t) evolves according to:
+
+
+
+
+
+χCm
+∂u
+∂t = ∇·
+ D∇u
+
+−χIion(u, w) + Iapp,
+dw
+dt = F(u, w).
+(1)
+where r denotes spatial locations and t time. Cm denotes membrane capacitance, χ is the membrane surface-to-volume ratio, D is the conductivity (or
+diffusion) tensor, Iion is the total ionic current, Iapp is an externally applied
+stimulus current, and w collects additional recovery, gating, and concentration variables [9, 31, 12].
+This formulation highlights the two core ingredients shared by a broad
+family of EP models. The diffusion term, ∇· (D∇u), governs the spatial
+spread of excitation through electrically coupled tissue. It depends on physiological properties that govern intercellular electrical coupling, including myocardial fiber organization, anisotropic tissue conductivity, and structural
+heterogeneity which are difficult to measure and thus associated with significant uncertainties in personalized modeling. The reaction terms, represented
+by Iion(u, w) together with the state dynamics F(u, w), govern the local nonlinear membrane kinetics underlying depolarization, recovery, and refractoriness [9, 31]. Many models under the monodomain family differ primarily
+5
+
+--- PAGE 8 [pdf_text] ---
+in the complexity they use to represent the reaction component: simplified
+two-variable phenomenological models, such as the Aliev–Panfilov [1] and
+Mitchell-Schaeffer [27] models, retain the essential excitable-wave and recovery behavior needed for efficient tissue-scale simulations; detailed biophysical
+ionic models, such as ten Tusscher–Panfilov [43] and Luo-Rudy [24] models,
+incorporate a much richer set of ionic currents and gating processes to more
+faithfully reproduce ventricular action-potential physiology.
+2.2. Existing DT Formulations and Optimization Strategies in Cardiac EP
+In this work, we consider DTs of cardiac EP as a model M(θ) describing
+the spatiotemporal propagation of action potentials u0:T, with parameter θ
+that can be calibrated to patient-specific observations y0:T = g(u0:T): once
+calibrated, M(ˆθ) with inferred ˆθ can be used in patient-specific simulations in
+predictive scenarios [14, 17]. Importantly, we do not consider works that are
+focused on inferring u0:T or its related variables from observed y0:T without
+an underlying M(θ) that can be optimized for simulations [23, 10, 45].
+2.2.1. White-, Black-, and Gray-Box DT Formulations
+White-box mechanistic models: The set of mathematical models as
+summarized in Equation (1) represent white-box models with mathematical
+expressions MPHY describing available biological and physiological knowledge about the EP process. These physics-based mechanistic DTs represent
+the forefront of DT research in the domain of cardiac DT [14, 6, 17, 44,
+32, 2, 53]. Their underlying physics-based principles allow these models to
+extrapolate in hypothetical scenarios to simulate, predict, and answer whatif questions. Their white-box structures and physics-based parameters also
+lend interpretability to explain their simulation outputs. Specifications of
+both their structures and parameters, however, are associated with assumptions and uncertainties, especially for those components that are difficult to
+measure or yet resolved with scientific knowledge. Their computation cost
+also prohibits a rapid adaptation, especially in the inference of their functional parameters to patient-specific values.
+Black-box neural models: On the other end of the spectrum, black-box
+models describe cardiac EP process with ML or DL models Mϕ and their
+weight parameters ϕ. These models are appreciated for their expressiveness,
+flexibility, and rapid computation at deployment; with proper design, these
+models also offer greater potential for rapid adaptation than their mechanistic counterparts. As any ML/DL models, unfortunately, the training of
+6
+
+--- PAGE 9 [pdf_text] ---
+these models typically depend on a large quantity of diverse and high-quality
+data samples: while these samples are difficult to attain in-vivo, many blackbox models have been trained from synthetic data as efficient surrogates
+of their mechanistic counterparts. These raise challenges of generalizations
+to distributional shifts, due to both simulation-to-reality gaps and significant physiological variabilities. Limited interpretability for their outputs is
+another major hurdle towards their adoption as a DT for healthcare decisionmaking purposes. Because of these bottlenecks, these blackbox neural DTs
+are being actively developed but further away from translational research
+compared to their mechanistic counterparts, in the domain of cardiac EP
+[19, 28, 20, 54, 29].
+Gray-box physics-informed models: To bridge the gap between the
+two ends of the spectrum, physics-informed learning has taken on a variety of
+forms among which the most well-known may be the physics-informed neural
+networks (PINNs) [35]. In this type of gray-box models, a neural-network
+Mϕ with weight parameters ϕ, is supervised by a partial differential equation
+(PDE) MPHY with known mathematical expressions and parameter θ. When
+θ is known, the PINN can be interpreted as an alternative way of solving the
+PDE without traditional numerical methods. When θ is unknown, the PINN
+can be optimized at the same time as θ, delivering a personalized PINN
+with limited data. By leveraging the known physics in its loss functions,
+the PINN reduces the requirement of large training data compared to its
+black-box counterpart. Mϕ, however, essentially remains a black-box model
+that faces similar challenges of generalization and interpretability as a DT.
+Furthermore, it will inherit any assumptions, uncertainties, and knowledge
+gaps in the MPHY used to govern its training. Similarly, PINN-based DTs
+represents an emerging line of research that has not yet reached translational
+studies in the domain of cardiac EP [16, 50, 37, 42].
+2.2.2. DT Optimization with Patient-Specific Measurements
+Existing approaches for optimizing the white-, black-, or gray-box DTs
+can be loosely categorized into two groups. Importantly, here we focus on
+the adaptation (i.e., personalization) of the functional parameters of a DT
+to patient-specific measurements. We do not include reviews of works on the
+initial construction of these DTs, including initial construction of a mechanistic EP model from patient-specific imaging data [44, 32, 2, 53], or the
+offline training of a neural surrogate for such EP models [20, 28, 54, 29, 25].
+Per-instance inference: In most approaches, traditional numerical op7
+
+--- PAGE 10 [pdf_text] ---
+timization strategies are employed to optimize the parameters of the DT
+to specific measurements from a specific instance, known interchangeably as
+personalization, calibration, or adaptation in different works. These apply to
+the optimization of most mechanistic and PINN models [14, 6, 17, 16, 50],
+while some recent works also considered per-instance optimization of the input mechanistic parameters θ to a black-box neural surrogate Mϕ(θ) to fit
+observed patient-specific data [29, 38].
+This per-instance inference can be generally expressed as:
+ˆθ = arg min
+θ
+||g(MPHY/ϕ(θ)) −yobs||2
+2
+(2)
+for a mechanistic DT MPHY or neural DT Mϕ.
+In the setting of PINNs, both ϕ and θ are simultaneously optimized:
+{ˆϕ, ˆθ} = arg min
+ϕ,θ {||Mϕ −yobs||2
+2 + λ||MPHY(Mϕ; θ)||2
+2}
+(3)
+where the first term fits Mϕ’s output to available data (data-fitting loss),
+and the second term encourages Mϕ’s output to follow the governing PDE
+specified by MPHY with unknown physics parameter θ (PDE residual loss).
+Regardless of the underlying models, per-instance inference involves iterative optimization for the purpose of DT adaptation, limiting their ability
+to rapidly adapt to limited live data.
+Amortized reconstructive-inference: Alternatively, amortized inference represents a learning-based strategy to train a neural network (often
+known as the inference or encoder network) to infer the parameter of a DT
+model from available training data. Once trained, this inference network can
+replace iterative per-instance optimization with rapid feedforward computation, realizing rapid adaptation. In analogy to the per-instance optimization
+objective in Equation (2), the amortized optimization objective can be expressed as:
+{ˆω, ˆϕ} = arg min
+ω,ϕ ||g(MPHY/ϕ(Eω(yobs)) −yobs||2
+2
+(4)
+where Eω(yobs) is the inference network parameterized by ω. Note that the
+estimated parameter θ is extracted by Eω(yobs) from observed yobs, and the
+adapted DT is asked to reconstruct yobs with the estimated θ. This is why we
+refer to this strategy as amortized reconstructive-inference. While a common
+concept in latent variable models such as variational auto-encoders [22], this
+8
+
+--- PAGE 11 [pdf_text] ---
+strategy has only recently begun to appear in DT adaptation. In cardiac EP,
+encoder-style amortized adaptation has been explored in neural surrogate
+settings [19], whereas its use for mechanistic or hybrid DT adaptation remains
+comparatively limited [42].
+Types of measurements: Another relevant point is the type of measurements used to calibrate a DT. In the current literature of cardiac EP,
+it is common to use indirect measures, such as noninvasive body-surface
+electrocardiograms (ECGs) or minimally-invasive heart-surface electrograms
+(EGMs), to calibrate a white-box DT [14, 6, 17]. For gray- or black-box
+DTs that have data-driven components, however, most existing works assume direct supervision on the variables (e.g., action potential) being modeled [16, 50, 42, 19, 28, 20, 52]: as aforementioned, this assumption is often
+not applicable in cardiac DTs, e.g., the spatiotemporal propagation of action
+potentials in the heart is only partially or indirectly observed.
+2.2.3. Summary of Related Works
+In summary, in the domain of cardiac EP, mechanistic DTs are in the
+most mature stage of developments towards clinical translation, where most
+are optimized per instance and thus not suitable for rapid adaptation to
+live data [14, 6, 38, 17].
+While neural and physics-informed alternatives
+are being actively pursued as efficient surrogates for mechanistic DTs, they
+are either not adaptive to patient-specific data [20, 28, 54, 29, 25] or need
+to be optimized per instance [29, 38, 52].
+Although amortized inference
+strategies exist for such adaptations, they are not yet adopted for DTs of
+cardiac EPs and are fundamentally still based on a reconstruction objective.
+Table. 1 presents a structured summary of existing DT formulations and
+optimizations strategies, along with their representative works that will be
+considered as baselines in our experimental studies.
+2.3. Existing Mechanistic-Neural Hybrid Models
+Both within and outside the domain of building DTs for cardiac EP, there
+has been growing interest in hybridizing physics-based models with neural
+augmentations [15, 34, 52]. For instance, APHYNITY [52] augments an incomplete physics-based dynamical model with a neural residual term: to
+avoid the expressive neural component overpowers the physics-based component, it explicitly encourages the physics-based component to explain as
+much of the dynamics as possible and restricts the neural term to capture
+only the remaining discrepancy. Similarly, universal differential equations
+9
+
+--- PAGE 12 [pdf_text] ---
+Table 1: Taxonomy of predictive cardiac EP digital-twin (DT) formulations and adaptation
+strategies. Only works that infer or adapt a reusable forward model for patient-specific
+prediction are included. Works focused on initial construction of either mechanistic or
+neural DTs are not included.
+Model class
+Per-instance inference (iterative)
+Amortized inference (learned)
+White-box
+(mechanistic)
+Iterative
+calibration
+of
+patientspecific
+physical
+parameters
+in
+mechanistic forward models.
+[14, 6, 17, 44, 32, 2, 53]
+Encoder-style amortized adaptation of mechanistic DT parameters;
+not yet seen in cardiac EP but exist in other physics systems
+[49]
+Gray-box
+(PINN or hybrid)
+Iterative personalization of network and/or physics parameters
+under data-fitting and PDE constraints.
+[16, 50]
+Encoder-style amortized adaptation of parameters for both neural and mechanistic components;
+progress limited in cardiac EP
+[42]
+Black-box
+(neural surrogate)
+Iterative calibration of input mechanistic parameters to a pre-trained
+neural-network surrogate [29]
+Encoder-style amortized adaptation of parameters for neural surrogates; progress limited in cardiac
+EP
+[19]
+(UDEs) [34] are presented as a general way to incorporate a neural network
+within physics-based differential equations, while NeuralSim [15] provides a
+broader hybrid-modeling framework in which neural modules are embedded
+inside differentiable simulators beyond additive formulations. All of these
+works, however, assume direct supervision on the state variables being modeled by the hybrid models. Furthermore, these hybrid models are commonly
+fit to observed trajectories via gradient-based system identification, often in
+a per-instance manner [52]. Whether the mechanistic and neural components
+can be separately identified when given indirect observations, and to what
+extent this may affect the predictive performance of the optimized hybrid
+model, have not been well investigated.
+Amortized inference strategies have emerged for optimizing hybrid models.
+Hybrid-VAE [41] combines mechanistic dynamics with latent neural
+components and use an encoder to infer the latent parameters for both components from indirect observations. Robust hybrid learning [46] improves
+this by generating expert-augmented training examples using the approxi10
+
+--- PAGE 13 [pdf_text] ---
+mate mechanistic component. These works have relaxed the assumption of
+direct supervision, i.e., latent parameters of the hybrid model are inferred
+from indirect observations of the variables the hybrid model describes. They
+also start to focus on the challenges in separately identifying the physicsbased and neural components of the model, although from the lens of ensuring the physics-based component to not be dominated by the expressive
+neural component. The amortized inference fundamentally still relies on a
+reconstructive objective, and its impact on the identifiability of the hybrid
+model are not discussed in these existing works.
+In a recent work, we have examined the issue of the non-identifiability
+of naive hybrid deep generative models under indirect observations, and established the first theoretical foundation for leveraging meta-learning as a
+remedy to address the issue of identifiability [51]. While focused on theoretical analysis and benchmarked on simple physics systems (such as pendulums), this works lays the theoretical basis for HAPI-EP, which we extend
+to identifiability-aware hybrid-DTs for cardiac EP that is adaptive and predictive.
+3. Methodology
+We present HAPI-EP by its four main elements: the adaptive and hybrid
+formulation of the generative DT (Section 3.1), its identifiable formulation
+by conditioning on context samples (Section 3.2), the corresponding learnto-predict inference strategy (Section 3.3), and the conditions under which
+the identifiability of the hybrid DT can be established (Section 3.4).
+3.1. Hybrid and Adaptive Modeling of Cardiac EP Process
+Let ut ∈RN denote the action potential amplitude defined over a volumetric bi-ventricular mesh represented by N number of nodes at time t,
+and xt ∈RM denote the EGM amplitude measured at M electrodes. We
+model ut with a hybrid dynamics process combining mechanistic reaction
+and neural diffusion as:
+(
+˙ut = fNN-dff(ut; zNN) + f (u)
+PHY-rct(ut, vt; zPHY) + g(s)
+˙vt = f (v)
+PHY-rct(ut, vt; zPHY)
+(5)
+where vt denotes the recovery state at time t and g(s) the external stimuli
+at known sites s, e.g., a known pacing site. fPHY-rct represents a known reaction term and fNN-dff represents a diffusion term described by a light-weight
+11
+
+--- PAGE 14 [pdf_text] ---
+neural network. This modeling choice is motivated by the fact that subjectspecific conductivity and anisotropy are difficult to measure, while explicitly
+resolving the diffusion term requires high-resolution numerical discretization
+with heavy computation [3].
+Importantly, neither fNN-dff nor fPHY-rct are
+globally defined for all samples, but instead are adaptable by their respective
+parameters zNN and zPHY which we elaborate below.
+3.1.1. Mechanistic Reaction Functions
+The mechanistic terms f u,v
+PHY-rct(ut, vt; zPHY) describe nonlinear local reaction dynamics. Various models can be adopted. As a proof of concept, we
+consider the Aliev–Panfilov (AP) reaction dynamics [1]. Based on sensitivity
+analysis, we let parameter a in the AP model be adaptive given its strong influence on local action potential morphology. The less influential parameters
+are fixed to literature values. In other words, zPHY := a.
+3.1.2. Neural Graph Diffusion Functions
+The neural term fNN-dff(ut; zNN) models spatial propagation of excitation
+over the bi-ventricular mesh as a learnable diffusion operator on the mesh
+graph. Let the mesh be represented as a graph G = (V, E) with |V| = N
+nodes and edges E defined by n nearest neighbors. Following [7], we model
+the learned diffusion dynamics as
+fNN-dff(ut; zNN) = α
+ A(ut) −I
+
+ut ≜α ¯A(ut) ut,
+(6)
+where A(ut) is an adjacency-structured attention operator with support on
+E (i.e., nonzero only on n nearest neighbors). We adopt scaled dot-product
+attention as:
+A(ut,i, ut,j) = softmaxj∈N(i)
+
+(WQ ut,i)⊤(WK ut,j)
+√
+d
+
+,
+(i, j) ∈E,
+where d is the dimensionality of the query/key embeddings. WQ and WK are
+expected to learn patient-specific anisotropic conduction while α modulates
+conduction velocity. We thus define zNN := {α, WQ, WK} to be adaptive.
+3.1.3. Mechanistic Emission/Measurement Processes
+We describe the measurement process for ut with a mechanistic operator
+H, which is obtained by solving the Poisson equation under the quasi-static
+approximation between the cardiac source due to ut and its extracellular
+potential measurements xt on an surface enclosing the ventricles [45] as
+12
+
+--- PAGE 15 [pdf_text] ---
+xt = H ut + ϵ
+(7)
+where ϵ is assumed to be Gaussian. In this paper, we consider xt’s as electrogram (EGM) measurements on the bi-ventricular surface (synthetic data
+experiments) or epicardial surface only (real data experiments).
+3.1.4. Non-Identifiability of Unconditional Generative Models
+Given a known stimulation protocol s, the hybrid EP model in (5) induces
+a distribution over the observed EGM sequence x0:T = {x(t)}T
+t=0 through latent EP dynamics. The marginal likelihood of x0:T is obtained by integrating
+out these latent variables as:
+p(x0:T | s)
+=
+Z Z
+p(x0:T | s, zPHY, zNN) p(zPHY) p(zNN) dzPHY dzNN (8)
+where
+p(x0:T | s, zPHY, zNN) =
+TY
+t=0
+p(xt | ut) |ut=ut−1+
+R t
+s=t−1 fhyd(us,vs;zPHY,zNN)ds,u0=g(s) (9)
+where fhyd(us, vs; zPHY, zNN) describes the hybrid model in Equation (5) and
+p(xt | zt) is defined by the emission Equation (7).
+Existing works in DT optimization are mostly based on the maximization
+of this likelihood, with learnable parameters (e.g., zPHY and zNN) inferred
+from x0:T. This corresponds to the inference of a generative model whose
+latent variables (zPHY and zNN) have an unconditional prior. As established
+by the theory of nonlinear independent component analysis (ICA) [21], the
+neural latent variable zNN of such an unconditional generative model is not
+identifiable [51]: while we refer the audience to [21, 51] for theoretical details,
+intuitively it means that an arbitrary nonlinear transformation can change
+the value of zNN without changing its distribution, and this transformation
+can be absorbed by the neural function without affecting the decoding to
+x0:T. Furthermore, this lack of identifiability in zNN may then compromise
+the recovery of zPHY, i.e., multiple values of zPHY and zNN may produce
+observationally equivalent p(x0:T | s) [51]: while these models may perform
+similarly in reconstructing x0:T, their ability to predict beyond x0:T may be
+impacted .
+13
+
+--- PAGE 16 [pdf_text] ---
+3.2. Identifiable Formulation via Context-Conditional Priors
+To construct an identifiable hybrid DT, we draw inspiration from [51] and
+condition the generation of x0:T on auxiliary information defined as k-shot
+examples Dc that are distinct from x0:T but share its generative parameters
+zPHY and zNN. More specifically, this is achieved by replacing the unconditional prior of zPHY and zNN with their conditional counterparts p(zPHY | Dc)
+and p(zNN | Dc).
+3.2.1. Context-Conditioned Priors for the Latent Hybrid Parameters
+With zPHY := a, we parameterize the conditional prior of the mechanistic
+reaction parameter as:
+h(a)
+i
+∼N(Eϕ1(xc
+i), σ)
+ˆa = Agg
+ {gϕ2
+ h(a)
+i
+
+}xc
+i∈Dc
+(10)
+where Eϕ and gϕ are neural networks parameterized by ϕ1 and ϕ2, respectively. They are applied to each context sample xc
+i ∈Dc to extract a scalar
+embedding, and Agg(·) denotes mean pooling across the context set. In our
+implementation, E(a)
+ϕ1 (·) is a spatio-temporal ResNet-GCN with temporal 1D
+convolutions followed by a GCNConv over mesh edges and global pooling.
+gϕ2 is a lightweight MLP head. In other words, ˆa is an embedding shared
+by all samples in the context set, which remove sample-specific information
+(e.g., those related to initial conditions) and extract shared parameters from
+available context samples. In this proof of concept study, we consider σ to
+be a pre-defined constant.
+Similarly, with zNN := {α, WQ, WK}, we define the conditional prior for
+the neural diffusion parameters as:
+{r(Q)
+i
+, r(K)
+i
+, ˆαi}
+=
+N(Eψ1(xc
+i), σ),
+{¯r(Q), ¯r(K), ˆα}
+=
+Agg
+ {r(Q)
+i
+, r(K)
+i
+, ˆαi}xc
+i∈Dc
+WQ = HNNψ2
+ ¯r(Q)
+,
+WK = HNNψ2
+ ¯r(K)
+,
+(11)
+where Eψ1(·) uses the same ResNet–GCN backbone as Eϕ1, followed by three
+lightweight MLP heads. HNNψ2 is a shared hyper-network parameterized by
+ψ2. In other words, ¯r(Q), ¯r(K), ˆα extract embeddings shared by all context
+samples, where ˆα modulates the neural diffusion strength in Equation (6),
+and {¯r(Q), ¯r(K)} adapt the projection matrices in the attention-based diffusion
+operator in Equation (6).
+14
+
+--- PAGE 17 [pdf_text] ---
+3.2.2. Conditional Generative Model
+The context-conditioned likelihood of x0:T is now:
+p(x0:T | s, Dc) =
+Z Z
+p(x0:T | s, zPHY, zNN) pϕ(zPHY | Dc) pψ(zNN | Dc) dzPHY dzNN
+(12)
+where ϕ = {ϕ1, ϕ2} as defined in Equation (10) and ψ = {ψ1, ψ2} as defined in
+Equation (11). The generation of x0:T is now conditioned on context samples
+Dc that are distinct from x0:T but share its latent parameters. Dc adapts the
+distribution of zPHY and zNN as defined by Equations (10)-(11), via which
+they adapt the hybrid DT to be specifically predictive for x0:T: we refer to
+x0:T as query samples hereafter and denote it as xq for clarity.
+3.3. Amortized Variational Inference as Meta-Learning
+To maximize the conditional likelihood as defined in Equation (12), we
+introduce the variational approximation of the posterior densities of zPHY
+and zNN as qϕ(zPHY | Dc ∪xq) and qψ(zNN | Dc ∪xq), sharing the same
+networks defining their priors as in Equations (10)-(11). This gives rise to
+the following evidence lower bound (LELBO) of log p(xq | sq, Dc) as:
+log p(xq | sq, Dc) ≥LELBO = Eqϕ(zPHY)qψ(zNN)
+h
+log p(xq | sq, zPHY, zNN)
+i
+−KL(qϕ(zPHY | Dc ∪xq) ∥pϕ(zPHY | Dc))
+−KL(qψ(zNN | Dc ∪xq) ∥pψ(zNN | Dc)) . (13)
+where qϕ(zPHY) and qψ(zNN) are short for qϕ(zPHY | Dc∪xq) and qψ(zNN | Dc∪
+xq), respectively. Note that the first likelihood term now defines a predictive
+objective where the hybrid DT is asked to use the latent parameters zPHY and
+zNN, inferred from context samples Dc, to predict for query examples xq that
+are different from Dc. This is fundamentally different from reconstructionbased objectives.
+Interestingly, optimizing the ELBO in (13) corresponds to a feedforward
+meta-learning process performed over tasks defined by individual patients or
+patient-subgroups, depending on the problem of interest. Given data from
+multiple such tasks, the conditioning on Dc realized via Equations (10)-(11)
+work as meta-models that provide inner-loop task adaptation, and the expected query log-likelihood defines the outer-loop meta-objective for optimizing the meta-models. Notably, unlike gradient-based meta-learning (e.g.,
+15
+
+--- PAGE 18 [pdf_text] ---
+model-agnostic meta-learning (MAML) [13]) where the inner-loop adaptation performs explicit gradient steps, HAPI-EP performs amortized adaptation in the form of feedforward passes through meta-models Eϕ1, gϕ2, Eψ1 and
+HNNψ2.
+3.4. Identifiability Theory
+Built on the theory established in [51], we can establish the identifiability
+of the latent neural parameter zNN of the conditional hybrid DT.
+Theorem 1. Assume that we observed data p(x0:T) generated following the
+process defined by Equations (10)-(12) with parameters (ϕ, ψ) and latent variable p(zNN|Dc) defined as in Equation (11). Denote this generation process
+as x0:T = G(zNN). Assume a model with parameter (ˆϕ, ˆψ) and p(ˆzNN|Dc)
+generates p(ˆx0:T) that is observationally equivalent to p(x0:T). Assume the
+following hold:
+1. The set {x0:T ∈X|φε(x0:T) = 0} has measure zero, where φε is the
+characteristic function of the density pε(xt −Hut).
+2. The function G is injective.
+3. There exist de+1 distinct context sets Ds,0, Ds,1, . . . , Ds,de such that the
+de × de matrix L defined as follows is invertible
+L = (λ(Dc,1) −λ(Dc,0), . . . ,λ(Dc,de) −λ(Dc,0))
+(14)
+where λ denotes the parameters of p(zNN|Dc), d the dimension of zNN,
+and e the dimension of its sufficient statistics T.
+then there exists an invertible de × de matrix A and vector b, such that
+T(zNN) = AT(ˆzNN) + b, i.e., T(zNN) are identifiable up to affine transformations.
+The proof of Theorem 1 directly builds on that in [51]. Interestingly,
+condition 3 in Theorem 1 specifies that the recovery of the latent variable
+zNN requires sufficient variability of its values, as conditioned on Dc, to be
+observed. In other words, for a Gaussian distribution used in this paper, a
+minimum of 2d + 1 unique values of zNN need to be present in the observed
+data in order for it to be identified.
+4. Synthetic Data Experiments
+We first evaluated HAPI-EP trained and tested on synthetic data generated on different bi-ventricular models.
+16
+
+--- PAGE 19 [pdf_text] ---
+4.1. Experimental Settings
+Experimental data: We considered three human bi-ventricular models
+derived from computed tomographic scans. On each mesh, we generated synthetic ventricular action potential sequences using the Aliev-Panfilov model
+[1] with mechanistic diffusion [45].
+Synthetic observations of EGMs were
+simulated on the ventricular surface using the physics-based forward operator numerically solved as described in [45]. We varied reaction parameters
+a ∈{0.08, 0.10, 0.12, 0.14} to control local action potential dynamics, along
+with diffusion parameter D ∈{1.5, 2.0, 2.5} to control conduction velocity
+across the mesh. On each mesh under various combinations of {a, D} values,
+we generated action potential simulations with ∼800 different initial conditions uniformly distributed across the ventricular volume. This resulted in
+∼2, 376 samples which we split into train/val/test sets with a 60:20:20 ratio.
+Baselines: We compared HAPI-EP to the spectrum of baselines summarized in Table 1. This includes three families of model formulations: (i)
+fully neural, (ii) hybrid, and (iii) full physics, with each adopting one of the
+two inference strategies: per-instance inference, or amortized reconstructiveinference. For physics-based baselines, we considered the full AP model with
+its parameters (a, D) optimized per instance via the derivative-free BOBYQA
+method [33], or with an encoder that resembles the approach presented in
+ALPS [49]. For the hybrid baselines, its per-instance optimization is represented by APHYNITY [52], and its amortized inference resembles the hybridVAE (H-VAE) [41]. For the neural baselines, we considered DeepCardioSim
+(specifically the GNN option presented) [29] for per instance optimization.
+We first pre-trained DeepCardioSim as a neural surrogate on synthetic EP
+data: following the published model architecture, it took as input the heart
+geometry, fiber directions, pacing-location encoding, and the EP parameters (a, α), and it outputs activation time (AT) on the ventricular mesh.
+The trained DT was then adapted/personalized per instance to available AT
+measurements, by freezing the network weights and optimizing only (a, α)
+using derivative-free BOBYQA method. Amortized inference for neural EP
+models did not seem to exist in published works (although a representative
+version of it will be included in our ablation studies in Section 4.2.6).
+Evaluation scenarios & metrics: For all models, we evaluated their
+test-time performance in two settings. In reconstruction tests, the model
+was asked to infer latent parameters from a sample and use them to reconstruct the same sample. In prediction tests, the model was asked to infer
+latent parameters from a sample, but use them to predict another sample
+17
+
+--- PAGE 20 [pdf_text] ---
+Table 2: Summary of quantitative results on reconstruction and prediction performances
+of HAPI-EP and all baselines.
+DeepCardioSim, BoBYQA, and APHYNITY represent
+neural, mechanistic, and hybrid DTs with per-instance optimization (□). ALPS and HVAE represent mechanistic and hybrid DTs with amortized reconstructive-inference (△).
+HAPI-EP is hybrid with amortized predictive inference. Lower is better for MSE/MAE,
+and higher is better for MCC.
+Reconstruction
+Method
+MSE(zphy)
+MCC(zNN)
+MSE(recon)
+MAE(APD)
+MAE(AT)
+MAE(RT)
+DeepCardioSim □[29]
+–
+–
+–
+–
+3.01 ± 1.37
+–
+BoBYQA □[33]
+5.00e-4 ± 6.00e-4
+0.250
+0.1000 ± 0.0890
+14.72 ± 12.09
+6.58 ± 3.11
+13.60 ± 11.09
+APHYNITY □[52]
+2.00e-4 ± 2.00e-4
+0.310
+0.0680 ± 0.0300
+13.21 ± 10.48
+5.40 ± 1.74
+13.20 ± 11.13
+ALPS △[49]
+7.59e-5 ± 9.50e-5
+0.371
+0.0124 ± 0.0146
+2.69 ± 2.60
+0.73 ± 0.86
+2.68 ± 2.60
+H-VAE △[41]
+8.50e-5 ± 1.00e-4
+0.340
+0.0250 ± 0.0152
+3.70 ± 3.12
+1.90 ± 1.13
+3.64 ± 2.41
+HAPI-EP
+1.73e-5 ± 2.77e-5
+0.714
+0.0188 ± 0.0123
+1.76 ± 1.31
+1.88 ± 1.31
+2.09 ± 0.95
+Prediction
+Method
+MSE(zphy)
+MCC(zNN)
+MSE(pred)
+MAE(APD)
+MAE(AT)
+MAE(RT)
+DeepCardioSim □[29]
+–
+–
+–
+–
+3.42 ± 1.71
+–
+BoBYQA □[33]
+5.00e-4 ± 6.00e-4
+0.300
+0.1000 ± 0.0900
+15.52 ± 12.38
+5.84 ± 2.82
+15.00 ± 11.77
+APHYNITY □[52]
+4.10e-4 ± 2.51e-4
+0.320
+0.0720 ± 0.0500
+13.22 ± 10.48
+5.60 ± 2.54
+13.39 ± 10.26
+ALPS △[49]
+9.17e-5 ± 2.20e-4
+0.300
+0.0168 ± 0.0220
+3.60 ± 4.69
+0.80 ± 0.89
+3.60 ± 4.49
+H-VAE △[41]
+2.00e-4 ± 4.0e-4
+0.259
+0.0347 ± 0.0340
+5.30 ± 7.33
+2.20 ± 1.33
+5.27 ± 6.45
+HAPI-EP
+1.74e-5 ± 2.57e-5
+0.702
+0.0196 ± 0.0134
+1.78 ± 1.31
+1.94 ± 1.33
+2.19 ± 1.12
+with the same parameters but different initial conditions. We considered the
+above evaluations considering latent parameter values both within the train
+distribution and out-of-distribution (OOD).
+For reconstructed/predicted action potential, we measured its mean squared
+error (MSE) with ground-truth signals over time and space, as well as the
+mean absolute error (MAE) for the activation time (AT), repolarization (RT),
+and action potential duration (APD) extracted from it. For physics-based
+parameters a, we reported the MSE between estimated and true parameter values. For latent neural diffusion parameters, we measured its mean
+correlation coefficients (MCC), a common identifiability metric, with true
+parameters [21]: the MCC value is between 0 and 1, where a higher MCC
+value indicates better identifiability results.
+4.2. Results
+4.2.1. Reconstruction versus Prediction
+The top half of Table 2 summarizes the performance of HAPI-EP and
+all considered baselines in reconstructing the sample used to infer the latent
+parameters (reconstruction), versus using the inferred parameters to predict
+for a different sample that shares the same parameters but has a different
+initial condition (prediction). Comparing DT performance in reconstruction
+18
+
+--- PAGE 21 [pdf_text] ---
+vs. prediction settings allow us to assess not only how well a DT adapts to
+available measurements and to what extent the latent DT parameters are
+recovered during the adaptation, but also how well the adapted DT is able
+to predict beyond what is observed.
+In reconstruction performance, the three per-instance models delivered
+weaker performances compared to the rest of the amortized models. Note
+that although DeepCardioSim delivered a lower MAE for the estimated AT
+than its per-instance mechanistic and hybrid counterparts, it was directly
+optimized from measured AT and had a narrower task of producing only
+AT (due to its model formulation). In comparison, the other models had
+a more challenging task of reconstructing more complete physiological variables from indirect EGM observations. These results revealed the potential
+limitations with per-instance DT optimization regardless of their underlying
+formulations.
+Interestingly, the use of amortized inference substantially improved the
+performance of the DT — both mechanistic (ALPS) and hybrid (H-VAE)
+— compared to their per-instance optimized counterparts, especially in the
+accuracy of the reconstructed action potential (MSE) and its derived physiological variables (MAE of AT, RT, and APD). Further note that H-VAE had
+similar accuracy in the estimation of reaction parameter a with BoBYQA
+and APHYNITY, yet with much stronger reconstruction performance: this
+suggests the importance of correctly modeling both reaction and diffusion
+components of the model, even if one of them may be neural. These results provide evidence for the potential ability of amortized-inference to learn
+across data samples.
+Note that ALPS, with its perfect mechanistic knowledge, achieved the
+best performance as expected among all baselines. Notably, HAPI-EP with
+its hybrid formulation (i.e., without perfect knowledge about the data generation mechanisms) achieved comparable performance without statistically
+significant difference to ALPS across all signal metrics except MAE for AT.
+More importantly, HAPI-EP obtained significantly improved identifiability
+results for the recovery of the physics-based and especially the neural latent
+parameters compared to all baselines, providing empirical evidence for its
+theoretical identifiability discussed in Section 3.4.
+The importance of this improved identifiability in the recovered latent
+parameters of the DT became evident in the prediction performances of all
+DTs in the bottom half of Table 2. While the relative performances among
+the baselines remained similar to those observed in reconstruction scenarios,
+19
+
+--- PAGE 22 [pdf_text] ---
+Table 3: Summary of out-of-distribution (OOD) quantitative results. Per-instance models
+are left out from this test because the OOD concept does not apply.
+Method
+MSE(OOD)
+MSE(a)
+MCC(α)
+MAE(APD)
+MAE(AT)
+MAE(RT)
+ALPS △[49]
+0.020 ± 0.0223
+0.0002 ± 0.0003
+0.53
+4.89 ± 4.39
+0.73 ± 0.86
+4.71 ± 4.30
+H-VAE △[41]
+0.0325 ± 0.0225
+0.0002 ± 0.0003
+0.52
+5.9 ± 4.5
+2.16 ± 1.27
+4.99 ± 3.99
+HAPI-EP
+0.0221 ± 0.009
+3.91e-05 ± 3.69e-05
+0.57
+3.25 ± 1.6
+1.99 ± 0.9
+2.81 ± 1.52
+all baselines’ performance metrics deteriorated, highlighting the importance
+that a successful fitting to observed data does not guarantee a predictive DT.
+In comparison, HAPI-EP’s performance remained remarkably stable across
+all metrics, delivering a more significant gain of performance over baselines in
+almost all metrics. Notably, a more detailed comparison between HAPI-EP
+and ALPS showed that ALPS was stronger in capturing the activation pattern, while HAPI-EP significantly outperformed ALPS in capturing recoveryrelated physiology, potentially owing to its significantly improved accuracy
+in recovering both latent diffusion and reaction parameters.
+This comparison between reconstruction and prediction performances in
+Table 2 is important: the increasingly pronounced gap between HAPI-EP and
+its baselines in prediction (than reconstruction) supports its design premise:
+the importance of mechanistic backbones when data is weak, and the importance of amortized predictive-inference for transferable and identifiable
+recovery of latent parameters for a DT that is able to predict beyond observed data samples.
+4.2.2. OOD Results
+Table 3 reports the prediction performance of the three amortized models
+on held-out parameter settings where the reaction parameter takes intermediate values a ∈{0.09, 0.11, 0.13}, which were not used during training, while
+the diffusion parameter remains within the same set D ∈{1.5, 2.0, 2.5} as indistribution experiments. The per-instance models are omitted here because
+OOD is a irrelevant concept due to their training-free nature.
+As shown, compared to the hybrid H-VAE with amortized reconstructiveinference, HAPI-EP with its amortized predictive-inference showed significant improvements across all metrics. Even compared with ALPS based on
+perfect knowledge of the underlying data-generation mechanism, HAPI-EP
+still developed comparable MSE on the predicted action potential, better
+parameter identifiability, and improved estimation of APD and RT. Note
+20
+
+--- PAGE 23 [pdf_text] ---
+Figure 2: Examples of ground-truth (GT) versus predicted activation time (AT) and
+repolarization time (RT) maps by all DTs, as the value of reaction parameter a increased
+at a fixed D = 1.5.
+Orange box includes DTs optimized per-instance.
+Magenta box
+includes DTs optimized with amortized reconstructive-inference. HAPI-EP in red box is
+optimized with amortized predictive-inference.
+that the improved MCC of α of ALPS and H-VAE compared to their indistribution performance reported in Table 2 was because they performed
+poorly at higher values of a = 0.14 which were not heavily presented in OOD
+tests. These results provided evidence that the latent parameters HAPI-EP
+inferred were not only useful for interpolation, but remained stable under
+distribution shift.
+4.2.3. Prediction Performance for Varying Reaction Parameters
+We now take a deeper dive into the prediction performance of all DTs under variations of the reaction parameter a. Figures 2 and 3 together demonstrate to what extent each DT preserves the spatial and physiological changes
+induced by a, using AT/RT maps and APD trends, respectively.
+As shown in Figure 2, in the synthetic ground-truth, the increasing value
+21
+
+--- PAGE 24 [pdf_text] ---
+of parameter a produced relatively modest increase in AT in local regions
+(e.g., basal-lateral right ventricular region), but much stronger overall reduction in RT across the ventricles, as expected by the intended effect of
+parameter a on local action potential dynamics.
+Activation maps: In capturing the changes in AT, DeepCardioSim was
+able to reflect the overall trend of increasingly delayed activation as the value
+of a increased. However, its predicted maps appeared less spatially coherent than the ground truth, with patchier transitions and a reduced contrast
+between early- and late-activation regions, particularly through the diminished blue early-activation area. This likely reflects the limitation of a purely
+neural surrogate without an explicit mechanistic model of propagation. The
+per-instance BoBYQA was able to perform well at lower parameter value of
+a = 0.08 but not able to capture the increasingly delayed activation as a increased; the per-instance APHYNITY, on the contrary, was able to capture
+the AT gradient at a = 0.14 but reduced overall spatial gradient of AT maps
+at low and intermediate values of a: these performances may reveal the limitation of per-instance optimizations in leveraging the hidden relations among
+samples, especially when contrasted with the performance of the three amortized DTs (ALPS, H-VAE, and HAPI-EP) which were all more successful in
+capturing the relative changes in AT maps as the value of a increased.
+Among the three amortized models, the reconstructive hybrid H-VAE
+exhibited a similar weakness to its per-instance counterpart (APHYNITY)
+in that it was less effective in capturing the contrast between the regions of
+early and late activation (i.e., the spatial gradient of AT maps) as a increased.
+Both ALPS and HAPI-EP remained consistently close to the ground-truth
+across the full sweep in a, although it is worthwhile noting that ALPS’ success
+was built on knowing the true data-generating mechanisms in its DT models.
+Repolarization maps: In capturing the changes in RT, a similar trend
+in relative performances was observed among methods but at a more pronounced difference. Note that, as the value of a increased, the ground-truth
+exhibited an overall reduction of RT throughout the ventricles. The perinstance mechanistic BoBYQA was faithful at a = 0.08, but deteriorated substantially as the value of a increased and clearly overestimated RT at higher
+values of a, particularly at a = 0.14. The per-instance hybrid APHYNITY
+captured the overall decrease in RT as a increased, but reduced the spatial
+gradients of RT at all four a values, elevating RT values at regions of lowRT while reducing RT values at regions of high-RT on each map. Among
+the three amortized models, H-VAE again was less effective in capturing the
+22
+
+--- PAGE 25 [pdf_text] ---
+(a) D = 1.5
+(b) D = 2.0
+(c) D = 2.5
+Figure 3: Comparison of ground-truth (GT, black) and DT-predicted APD values across
+different values of reaction parameter a at a given value of diffusion parameter D.
+reduction of RT as the value of a increased, especially at higher values of
+a = 0.12 and 0.14. ALPS and HAPI-EP remained consistent and competitive across all values of a.
+Action potential duration: Figure 3 provides a comprehensive summary of APD predictions of all methods against the ground-truth (black) as
+the value of parameter a increased, at each fixed value of parameter D. Consistent with what was observed in Figures 2, the ground-truth APD decreased
+consistently as the value of a increased across all diffusion settings.
+The
+largest disagreement between all methods and the ground-truth appeared at
+a = 0.14, matching the behavior seen in Figure 2. BoBYQA showed increasing deviation from the truth as the value of a increased, particularly at
+a = 0.12 and a = 0.14. APHYNITY and H-VAE were reasonably close at
+lower value of a, but both showed larger departures from the ground-truth as
+a increased, especially in the hardest regime of a = 0.14. HAPI-EP and ALPS
+23
+
+--- PAGE 26 [pdf_text] ---
+Figure 4: Examples of ground-truth (GT) versus predicted activation time (AT) and
+repolarization time (RT) maps by all DTs, as the value of diffusion parameter D increased
+at a fixed a = 0.14 Orange box includes DTs optimized per-instance. Magenta box includes
+DTs optimized with amortized reconstructive-inference. HAPI-EP in red box is optimized
+with amortized predictive-inference.
+remained close to the decreasing trend in the ground-truth APD, across all
+diffusion settings. Taken together, Figs. 2 and 3 revealed a consistent pattern. Higher value of a, especially a = 0.14, is the most difficult regime to
+recover. The effect of a is more clearly expressed in RT and APD than in
+AT, making these outputs more diagnostic of whether a method has captured
+the underlying reaction-driven variation. The relative weaker performances
+of per-instance DTs in capturing the change in the underlying physiological
+variables as the value of a changed revealed the benefit of learning across
+data samples in learning-based amortized inference.
+The strong performance of ALPS indicated the importance of mechanistic
+structure in improving stability, although it requires perfect knowledge about
+24
+
+--- PAGE 27 [pdf_text] ---
+the data-generating mechanisms.
+The competitive performance of HAPIEP to ALPS, particularly in the high-a regime where most other methods
+deteriorated, thus revealed its significant strength: its ability to resolve the
+residuals in imperfect prior mechanisms that was consistent across different
+underlying physiological conditions and at the same time is predictive across
+varying initial conditions.
+4.2.4. Prediction Performance for Varying Diffusion Parameters
+Figure 4 similarly shows AT and RT maps across increasing values of
+parameter D, at the fixed parameter value of a = 0.14 — the most difficult reaction regime observed earlier. As expected in the ground-truth, an
+increase value in the parameter D increased the conduction velocity and
+thereby reduced the spread (i.e., spatial gradient) of both AT and RT maps
+across the ventricles.
+Activation maps: Similar to what was previously observed, DeepCardioSim was able to capture the overall trend of AT changes as D increased,
+but its predicted maps appeared less spatially coherent than the ground
+truth. The per-instance BoBYQA was only able to capture the AT map at
+D = 2.0 without resolving their differences at different values of D, while
+similarly producing a similar RT map across different values of D – the absolute value of the RT maps was also incorrect, due to its inability to resolve
+the correct value of a at a = 0.14 as revealed in Figure 2. These combined
+results demonstrated the limitation of per-instance mechanistic BoBYQA in
+correctly resolving the change in both diffusion and reaction parameter values and how the difficulty in resolving one parameter may be affected by the
+other. The rest of the models were able to capture the change in AT maps as
+the value of D increased, with the amortized hybrid H-VAE arguably being
+the most faithful to the ground-truth while the other three models (including
+HAPI-EP) showed an exaggerated spread of AT gradients for D = 2.
+Repolarization maps: However, all baselines’ prediction of RT maps
+were evidently less accurate than HAPI-EP. Per-instance hybrid APHYNITY,
+similar to previously observed, had a limited ability to resolve the difference
+in RT maps induced by the change of values in parameter D.
+The two
+amortized baselines were able to resolve this difference better, although the
+mechanistic ALPS showed an over-estimation of the spatial RT spread at
+higher values of D = 2.0 and 2.5, while the hybrid H-VAE over-estimated
+this spread throughout all values of D with especially an over-estimate of the
+absolute RT values at lower values of D = 1.5. Among all models, HAPI-EP
+25
+
+--- PAGE 28 [pdf_text] ---
+(a) a = 0.08
+(b) a = 0.10
+(c) a = 0.12
+(d) a = 0.14
+Figure 5: APD comparison (bar plots) across D for different a values.
+was the only DT that was able to consistently resolve the differences in AT
+and RT maps due to the different values of D.
+Action potential duration: Figure 5 summarizes the predicted APD
+values by all DTs against the ground-truth (black) as the value of D increased,
+at each fixed value of a. As expected, at a given parameter value of a, APD
+values should be minimally affected by the diffusion parameter D as shown
+in the ground-truth (black).
+While all DTs were able to respect this at
+a = 0.08, all baselines started to increasingly over-estimate APD values as
+the value of a increased, while HAPI-EP remained the most faithful to the
+ground-truth throughout all settings.
+Note that the amortized ALPS —
+with perfect mechanistic knowledge — was competitive to HAPI-EP but still
+over-estimated at a = 0.14 compared to HAPI-EP.
+Taken together, Figs. 4 and 5 revealed a consistent pattern. Diffusiondriven physiological changes could be recovered reasonably well when the
+reaction regime is easy, but once a became difficult to recover, the correct re26
+
+--- PAGE 29 [pdf_text] ---
+(a) MSE(pred) across hearts.
+(b) MSE(a) across hearts.
+(c) MCC(α) across hearts.
+(d) MSE(a) across D.
+(e) MSE(a) across a.
+Figure 6: Summary metrics (stacked bar plots) across hearts and parameter settings.
+covery of D also became difficult. This highlights the challenge of parameter
+identification in DT adaptation which, without proper adaptation strategies,
+could persist even with full knowledge about the data-generating mechanisms
+and became exaggerated if there were neural components within the DT. The
+learn-to-predict strategies, underlined by theoretical identifiability of the latent DT parameters, were empirically proven to be the only strategy that
+was able to address this challenge in the experiments conducted.
+4.2.5. Quantitative Comparisons across Hearts and Physiological Conditions
+Figure 6 summarizes these quantitative trends across hearts and conditions, to examine the stability of each DT across hearts/conditions as well
+as identify the most challenging scenarios for all DTs.
+Across the three ventricles considered, as shown in Figure 6(a)-(c), the
+identification of reaction parameter a seemed to be the most difficult in heart
+3, while the identification of diffusion parameter D was significantly the most
+difficult in heart 2. Across the physiological values of parameters a and D,
+Figure 6(d)-(e) show how the largest error was seen at D = 2.5 while the
+increase in the value of a significantly increased the difficulty.
+27
+
+--- PAGE 30 [pdf_text] ---
+Table 4: Additional ablation of the two key elements in HAPI-EP. The shaded column
+represents a best-case scenario because it uses a known mechanism.
+Hybrid
+X
+✓
+X(neural)
+✓
+X(physics)
+Learn to predict
+X
+X
+✓
+✓
+✓
+MSE(x)
+0.193
+0.072
+1.3
+0.019
+0.012
+Within each setting, the stacked bars also show the extent to which
+each DT was affected by the difficulty of estimation.
+Overall, across all
+settings, the largest contributions to prediction and parameter-estimation
+errors tended to come from BoBYQA and APHYNITY (tall MSE bars and
+short MCC bars), particularly in the more difficult settings, whereas HAPIEP consistently contributed the lowest errors (short MSE bars and tall MCC
+bars) across the hearts and physiological conditions considered.
+4.2.6. Additional Ablations
+We conducted additional ablation studies on HAPI-EP, progressively testing each of its key elements: the hybrid formulation, and its identifiable formulation with the amortized predictive-inference. As summarized in Table 4,
+The starting ablation, without the hybrid component or the learn-to-predict
+objective, was a neural graph diffusion architecture the same as that used in
+HAPI-EP but with a neural function for the reaction terms, optimized per
+instance. Adding the amortized predictive-inference along, using the same
+encoder architectures as described in HAPI-EP, was not successful, showing
+the importance of mechanistic knowledge in this DT. Indeed, adding the hybrid structure alone improved the performance substantially, although still
+to a limited extent. The use of hybrid formulation together with the learnto-predict objective significantly improved the performance of the DT, to a
+level that is competitive to the use of the perfect data-generating mechanism
+(shaded). These results reiterated that both the use of a hybrid model formulation and the amortized predictive-inference strategies are necessary for
+an adaptive and predictive DT.
+5. Real Data Experiments
+5.1. Experimental Settings
+We evaluate on in-vivo canine epicardial recordings acquired with a multielectrode epicardial sock under controlled pacing protocols, following the
+28
+
+--- PAGE 31 [pdf_text] ---
+Figure 7: Visual comparison of predicted AT maps for four pacing sites by all models
+(low→high)
+experimental setup and preprocessing pipeline described in prior work [4].
+Bipolar plunge-needle pacing was delivered at 4 unique left-ventricular sites
+to generate activation sequences, and EGMs were recorded at 1 kHz on an
+sock array applied to the epicardium only.
+We considered all models from Section 4, adapting the DT using real EGM
+data for predictive scenarios: in a cross-validation setting, we used epicardial
+EGMs from three pacing sites to infer latent DT model parameters, and the
+adapted model was used to make predictions for the one left-out pacing
+site; this was done four times, leaving recordings from one pacing site out
+each. For DeepCardioSim which as a neural surrogate outputs only AT, perinstance optimization was carried out using EGM-derived AT data. For the
+29
+
+--- PAGE 32 [pdf_text] ---
+Figure 8: Visual comparison of predicted RT maps for four pacing sites by all models
+(low→high).
+base DeepCardioSim network and the amortized models including HAPI-EP,
+since there was not sufficient in-vivo data for training, the models trained on
+the synthetic data in Section 4 were directly tested here.
+For evaluation, we extracted AT and APD from the predicted action
+potential signals, and evaluated their MAEs against AT and APD derived
+from EGMs measured on the epicardial sock.
+5.2. Results
+Figure 7 compares AT maps predicted by all DTs across the four pacing
+sites. The ground-truth maps show clear site-dependent changes in both the
+location of the high-AT region and the overall spatial gradient. The relative
+performance of all DTs resembled that observed in synthetic experiments.
+DeepCardioSim was able to predict the general early-to-late AT pattern,
+although consistently under-performed in the region near the site of early
+30
+
+--- PAGE 33 [pdf_text] ---
+Table 5: Summary of quantitative results and computation time (wall-clock time in seconds
+for adaptation and prediction) on real-data.
+Method
+MAE(AT)
+MAE(APD)
+MAE(RT)
+Computation (s)
+DeepCardioSim □
+6.39 ± 1.29
+–
+–
+6.39
+BoBYQA □
+10.18 ± 2.45
+15.79 ± 4.04
+12.22 ± 1.53
+1630.56
+APHYNITY □
+9.61 ± 2.80
+10.88 ± 0.96
+9.29 ± 2.39
+3293.96
+ALPS △
+6.55 ± 2.27
+22.21 ± 4.51
+16.12 ± 2.67
+30.13
+H-VAE △
+6.73 ± 2.65
+21.95 ± 4.55
+15.64 ± 2.49
+28.20
+HAPI-EP
+5.14 ± 1.96
+9.63 ± 4.31
+11.38 ± 3.66
+32.24
+activation. The per-instance BoBYQA and APHYNITY were able to capture
+an activation pattern starting from each pacing site, although both underestimated the spatial gradient of the AT maps across all four cases. The
+two amortized reconstructive DTs, ALPS and HVAE, were more successful
+in capturing the AT gradients in space, although still under-estimated the
+complete span of AT exhibiting smaller latest activation time in all four cases.
+HAPI-EP predicted the most consistent AT maps to the ground-truth in all
+cases, preserving both the site-specific region of early- and late-activation
+regions as well as the range of AT values.
+Figure 8 compares RT maps across the same pacing sites. In contrast
+to AT, the measured RT maps were more similar across sites in their global
+structure, with subtle site-dependent changes in spatial distributions. Interestingly, the relative performance of the DTs was different from what was
+observed in synthetic data. Notably, the two mechanistic DTs — BoBYQA
+and ALPS — significantly over-estimated RT values. This suggested that
+mechanistic DTs, while performing well when perfect mechanistic knowledge
+is available (e.g., in synthetic data), can deteriorate significantly when the
+underlying mechanistic knowledge has a gap to real data. Between the two
+hybrid DTs that had learnable neural component to resolve this gap, the
+amortized H-VAE also had a similar problem of over-estimating the RT
+ranges, while the per-instance APHYNITY performed significantly better.
+This suggested the challenge of generalization associated with learning-based
+amortized inference, especially when training occurred on synthetic data.
+Notably, the learning-based HAPI-EP was not impacted by this issue and
+performed visually similar to APHYNITY in its predicted RT maps across
+all four sites. This highlighted the benefit of its learn-to-predict objective.
+Quantitative MAE values in Table 5 confirmed these visual comparisons.
+31
+
+--- PAGE 34 [pdf_text] ---
+HAPI-EP achieved the lowest MAE in AT, with DeepCardioSim being the
+next best method on this metric. Notably, however, DeepCardioSim was personalized directly from AT information, whereas the DT baselines adapted
+from EGM measurements, making its setting narrower and more supervised.
+APHYNITY achieved the lowest MAE in RT, although its difference to
+HAPI-EP was within one standard deviation of the mean.
+Importantly,
+HAPI-EP (and ALPS) also achieved the lowest MAE in the predicted APD
+values, which was substantially improved over the rest of the baseline DTs.
+Importantly, in the last column of Table 5 we show the computation (wallclock time in seconds) for each method in adapting the DT and using the
+adapted DT for prediction, measured per case with the average reported
+across all cases. As shown, although HAPI-EP and APHYNITY achieved
+similar performance in RT and APD predictions, HAPI-EP was able to deliver this adaptation at a fraction of the computation cost of the per-instance
+APHYNITY.
+6. Conclusions and Discussion
+In this paper, we present HAPI-EP as a novel foundation for building hybrid and adaptive DTs with predictive-ness guaranteed by the identifiability
+of its latent parameters. Our synthetic and real-data experimental results
+showed several important findings. First, activation and repolarization features were not equally easy to recover, and the latter seemed to present a
+bigger challenge for most per-instance based approaches whether the underlying model is mechanistic or not. In this context, amortized inference, i.e.,
+learning the optimization across many instances, seemed to offer not only
+benefits of rapid adaptation at deployment time but also improvements in
+resolving repolarization-related features from data. Second, the performance
+of parameter adaptation of a method can change depending on the values of
+the parameter, and this difficulty can impact the method’s ability to resolve
+another parameter. For instance, a = 0.08 appeared the easiest for all DTs
+to estimate correctly, while a larger performance gap was observed among
+methods at high values of parameter a (Fig. 3) across all values of parameter
+D (Fig. 5). Finally, HAPI-EP with its hybrid formulation and amortized
+predictive-inference consistently provided the strongest performance across
+parameter values, especially in improving predictive accuracy and OOD performance.
+As a proof-of-concept, this work has the following limitations that can be
+32
+
+--- PAGE 35 [pdf_text] ---
+addressed in future investigations. In terms of formulation of the hybrid DT,
+while the concept and methodology of HAPI-EP is not tied to the specific
+choice of mechanistic models, we demonstrated its proof of concept using the
+reaction mechanism described in the Aliev-Panfilov model combined with a
+neural graph diffusion. A natural next step is to extend HAPI-EP to richer
+ionic models and assess whether its hybrid and identifiable adaptation strategy remains effective when the mechanistic component is more biophysically
+detailed.
+Other more general forms of hybridization between mechanistic
+and neural components can also be considered in future works. In terms of
+the inference methodology, the current study is limited to the setting where
+the activation site is controlled/known: when the initial site of activation is
+not known, this will become an additional learnable latent variable whose
+identifiability needs to be established along with the latent parameters of the
+hybrid model. Furthermore, for simplicity, the latent parameters zPHY and
+zNN were assumed to be Gaussian with fixed variance parameter σ. While
+this stabilizes training, it limits the flexibility of the uncertainty model. A
+more expressive formulation that learns or adapts this variance may better capture heterogeneity in confidence across tasks and subjects. Finally,
+although HAPI-EP enables rapid feedforward adaptation at test time, this
+comes at a nontrivial computation and memory cost during training because the framework jointly optimizes context encoders, hypernetworks, and
+the hybrid simulator in an episodic meta-learning setting.
+Reducing this
+training-time overhead will be important for scaling the method to larger
+models and datasets.
+In experimental evaluation of HAPI-EP, the synthetic training data were
+generated from the fully mechanistic Aliev-Panfilov model. While this allowed a controlled testing of whether the hybrid formulation of HAPI-EP is
+able to resolve the knowledge gap about the mechanistic diffusion, it does not
+fully capture the structural mismatch encountered in practice. Future work
+should therefore evaluate HAPI-EP under higher-fidelity simulation environments, including more detailed electrophysiology models and more realistic
+forward models, to better test the robustness of the hybrid formulation to
+capture mismatch in prior mechanistic knowledge. Furthermore, while we
+considered the heterogeneity of the reaction and diffusion parameters in our
+experiments, these parameters were assumed to be spatially uniform. How
+to take into account spatially-varying electrophysiological properties is an
+important future direction in order to model local pathological conditions,
+including non-trivial challenges such as establishing conditions that need to
+33
+
+--- PAGE 36 [pdf_text] ---
+be met in order to meet the identifiability of such high-dimensional parameters .
+Finally, while the in-vivo evaluation provided promising evidence for the
+generalizability of HAPI-EP even when trained on simulation data, it remained limited in scale. Larger studies on both animal and human data
+will be necessary to establish the robustness, clinical relevance, and generalizability of HAPI-EP across geometries, physiological conditions, and measurement conditions.
+Acknowledgement
+This work was supported by National Institutes of Health (NIH) award
+number R01HL145590 (contact PI Wang).
+References
+[1] Aliev, R.R., Panfilov, A.V.:
+A simple two-variable model of cardiac excitation. Chaos, Solitons & Fractals 7(3), 293–301 (1996).
+https://doi.org/10.1016/0960-0779(95)00089-5
+[2] Arevalo, H.J., Vadakkumpadan, F., Guallar, E., Jebb, A., Malamas,
+P., Wu, K.C., Trayanova, N.A.: Arrhythmia risk stratification of patients after myocardial infarction using personalized heart models. Nature communications 7(1), 11437 (2016)
+[3] Barrios Espinosa, C., Sánchez, J., Appel, S., Becker, S., Krauß, J.,
+Martínez Díaz, P., Unger, L., Houillon, M., Loewe, A.:
+A cyclical
+fast iterative method for simulating reentries in cardiac electrophysiology using an eikonal-based model. Engineering with Computers 41(4),
+2335–2358 (Jan 2025). https://doi.org/10.1007/s00366-024-02094-9
+[4] Bergquist, J.A., Good, W.W., Zenger, B., Tate, J.D., Rupp, L.C.,
+MacLeod, R.S.: The electrocardiographic forward problem: A benchmark study. Computers in Biology and Medicine 134, 104476 (2021).
+https://doi.org/10.1016/j.compbiomed.2021.104476
+[5] Bhagirath,
+P.,
+Strocchi,
+M.,
+Bishop,
+M.J.,
+Boyle,
+P.M.,
+Plank,
+G.:
+From bits to bedside:
+entering the age of digital twins in
+cardiac electrophysiology. EP Europace 26(12), euae295 (12 2024).
+https://doi.org/10.1093/europace/euae295
+34
+
+--- PAGE 37 [pdf_text] ---
+[6] Camps, J., Wang, Z.J., Doste, R., Berg, L.A., Holmes, M., Lawson, B.,
+Tomek, J., Burrage, K., Bueno-Orovio, A., Rodriguez, B.: Harnessing
+12-lead ecg and mri data to personalise repolarisation profiles in cardiac
+digital twin models for enhanced virtual drug testing. Medical Image
+Analysis p. 103361 (2025). https://doi.org/10.1016/j.media.2024.103361
+[7] Chamberlain, B., Rowbottom, J., Gorinova, M.I., Bronstein, M., Webb,
+S., Rossi, E.: Grand: Graph neural diffusion. In: Proceedings of the
+38th International Conference on Machine Learning. Proceedings of
+Machine Learning Research, vol. 139, pp. 1407–1418. PMLR (2021).
+https://doi.org/10.48550/arXiv.2106.10934
+[8] Chis, O.T., Banga, J.R., Balsa-Canto, E.: Structural identifiability of
+systems biology models: A critical comparison of methods. PLoS ONE
+6(11), e27755 (2011). https://doi.org/10.1371/journal.pone.0027755
+[9] Clayton,
+R.H.,
+Bernus,
+O.,
+Cherry,
+E.,
+Dierckx,
+H.,
+Fenton,
+F.H., dos Santos Forte, L., Greenstein, S.G., Lines, H., Maleckar,
+M.O.,
+Pathmanathan,
+P.,
+Plank,
+G.,
+Rodriguez,
+J.F.,
+Sachse,
+F.B.,
+Seemann,
+G.,
+Zhang,
+H.:
+Models of cardiac tissue electrophysiology:
+Progress,
+challenges and open questions. Progress
+in
+Biophysics
+and
+Molecular
+Biology
+104(1–3),
+22–48
+(2011).
+https://doi.org/10.1016/j.pbiomolbio.2010.05.008
+[10] Cluitmans, M.J.M., Clerx, M., Vandersickel, N., Peeters, R.L.M., Volders, P.G.A., Westra, R.L.: Physiology-based regularization of the electrocardiographic inverse problem. Medical & Biological Engineering &
+Computing 55, 1353–1365 (2017). https://doi.org/10.1007/s11517-0161595-5
+[11] Cluitmans,
+M.J.M.,
+Plank,
+G.,
+Heijman,
+J.:
+Digital twins for
+cardiac electrophysiology:
+state of the art and future challenges.
+Herzschrittmachertherapie & Elektrophysiologie 35(2), 118–123 (2024).
+https://doi.org/10.1007/s00399-024-01014-0
+[12] Coudière, Y., Bourgault, Y., Rioux, M.N.: Optimal monodomain approximations of the bidomain equations used in cardiac electrophysiology. Mathematical Models and Methods in Applied Sciences 24(6),
+1115–1140 (2014). https://doi.org/10.1142/S0218202513500784
+35
+
+--- PAGE 38 [pdf_text] ---
+[13] Finn, C., Abbeel, P., Levine, S.:
+Model-agnostic meta-learning for
+fast adaptation of deep networks. In: Proceedings of the 34th International Conference on Machine Learning (ICML). Proceedings of Machine
+Learning Research, vol. 70, pp. 1126–1135 (2017)
+[14] Grandits, T., Gillette, K., Plank, G., Pezzuto, S.: Accurate and efficient
+cardiac digital twin from surface ecgs: Insights into identifiability of
+ventricular conduction system. Medical Image Analysis p. 103641 (2025).
+https://doi.org/10.1016/j.media.2025.103641
+[15] Heiden,
+E.,
+Millard,
+D.,
+Coumans,
+E.,
+Sheng,
+Y.,
+Sukhatme,
+G.S.:
+Neuralsim:
+Augmenting
+differentiable
+simulators
+with
+neural
+networks.
+In:
+2021
+IEEE
+International
+Conference
+on
+Robotics
+and
+Automation
+(ICRA).
+pp.
+9474–9481
+(2021).
+https://doi.org/10.1109/ICRA48506.2021.9560935
+[16] Herrero Martin,
+C.,
+Oved,
+A.,
+Chowdhury,
+R.A.,
+Ullmann,
+E.,
+Peters,
+N.S.,
+Bharath,
+A.A.,
+Varela,
+M.:
+Ep-pinns:
+Cardiac electrophysiology characterisation using physics-informed neural
+networks.
+Frontiers
+in
+Cardiovascular
+Medicine
+8
+(2022).
+https://doi.org/10.3389/fcvm.2021.768419
+[17] Herrero-Martín, C., Molero, R., Sánchez, J., Reventós-Presmanes, J.,
+Guichard, J.B., Althoff, T., Porta-Sánchez, A., Roca-Luque, I., Mont,
+L., Guillem, M.S., Climent, A.M., Hernández-Romero, I.:
+Dynamo
+framework: Advancing non-invasive, rapid calibration in cardiac digital twin technology. Computers in Biology and Medicine 197, 110974
+(2025). https://doi.org/10.1016/j.compbiomed.2025.110974
+[18] Jaffery, O.A., Melki, L., Slabaugh, G., Good, W.W., Roney, C.H.:
+A review of personalised cardiac computational modelling using electroanatomical mapping data. Arrhythmia & Electrophysiology Review
+13 (2024). https://doi.org/10.15420/aer.2023.25
+[19] Jiang, X., Li, Z., Missel, R., Zaman, M.S., Zenger, B., Good, W.W.,
+MacLeod, R.S., Sapp, J.L., Wang, L.: Few-shot generation of personalized neural surrogates for cardiac simulation via bayesian meta-learning.
+In: Wang, L., Dou, Q., Fletcher, P.T., Speidel, S., Li, S. (eds.) Medical
+Image Computing and Computer Assisted Intervention – MICCAI 2022.
+pp. 46–56. Springer Nature Switzerland, Cham (2022)
+36
+
+--- PAGE 39 [pdf_text] ---
+[20] Kashtanova, V., Ayed, I., Cedilnik, N., Gallinari, P., Sermesant, M.: Epnet 2.0: Out-of-domain generalisation for deep learning models of cardiac electrophysiology. In: Ennis, D.B., Perotti, L.E., Wang, V.Y. (eds.)
+Functional Imaging and Modeling of the Heart. pp. 482–492. Springer
+International Publishing, Cham (2021)
+[21] Khemakhem, I., Kingma, D., Monti, R., Hyvarinen, A.: Variational autoencoders and nonlinear ica: A unifying framework. In: Chiappa, S.,
+Calandra, R. (eds.) Proceedings of the Twenty Third International Conference on Artificial Intelligence and Statistics. Proceedings of Machine
+Learning Research, vol. 108, pp. 2207–2217. PMLR (26–28 Aug 2020),
+https://proceedings.mlr.press/v108/khemakhem20a.html
+[22] Kingma, D.P., Welling, M.: Auto-encoding variational bayes. In: International Conference on Learning Representations (ICLR) (2014).
+https://doi.org/10.48550/arXiv.1312.6114
+[23] Li, L., Camps, J., Rodriguez, B., Grau, V.:
+Solving the inverse
+problem of electrocardiography for cardiac digital twins:
+A survey. IEEE Reviews in Biomedical Engineering 18, 316–336 (2025).
+https://doi.org/10.1109/RBME.2024.3486439
+[24] Luo,
+C.H.,
+Rudy,
+Y.:
+A model of the ventricular cardiac action
+potential.
+depolarization,
+repolarization,
+and
+their
+interaction.
+Circulation
+Research
+68(6),
+1501–1526
+(1991).
+https://doi.org/10.1161/01.RES.68.6.1501
+[25] Lydon,
+H.,
+Kazemi,
+M.,
+Bishop,
+M.,
+Paoletti,
+N.:
+Physicsinformed
+neural
+operators
+for
+cardiac
+electrophysiology
+(2025),
+https://arxiv.org/abs/2511.08418
+[26] Mirams,
+G.R.,
+Niederer,
+S.A.,
+Clayton,
+R.H.:
+The
+fickle
+heart:
+uncertainty
+quantification
+in
+cardiac
+and
+cardiovascular
+modelling
+and
+simulation.
+Philosophical
+Transactions
+of
+the
+Royal Society A: Mathematical, Physical and Engineering Sciences
+378(2173), 20200119 (05 2020). https://doi.org/10.1098/rsta.2020.0119,
+https://doi.org/10.1098/rsta.2020.0119
+[27] Mitchell, C.C., Schaeffer, D.G.: A two-current model for the dynamics
+of cardiac membrane. Bulletin of Mathematical Biology 65(5), 767–793
+(2003). https://doi.org/10.1016/S0092-8240(03)00041-7
+37
+
+--- PAGE 40 [pdf_text] ---
+[28] Morier, M., Rodríguez-Padilla, J., Gallinari, P., Sermesant, M.: Learning Cardiac Electrophysiology with Graph Neural Networks for Fast
+Data-driven Personalised Predictions. In:
+FIMH 2025 - 13th Functional Imaging and Modeling of the Heart International Conference.
+vol. 15672 (Part I) and 15673 (Part II), p. LNCS 15672 and LNCS
+15673. Radomír Chabiniok, Dallas (TX), United States (Jun 2025),
+https://hal.science/hal-05114524
+[29] Naghavi, E., Wang, H., Ziaei-Rad, V., Guccione, J., Kassab, G., Boddeti, V., Baek, S., Lee, L.C.: Rapid prediction of cardiac activation in
+the left ventricle with geometric deep learning: a step towards cardiac
+resynchronization therapy planning. npj Digital Medicine 9, 225 (2026).
+https://doi.org/10.1038/s41746-026-02399-7
+[30] Niederer, S.A., Aboelkassem, Y., Cantwell, C.D., Corrado, C., Coveney,
+S., Cherry, E.M., Delhaas, T., Fenton, F.H., Panfilov, A., Pathmanathan, P., Plank, G., Riabiz, M., Roney, C.H., dos Santos, R.W.,
+Wang, L.: Creation and application of virtual patient cohorts of heart
+models. Philosophical Transactions of the Royal Society A: Mathematical, Physical and Engineering Sciences 378(2173), 20190558 (2020).
+https://doi.org/10.1098/rsta.2019.0558
+[31] Niederer, S.A., Kerfoot, J.G., Benson, A.P., Bernabeu, M.O., Bernus,
+O., Clayton, R.H., Fenton, F.H., Garny, A., Heidenreich, E.M., Land,
+S., Maleckar, M.J., Pathmanathan, P., Plank, G., Rodriguez, J.F., Roy,
+I., Sachse, F.B., Seemann, G., Skavhaug, O., Smith, N.P.: Verification
+of cardiac tissue electrophysiology simulators using an n-version benchmark. Philosophical Transactions of the Royal Society A 369(1954),
+4331–4351 (2011). https://doi.org/10.1098/rsta.2011.0139
+[32] O’Hara, R.P., Lacy, A., Prakosa, A., Kholmovski, E.G., Maurizi,
+N., Pruvot, E.J., Teres, C., Antiochos, P., Masi, A., Schwitter, J.,
+Trayanova, N.A.:
+Cardiac MRI oversampling in heart digital twins
+improves preprocedure ventricular tachycardia identification in postinfarction patients. JACC: Clinical Electrophysiology 10(9), 2035–2048
+(2024). https://doi.org/10.1016/j.jacep.2024.04.032
+[33] Powell, M.: The bobyqa algorithm for bound constrained optimization
+without derivatives. Technical Report, Department of Applied Mathematics and Theoretical Physics (01 2009)
+38
+
+--- PAGE 41 [pdf_text] ---
+[34] Rackauckas, C., Ma, Y., Martensen, J., Warner, C., Zubov, K.,
+Supekar,
+R.,
+Skinner,
+D.,
+Ramadhan,
+A.,
+Edelman,
+A.:
+Universal differential equations for scientific machine learning (2021),
+https://arxiv.org/abs/2001.04385
+[35] Raissi, M., Perdikaris, P., Karniadakis, G.:
+Physics-informed neural
+networks:
+A
+deep
+learning
+framework
+for
+solving
+forward
+and inverse problems involving nonlinear partial differential equations.
+Journal
+of
+Computational
+Physics
+378,
+686–707
+(2019).
+https://doi.org/10.1016/j.jcp.2018.10.045
+[36] Raue, A., Kreutz, C., Maiwald, T., Bachmann, J., Schilling, M.,
+Klingmüller, U., Timmer, J.:
+Structural and practical identifiability analysis of partially observed dynamical models by exploiting
+the profile likelihood. Bioinformatics 25(15), 1923–1929 (08 2009).
+https://doi.org/10.1093/bioinformatics/btp358
+[37] Ruiz Herrera, C., Grandits, T., Plank, G., Perdikaris, P., Sahli Costabal, F., Pezzuto, S.: Physics-informed neural networks to learn cardiac
+fiber orientation from multiple electroanatomical maps. Eng. with Comput. 38(5), 3957–3973 (Oct 2022). https://doi.org/10.1007/s00366-02201709-3
+[38] Salvador, M., Kong, F., Peirlinck, M., Parker, D.W., Chubb, H., Dubin,
+A.M., Marsden, A.L.: Digital twinning of cardiac electrophysiology for
+congenital heart disease. Journal of the Royal Society Interface 21(215),
+20230729 (2024). https://doi.org/10.1098/rsif.2023.0729
+[39] Sel,
+K.,
+Osman,
+D.,
+Zare,
+F.,
+Shahrbabak,
+S.M.,
+Brattain,
+L.,
+Hahn,
+J.,
+Inan,
+O.T.,
+Mukkamala,
+R.,
+Palmer,
+J.,
+Paydarfar,
+D.,
+Pettigrew,
+R.I.,
+Quyyumi,
+A.A.,
+Telfer,
+B.,
+Jafari,
+R.:
+Building digital twins for cardiovascular health:
+From principles to clinical impact. Journal of the American Heart Association
+13(19),
+e031981 (2024). https://doi.org/10.1161/JAHA.123.031981,
+https://www.ahajournals.org/doi/abs/10.1161/JAHA.123.031981
+[40] Sermesant, M., Chabiniok, R., Chinchapatnam, P., Mansi, T., Billet,
+F., Moireau, P., Peyrat, J., Wong, K., Relan, J., Rhode, K., Ginks,
+M., Lambiase, P., Delingette, H., Sorine, M., Rinaldi, C., Chapelle, D.,
+Razavi, R., Ayache, N.: Patient-specific electromechanical models of
+39
+
+--- PAGE 42 [pdf_text] ---
+the heart for the prediction of pacing acute effects in crt: A preliminary clinical validation. Medical Image Analysis 16(1), 201–215 (2012).
+https://doi.org/10.1016/j.media.2011.07.003
+[41] Takeishi, N., Kalousis, A.:
+Physics-integrated variational autoencoders for robust and interpretable generative modeling. In:
+Advances in Neural Information Processing Systems. vol. 34 (2021).
+https://doi.org/10.5555/3540261.3541396
+[42] Toloubidokhti, M., Missel, R., Lian, S., Wang, L.:
+Meta-learning
+physics-informed neural networks for personalized cardiac modeling.
+In: Gee, J.C., Alexander, D.C., Hong, J., Iglesias, J.E., Sudre, C.H.,
+Venkataraman, A., Golland, P., Kim, J.H., Park, J. (eds.) Medical Image Computing and Computer Assisted Intervention – MICCAI 2025.
+pp. 344–354. Springer Nature Switzerland, Cham (2026)
+[43] ten Tusscher, K.H.W.J., Panfilov, A.V.: Alternans and spiral breakup
+in a human ventricular tissue model. American Journal of PhysiologyHeart
+and
+Circulatory Physiology
+291(3),
+H1088–H1100 (2006).
+https://doi.org/10.1152/ajpheart.00109.2006
+[44] Waight,
+M.C.,
+Prakosa,
+A.,
+Li,
+A.C.,
+Bunce,
+N.,
+Marciniak,
+A.,
+Trayanova,
+N.A.,
+Saba,
+M.M.:
+Personalized
+heart
+digital
+twins
+detect
+substrate
+abnormalities
+in
+scar-dependent
+ventricular
+tachycardia.
+Circulation
+151(8),
+521–533
+(2025).
+https://doi.org/10.1161/CIRCULATIONAHA.124.070526
+[45] Wang,
+L.,
+Zhang,
+H.,
+Wong,
+K.C.L.,
+Liu,
+H.,
+Shi,
+P.:
+Physiological-model-constrained
+noninvasive
+reconstruction
+of
+volumetric
+myocardial
+transmembrane
+potentials.
+IEEE
+Transactions
+on
+Biomedical
+Engineering
+57(2),
+296–315
+(2010).
+https://doi.org/10.1109/TBME.2009.2024531
+[46] Wehenkel,
+A.,
+Behrmann,
+J.,
+Hsu,
+H.,
+Sapiro,
+G.,
+Louppe,
+G.,
+Jacobsen,
+J.H.:
+Robust
+hybrid
+learning
+with
+expert
+augmentation.
+Transactions
+on
+Machine
+Learning
+Research
+(2023),
+https://openreview.net/forum?id=oe4dl4MCGY
+[47] Wieland, F.G., Hauber, A.L., Rosenblatt, M., Tönsing, C., Timmer, J.:
+On structural and practical identifiability. Current Opinion in Systems
+Biology 25, 60–69 (2021). https://doi.org/10.1016/j.coisb.2021.03.005
+40
+
+--- PAGE 43 [pdf_text] ---
+[48] Wong, K.C., Sermesant, M., Rhode, K., Ginks, M., Rinaldi, C.A.,
+Razavi, R., Delingette, H., Ayache, N.: Velocity-based cardiac contractility personalization from images using derivative-free optimization.
+Journal of the mechanical behavior of biomedical materials 43, 35–52
+(2015)
+[49] Yang, T.Y., Rosca, J., Narasimhan, K., Ramadge, P.J.:
+Learning
+physics constrained dynamics using autoencoders. Advances in Neural
+Information Processing Systems 35, 17157–17172 (2022)
+[50] Ye, Y., Liu, H., Jiang, X., Toloubidokhti, M., Wang, L.: A spatialtemporally adaptive pinn framework for 3d bi-ventricular electrophysiological simulations and parameter inference. In: Greenspan, H., Madabhushi, A., Mousavi, P., Salcudean, S., Duncan, J., Syeda-Mahmood, T.,
+Taylor, R. (eds.) Medical Image Computing and Computer Assisted Intervention – MICCAI 2023. pp. 163–172. Springer Nature Switzerland,
+Cham (2023)
+[51] Ye, Y., Toloubidokhti, M., Vadhavkar, S., Jiang, X., Liu, H., Wang, L.:
+On the identifiability of hybrid deep generative models: Meta-learning
+as a solution. In: Globerson, A., Mackey, L., Belgrave, D., Fan, A.,
+Paquet, U., Tomczak, J., Zhang, C. (eds.) Advances in Neural Information Processing Systems. vol. 37, pp. 7714–7735. Curran Associates, Inc.
+(2024). https://doi.org/10.52202/079017-0247
+[52] Yin, Y., Le Guen, V., Donà, J., de Bézenac, E., Ayed, I., Thome,
+N., Gallinari, P.: Augmenting physical models with deep networks for
+complex dynamics forecasting. Journal of Statistical Mechanics: Theory and Experiment (12), 124012 (2021). https://doi.org/10.1088/17425468/ac3ae5
+[53] Zahid, S., Whyte, K.N., Schwarz, E.L., Blake, R.C., Boyle, P.M.,
+Chrispin, J., Prakosa, A., Ipek, E.G., Pashakhanloo, F., Halperin, H.R.,
+Calkins, H., Berger, R.D., Nazarian, S., Trayanova, N.A.: Feasibility of
+using patient-specific models and the “minimum cut” algorithm to predict optimal ablation targets for left atrial flutter. Heart Rhythm 13(8),
+1687–1698 (2016). https://doi.org/10.1016/j.hrthm.2016.04.009
+[54] Ziarelli, G., Centofanti, E., Parolini, N., Scacchi, S., Verani, M.,
+Pavarino, L.F.: Learning cardiac activation and repolarization times
+41
+
+--- PAGE 44 [pdf_text] ---
+with operator learning. PLOS Computational Biology 22(1), e1013920
+(2026). https://doi.org/10.1371/journal.pcbi.1013920
+42

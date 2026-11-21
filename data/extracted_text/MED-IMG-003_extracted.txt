@@ -1,0 +1,841 @@
+--- PAGE 1 [pdf_text] ---
+Scribble Once, Segment the Sequence: Bidirectional Temporal Consistency for
+Weakly Supervised Segmentation in Echocardiography Sequences
+Vincent Li Weixin
+University of Oxford
+vincent.li@reuben.ox.ac.uk
+Chen Jingkun
+Northwest Polytechnical University Xi’an
+jingkunchen@nwpu.edu.cn
+Vicente Grau
+University of Oxford
+vicente.grau@eng.ox.ac.uk
+Abstract
+Temporal medical image segmentation relies on pixel-wise
+annotations, which are prohibitively expensive for long image sequences. Existing weakly-supervised methods reduce
+the annotation burden per frame but still require repeated
+annotations across the sequence. Furthermore, sparse supervision can result in temporally unstable representations.
+Addressing both challenges requires a model that can leverage strong spatial priors from large-scale pretraining while
+minimizing reliance on dense annotations. Frozen 2D vision foundation models provide a promising basis for this
+by offering transferable spatial representations with low
+trainable parameters. However, their lack of explicit temporal modeling limits their ability to propagate reliable information across anatomical sequences. To address this,
+we present a weakly-supervised framework for temporal
+segmentation from a single scribble-annotated frame, with
+all remaining frames left unlabeled. The framework combines parameter-efficient adaptation of DINOv3 encoders
+present in the mean-teacher architecture.
+Furthermore,
+a set of complementary losses, including a temporal loss
+helps generate reliable segmentation priors for the unlabeled frames. This formulation decouples annotation costs
+from sequence length while retaining the transferable spatial knowledge of the pretrained encoder.
+Extensive experiments on the publicly available CAMUS and CardiacNet datasets demonstrate that our approach outperforms
+other scribble-supervised methods. These results show that
+accurate and temporally consistent segmentation can be
+achieved from extremely sparse supervision, substantially
+reducing annotation requirements for temporal echocardiographic segmentation and providing a practical framework
+for scalable clinical deployment.
+1. Introduction
+Segmentation of temporal medical sequences is vital in
+many clinical applications, as it enables consistent quantification and tracking of anatomical and pathological changes
+over time [2, 19, 23]. However, achieving reliable sequence
+segmentation remains constrained by the annotation bottleneck. Methods achieving high segmentation performance
+conventionally rely on dense pixel-wise annotations for every frame, while obtaining such large-scale annotations in
+clinical settings remains a significant challenge [20, 22].
+This challenge is particularly pronounced in echocardiography, where speckle noise obscures anatomical boundaries
+and adjacent tissues can exhibit similar acoustic properties,
+making structures difficult to distinguish without expert interpretation [6, 24]. Consequently, annotation of echocardiographic sequences is both time-consuming and dependent on specialist expertise, with annotation effort increasing with every additional frame in a sequence.
+Current methods that reduce annotation requirements
+can broadly be divided into two categories.
+Semisupervised learning (SSL) combines a small subset of
+densely annotated frames with a larger set of unlabeled
+frames, as shown in Mean Teacher [21] and Cross Pseudo
+Supervision (CPS) [5]. The labeled subset provides direct
+supervision through segmentation losses, while the unlabeled subset provides consistency regularization [13] that
+encourages reliable and temporally coherent predictions.
+Weakly-supervised learning (WSL), in contrast, replaces
+dense masks with coarse annotations such as bounding
+boxes [8, 9, 15], points [27, 30] or scribbles [1, 3, 4], typically provided on every training frame. These approaches
+reduce annotation burden in different ways. SSL reduces
+the number of frames requiring dense annotation while
+WSL reduces the amount of annotation required per frame.
+However, both remain dependent on annotations across the
+1
+arXiv:2611.21137v1 [eess.IV] 16 Nov 2026
+
+--- PAGE 2 [pdf_text] ---
+sequence, so annotation effort continues to increase with sequence length.
+To address this limitation, we propose a weaklysupervised framework for segmenting echocardiographic
+sequences from a single scribble-annotated frame, with all
+remaining frames left unlabeled. The framework consists of
+three complementary components that convert sparse spatial supervision into reliable sequence-wide segmentation.
+Firstly, a mean-teacher framework generates dense pseudolabels and propagates supervision outward from the annotated frame in a bidirectional manner. Secondly, a frozen
+DINOv3-based [18] encoder, adapted to medical images
+using Low-rank Adaptations (LoRA) [7] provides transferable spatial representations while restricting adaptation to
+a small number of trainable parameters. The representations are fed into a lightweight U-Net-style decoder [16],
+keeping trainable parameters low. Thirdly, complementary
+spatial and temporal losses enforce consistency across the
+sequence while allowing anatomically plausible changes in
+cardiac shape.
+We evaluate the proposed framework on two publicly
+available datasets, Cardiac Acquisitions for Multi-structure
+Ultrasound Segmentation (CAMUS) [10] and CardiacNet [25], spanning three different cohorts. Experimental
+results demonstrate that our method consistently outperforms existing scribble-supervised baselines in both Dice
+and HD95 metrics, while achieving a more favorable balance between precision and recall. These results show that
+accurate and spatially well-localized temporal segmentation
+can be achieved from only one scribble-annotated frame,
+substantially reducing annotation requirements for echocardiographic sequence segmentation. Our key contributions
+are summarized as follows:
+• We propose a weakly-supervised temporal segmentation
+framework for medical imaging sequences based on single slice scribble annotations on the middle frame.
+• We demonstrate that a LoRA-adapted foundation model
+encoder can improve segmentation performance with significantly fewer parameters compared to state-of-the-art
+scribble segmentation methods
+• We also propose an anchor-relative bidirectional temporal loss, Ltemp, that can propagate supervision outward
+from the anchor frame in both directions while allowing
+for drifting so that segmentation masks follow the natural
+progression of anatomical structures.
+2. Related Work
+2.1. Scribble-supervised Segmentation
+Scribble-supervised segmentation addresses the problem
+of learning dense segmentation masks from sparse pixel
+annotations.
+Common methods such as partial crossentropy (pCE) compute the supervised loss only over annotated pixels but do not extend supervision to unlabeled
+regions. Therefore, existing scribble-supervised methods
+extend sparse scribbles through augmentation, consistency
+regularization and architectural modifications.
+Augmentation-based methods perturb the training samples and enforce consistency between the corresponding
+predictions. CutMix [26] constructs a new training sample by combining regions from two images, with the corresponding labels mixed using the same spatial transformation.
+This exposes the model to additional combinations of foreground and background regions while preserving the available sparse supervision.
+CycleMix [28] extends mixed-sample augmentation with cycle-consistency
+constraints, using complementary transformed views to exploit information from both labeled and unlabeled regions.
+Together, these strategies encourage predictions to remain
+consistent under input perturbations.
+Architecture-based approaches instead modify the segmentation framework to better exploit the limited spatial
+supervision. ScribFormer [12] combines a convolutional
+branch with a transformer branch and a class-activation
+branch to integrate local appearance with global contextual information, allowing the network to infer object structure beyond the annotated scribbles. Other methods combine architectural changes with consistency-based training.
+HELPNet [29] introduces hierarchical perturbations at multiple spatial granularity and enforces consistency between
+the resulting predictions, together with edge-guided refinement to improve boundaries that are not directly specified
+by the scribble. Despite different mechanisms, these methods process frames independently and require scribble annotations throughout the sequence, causing annotation cost
+to scale with sequence length.
+2.2. Vision Foundation Models and ParameterEfficient Adaptation
+Large-scale self-supervised pretraining has produced vision backbones with transferable representations that can be
+reused across downstream tasks with limited task-specific
+supervision [11]. DINOv3 extends this capability through
+large-scale self-supervised pretraining, providing spatial
+representations that can be transferred to domains where labeled data are scarce. We use a general-purpose DINOv3
+rather than an echocardiography-specific foundation model
+so that the supervision scheme remains modality-agnostic
+rather than tied to a single domain.
+Adapting large pretrained backbones to a target medical domain introduces a second challenge. Full fine-tuning
+of all backbone parameters increases computational cost
+and risk of overfitting [17]. Parameter-efficient fine-tuning
+(PEFT) methods instead preserve most of the pretrained
+representation while restricting task-specific adaptation to
+a small number of parameters.
+LoRA introduces train2
+
+--- PAGE 3 [pdf_text] ---
+able low-rank updates into selected linear projections while
+keeping the original pretrained weights fixed, substantially
+reducing the number of trainable parameters.
+3. Methodology
+3.1. Overview
+As illustrated in Fig. 1, we propose a weakly-supervised
+framework for segmenting echocardiographic sequences
+from scribble annotations on the anchor frame. The following sections describe each component in detail.
+3.2. Segmentation of Echocardiographic Sequences
+from a Single Scribble
+Let X = {x1, x2, . . . , xT } denote an echocardiographic sequence of T frames. The model predicts a segmentation
+mask for every frame with supervision limited to a single
+scribble map S defined on the anchor frame xm while all remaining frames are unlabeled. The annotation map contains
+both foreground and background scribbles and the scribble
+assigns each pixel i of xm one of three values
+S(i) =
+
+
+
+
+
+0,
+background,
+1,
+foreground,
+255,
+ignore
+(1)
+The framework allows any frame in the sequence to be
+selected as the annotated anchor frame. The middle frame
+xm provides a natural default by reducing the maximum
+propagation distance to approximately T/2 frames. However, keyframes such as end-systole (ES) or end-diastole
+(ED) frames may also be selected. Supervision is subsequently propagated bidirectionally from the selected anchor
+to the remaining unlabeled frames.
+3.3. Parameter-Efficient Encoding and Multi-Scale
+Decoding
+A frozen DINOv3 encoder is adapted using LoRA on the
+query and value projections of three transformer blocks,
+introducing 27.6 K trainable parameters corresponding to
+0.03% of the 85.7 M while preserving the pretrained representation under sparse supervision. Patch tokens are extracted from the three adapted blocks. Each token corresponds to a 16 × 16 pixel patch so a 512 × 512 input yields
+a grid of 32×32 tokens. Since the transformer block applies
+no spatial downsampling, all three LoRA block readouts
+share this resolution and differ only in semantic depth. They
+are resampled to strides 4, 8 and 16, producing 128 × 128,
+64 × 64 and 32 × 32 spatial feature maps. A fourth level at
+stride 32 is obtained by average pooling the stride-16 map
+to 16 × 16, which provides the decoder a coarser representation and a larger effective receptive field.
+Each pyramid level is independently projected using a
+1 × 1 convolution followed by group normalization and
+ReLU. The projected features are then passed to a U-Net
+style decoder, beginning at stride-32 level and progressively
+upsampled through three stages. At each stage, the upsampled decoder features are concatenated with the corresponding projected feature map from the pyramid. The final decoder output is converted to segmentation logits and bilinearly resized to the original input resolution.
+3.4. Dense Supervision from Single Scribbleannotated Frame
+3.4.1. Mean Teacher Construction and Scribble Supervision
+The framework maintains structurally identical student and
+teacher branches. The student is optimized directly through
+gradient descent while the teacher parameters are updated
+as an exponential moving average (EMA) of the student parameters. Since the DINOv3 backbone is frozen throughout training, its pretrained weights are shared between the
+two branches, while the LoRA adapters, feature projections and segmentation decoder are maintained separately
+and updated through the corresponding student and teacher
+mechanisms.
+For each training sequence, the student receives a weakly
+augmented view generated using brightness and contrast
+perturbations together with additive noise. These transformations modify image appearance while preserving spatial geometry, ensuring pixel-wise alignment between the
+student predictions and the supervision generated from the
+unaugmented sequence.
+Direct supervision is restricted to the annotated frame
+xm, which is the only frame containing scribble annotations. We apply pCE exclusively to pixels labeled as foreground and background
+LpCE = −1
+|Ω|
+X
+i∈Ω
+C−1
+X
+c=0
+yc
+i log pc
+i
+(2)
+where Ω= { i : S(i) ̸= 255 } is the set of annotated pixels on the middle frame, yc
+i is the one-hot encoding of the
+scribble label at pixel i and pc
+i is the predicted probability of
+class c at that pixel. Pixels assigned the ignore value 255 lie
+outside Ωand are excluded from the loss. This ensures that
+supervision is applied only where an explicit annotation is
+available, without assigning artificial labels to the remaining pixels in the scribble-annotated frame.
+3.4.2. Dense Pseudo-label Construction
+We use spatial connectivity to the foreground scribble to
+identify the predicted component associated with the annotated structure, and propagate this selection through the
+sequence. Let CC(ˆy) denote the set of connected components of a predicted binary mask ˆy, so that each R ∈CC(ˆy)
+is a single maximally connected foreground region, and let
+3
+
+--- PAGE 4 [pdf_text] ---
+Figure 1. Overview of the proposed weakly-supervised temporal segmentation framework. A mean-teacher architecture with LoRAadapted frozen DINOv3 encoders generates mixed connectivity-filtered pseudo-labels for dense Dice supervision. Partial cross-entropy
+supervises scribbles on the anchor frame, gated-CRF refines boundaries and an anchor-relative temporal loss enforces bidirectional consistency while allowing cardiac deformation
+Sfg = { i : S(i) = 1 } denote the set of foreground scribble
+pixels. The connectivity filter Φ(·) maps a predicted mask
+to the subset that remains associated with the annotation.
+For the anchor-slice prediction ˆym, only components intersecting the foreground scribble are retained
+Φ(ˆym) =
+[
+R ∈CC(ˆym) : R ∩Sfg ̸= ∅
+ 
+(3)
+Starting from the anchor slice, the filtered mask is propagated outward in both temporal directions. Each frame
+retains only those connected components that overlap the
+already filtered prediction of its adjacent frame, ˆyt
+Φ(ˆyt) =
+[
+R ∈CC(ˆyt) : R ∩Φ(ˆyt∓1) ̸= ∅
+ 
+(4)
+Connectivity filtering is applied independently to both
+the teacher and student predictions before fusion, ensuring
+that each branch retains only components connected to the
+scribble-propagated structure. Let ΦT
+t ≡Φ(ˆyT
+t ) and ΦS
+t ≡
+Φ(ˆyS
+t ) denote the connectivity-filtered teacher and student
+predictions at frame t respectively. These predictions are
+then combined through pixel-wise mixing [14], incorporating the more stable EMA teacher prediction with the fasteradapting student prediction. Let Mt ∈{0, 1}H×W be a
+random selection mask that assigns each pixel to one of
+the two branches, drawn independently from Bernoulli(β).
+The mixed pseudo-label is
+˜yt = Mt ⊙ΦT
+t + (1 −Mt) ⊙ΦS
+t
+(5)
+where ⊙denotes the element-wise product, so each pixel
+of ˜yt is taken from either branch. The student prediction
+is supervised against ˜y on every frame by a soft Dice loss
+Lcons averaged over both classes.
+3.4.3. Anchor-relative Temporal Consistency
+A temporal consistency loss, Ltemp, encourages coherent
+predictions across neighboring frames while preserving outward propagation from the anchor frame xm. We define a
+temporal window D = { 1, 2, . . . , D }, where d ∈D denotes the frame distance. For each frame t, the references
+are the D frames adjacent to t on the side facing the anchor. Frames before the anchor take references after them
+and frames at or after the anchor take references before them
+r =
+(
+t + d,
+t < m,
+t −d,
+t ≥m,
+d ∈D.
+(6)
+A frame far from the anchor is compared with its own
+4
+
+--- PAGE 5 [pdf_text] ---
+neighbors rather than with the anchor. Each reference is
+weighted by wd = 1/d, giving greater influence to nearby
+frames.
+This progressively propagates supervision without enforcing the anchor geometry across the entire sequence. To avoid suppressing natural anatomical changes
+between frames, three mechanisms are introduced to distinguish physiological variation from inconsistent predictions.
+Firstly, a confidence gate restricts the temporal loss to
+pixels where the student is confident and agrees with the
+pseudo-label of the reference frame. Let ˆyt(i) be the class
+the student predicts at pixel i of frame t, and ˆpt(i) the probability it assigns to that class. The gate Ωt,r is the set of
+pixels of frame t that are kept when it is compared with its
+reference frame r
+Ωt,r = { i : ˆpt(i) > θ and ˆyt(i) = ˜yr(i) }.
+(7)
+where θ is a confidence threshold where a pixel is kept
+only if the student assigns its predicted class with probability above θ. Pixels outside Ωt,r are ignored and a frame
+pair contributes to the temporal loss only when Ωt,r covers at least a fraction η of the frame. This prevents uncertain or conflicting predictions from enforcing temporal
+consistency. Secondly, predictions are average-pooled over
+non-overlapping cells before comparison rather than evaluated at the original resolution. Each pooled value therefore
+represents the foreground occupancy within a local region
+allowing small spatial displacements between neighboring
+frames without penalty. Thirdly, a margin γ is applied to
+the difference between the pooled prediction and pseudolabel
+et,r(u) = max(|¯pt(u) −¯yr(u)| −γ, 0) ,
+(8)
+where et,r(u) is the error assigned to cell u when frame
+t is compared with its reference r and |¯pt(u) −¯yr(u)| measures how much the foreground occupancy of cell u differs
+between the two frames. Differences smaller than γ incur
+no penalty while larger differences are penalized only by
+the amount that exceeds γ.
+3.4.4. Boundary Regularization and Training Objective
+A gated conditional random field (CRF) loss, LCRF ,
+grounds the predicted boundaries in the underlying image
+appearance. Pixels that are spatially close and similar in intensity are encouraged to receive the same label, while disagreement across an intensity edge is left unpenalized. This
+supplies complementary supervision in the unlabeled region
+between the foreground and background strokes. The complete objective combines the four terms
+L = λpCELpCE +λconsLcons +λtempLtemp +λCRFLCRF
+(9)
+where LpCE applies only at the annotated frame xm, while
+the remaining three apply across the whole sequence.
+4. Experiments and Results
+4.1. Datasets
+We evaluate our method on two publicly available echocardiography datasets, CAMUS and CardiacNet. All datasets
+are divided into training, validation and test sets using a
+70:10:20 ratio.
+CAMUS contains echocardiographic sequences from 500 patients, from which we use the twochamber (2CH) half-sequence subset. Ground-truth masks
+are provided for all frames, so the mask-derived scribble
+annotations is on the middle frame of the sequence. Performance is evaluated on three anatomical structures namely
+the left-ventricular endocardium (LVendo), left-ventricular
+epicardium (LVepi) and left atrium.
+CardiacNet comprises two pathology-specific cohorts:
+atrial septal defect (ASD) and pulmonary arterial hypertension (PAH). Segmentation masks are released for only
+a subset of the acquired sequences and a small number of
+the released files could not be read. We therefore use every
+sequence for which a usable annotation exists, giving 135
+ASD and 299 PAH sequences. Unlike CAMUS, groundtruth masks are provided for approximately five frames
+within each sequence, so the scribble is placed on the middle annotated frame rather than the middle frame of the sequence. Both cohorts are evaluated on four cardiac structures: left ventricle (LV), left atrium (LA), right ventricle
+(RV) and right atrium (RA). Across both datasets, training
+supervision is restricted to one background and one foreground scribble with all remaining frames unlabeled.
+4.2. Implementation Details
+All experiments were implemented in PyTorch with Python
+3.12 and CUDA 13.2 and conducted on a single NVIDIA
+RTX PRO 5000 Blackwell GPU. We use DINOv3 ViTB/16 as the vision foundation model backbone, with rank-3
+LoRA adapters applied to the query and value projections
+of transformer blocks 3, 6 and 9. Single-channel ultrasound
+frames are used across three channels, resized to 512×512,
+and normalized using the ImageNet channel-wise mean and
+standard deviation.
+Models are trained for 40 epochs using AdamW with a
+learning rate of 1 × 10−4, weight decay of 1 × 10−4 and
+mixed-precision training. The partial cross-entropy, Dice,
+temporal consistency and gated-CRF losses are weighted by
+1.0, 0.5, 0.1 and 0.1 respectively. The weights of the three
+unsupervised objectives are linearly ramped from zero to
+their respective values over the first five epochs. The teacher
+parameters are updated using an EMA decay of 0.99 and
+the connectivity-filtered teacher and student predictions are
+mixed using a pixel-wise Bernoulli mask with β = 0.5.
+5
+
+--- PAGE 6 [pdf_text] ---
+4.3. Baseline and Evaluation Metrics
+We compare our method against a U-Net trained with pCE
+alone and four scribble-supervised methods: CutMix, CycleMix, ScribFormer and HELPNet. A consistent evaluation protocol is applied across all methods, with performance measured on all frames with available ground-truth
+annotations to assess generalization beyond the annotated
+frame. We report the Dice similarity coefficient and 95thpercentile Hausdorff distance (HD95), together with precision and recall to further characterize segmentation errors.
+Tab. 1 shows that our method achieves the highest
+average Dice across all three cohorts, with scores of
+0.784, 0.744, and 0.754 on CAMUS, CardiacNet-ASD
+and CardiacNet-PAH respectively.
+Performance is lowest on the CardiacNet-ASD cohort, where the septal defect disrupts the normal boundary between the atria, increasing ambiguity in chamber delineation. Compared to
+consistency-based methods, our method improves over CutMix by 0.097, 0.338, and 0.192 Dice respectively.
+The
+improvement over dedicated scribble-supervised methods is
+larger, particularly on CardiacNet. While ScribFormer and
+HELPNet achieve competitive performance on some CAMUS structures, their average Dice remains low on both
+CardiacNet cohorts, indicating poor generalization while
+our method achieves 0.744 on CardiacNet-ASD and 0.754
+on CardiacNet-PAH. Overall, our method achieves the highest Dice on 10 of 11 structures, demonstrating more consistent performance under single-frame scribble supervision.
+It also shows that our method achieves the lowest average HD95 across all three cohorts, with 31.25,
+41.72, and 28.30 pixels on CAMUS, CardiacNet-ASD, and
+CardiacNet-PAH respectively. Consistent with the Dice results, CardiacNet-ASD remains the most challenging cohort, although our method maintains considerably lower
+boundary errors across all four structures.
+Given the substantial performance gap observed in both
+Dice and HD95, we further investigate why existing methods degrade under single-frame supervision. As illustrated
+in Figs. 2 to 4, their poor performance is primarily driven
+by severe over-segmentation rather than localized boundary
+errors, with predictions extending substantially beyond the
+target anatomy. This explains the low Dice and high HD95
+observed in the quantitative results. To better characterize
+this failure mode, we additionally analyze precision and recall in Tab. 2.
+Tab. 2 further corroborates this failure mode. The pCE
+baseline, CycleMix and ScribFormer consistently exhibit
+high recall but extremely low precision, particularly on
+the two CardiacNet cohorts.
+This pattern shows oversegmentation, where predicted masks cover large regions
+of the image, leading to substantial overlap with the ground
+truth mask. Thus, recall values are inflated despite poor
+localization quality. In contrast, our framework improves
+precision while maintaining competitive recall, with precision consistently exceeding recall across all three cohorts.
+Overall, the improvements in Dice and HD95 can be attributed primarily to a reduction in false-positive predictions
+rather than increased anatomical coverage, consistent with
+the qualitative segmentation results.
+5. Ablations
+All ablation experiments are conducted on the CAMUS
+dataset using the LV endocardium. CAMUS is selected as
+ground-truth masks are available for every frame so metrics
+can be computed on the entire sequence, enabling a more
+comprehensive evaluation of temporal segmentation performance. The LV endocardium is used as a representative
+structure to systematically isolate the contribution of each
+component in the proposed framework. We evaluate the effects of the architectural design, LoRA adaptation, meanteacher framework and individual loss terms.
+5.1. Effectiveness of Architecture
+We further examine the depth of the feature pyramid by
+reducing it from four to three levels, removing the coarsest scale while keeping the frozen DINOv3 encoder and all
+other components unchanged. The three-level model decreases Dice from 0.824 to 0.734 on CAMUS and from
+0.779 to 0.763 on CardiacNet-PAH. The coarsest level aggregates information over a larger area of the image, allowing the decoder to reason about global shape and spatial
+relationships between structures, which cannot be inferred
+from local appearance alone. Without this level, the decoder must recover such context from finer scales that look
+at smaller areas, so spatially separated regions are processed
+largely independently. This is particularly detrimental under scribble supervision, where most pixels and unlabeled
+and the network must rely on global shape priors to extend sparse annotations to complete, anatomically plausible
+masks.
+5.2. Effectiveness of LoRA
+Removing the low-rank adapters reduces Dice from 0.824
+to 0.784 on CAMUS and from 0.779 to 0.771 on
+CardiacNet-PAH. The improvement on CAMUS indicates
+that adapting the pretrained DINOv3 features is important
+for capturing echocardiographic characteristics such as lowcontrast boundaries and speckle patterns.
+5.3. Effectiveness of Mean Teacher Framework
+Removing the EMA teacher while retaining all other components reduces Dice from 0.824 to 0.799 on CAMUS
+and from 0.779 to 0.772 on CardiacNet-PAH. The consistent reduction across both datasets demonstrates the benefit of maintaining a temporally averaged teacher. Without EMA updates, both branches adapt directly to similar
+6
+
+--- PAGE 7 [pdf_text] ---
+Table 1. Segmentation results for all eleven structures. Top: Dice similarity coefficient (↑). Bottom: 95th-percentile Hausdorff distance in
+pixels (↓). Avg is the mean over the structures of each cohort. #Params: trainable parameters in millions.
+CAMUS
+CardiacNet-ASD
+CardiacNet-PAH
+Method
+Params (M)
+LVendo
+LVepi
+LA
+Avg
+LV
+LA
+RV
+RA
+Avg
+LV
+LA
+RV
+RA
+Avg
+Dice (↑)
+U-Net (pCE)
+7.76
+0.351
+0.635
+0.337
+0.441
+0.057
+0.049
+0.084
+0.086
+0.069
+0.198
+0.190
+0.297
+0.127
+0.203
+CutMix
+7.76
+0.650
+0.709
+0.702
+0.687
+0.275
+0.492
+0.154
+0.704
+0.406
+0.390
+0.647
+0.455
+0.757
+0.562
+CycleMix
+7.76
+0.560
+0.700
+0.334
+0.531
+0.177
+0.054
+0.093
+0.072
+0.099
+0.063
+0.084
+0.268
+0.092
+0.127
+ScribFormer
+47.91
+0.239
+0.787
+0.148
+0.391
+0.074
+0.066
+0.097
+0.071
+0.077
+0.078
+0.064
+0.101
+0.096
+0.085
+HELPNet
+25.76
+0.653
+0.720
+0.571
+0.648
+0.131
+0.121
+0.116
+0.045
+0.103
+0.058
+0.060
+0.122
+0.044
+0.071
+Ours
+3.81
+0.851
+0.791
+0.709
+0.784
+0.741
+0.705
+0.762
+0.770
+0.744
+0.781
+0.740
+0.752
+0.744
+0.754
+HD95 in pixels (↓)
+U-Net (pCE)
+7.76
+224.27
+175.23
+287.61
+229.03 306.74 337.79 305.20 314.50 316.06 304.27 337.45 239.80 327.60
+302.28
+CutMix
+7.76
+183.23
+86.79
+68.23
+112.75 268.65 362.15 279.17 106.27 254.06 210.44 116.34 217.34
+79.73
+155.96
+CycleMix
+7.76
+193.54
+131.95
+287.99
+204.49 311.06 342.17 298.59 334.88 321.67 305.32 322.31 250.00 324.55
+300.54
+ScribFormer
+47.91
+253.77
+54.67
+392.91
+233.78 308.20 345.08 304.32 332.61 322.56 301.42 350.29 304.77 338.55
+323.76
+HELPNet
+25.76
+109.49
+21.57
+135.27
+88.78
+224.32 230.10 272.46 332.83 264.93 261.79 322.53 212.49 350.55
+286.84
+Ours
+3.81
+29.01
+24.31
+40.44
+31.25
+43.01
+38.31
+42.66
+42.89
+41.72
+30.87
+24.56
+34.19
+23.59
+28.30
+Figure 2. Qualitative comparison on CAMUS (LV endocardium) with the red segmentation mask overlayed on the image
+Table 2. Precision / recall (↑), averaged over the structures of each
+cohort. ASD and PAH are the two CardiacNet cohorts.
+Method
+CAMUS
+ASD
+PAH
+U-Net (pCE) 0.336 / 0.741 0.037 / 0.781 0.121 / 0.803
+CutMix
+0.711 / 0.706 0.365 / 0.696 0.517 / 0.713
+CycleMix
+0.474 / 0.699 0.055 / 0.748 0.074 / 0.770
+ScribFormer
+0.342 / 0.747 0.041 / 0.683 0.045 / 0.780
+HELPNet
+0.746 / 0.605 0.062 / 0.390 0.041 / 0.350
+Ours
+0.901 / 0.713 0.780 / 0.743 0.858 / 0.698
+training signals, reducing the diversity and stability of the
+predictions used to construct the mixed pseudo-labels. The
+mean-teacher framework provides a more stable teacher
+that evolves smoothly over training, complementing the
+faster-adapting student. This produces more reliable consistency targets and improves segmentation under limited
+supervision.
+5.4. Effectiveness of Losses
+The loss ablation demonstrates the contribution of each supervision component across both datasets. Using only the
+partial cross-entropy loss, LpCE, results in Dice scores of
+0.613 on CAMUS and 0.410 on CardiacNet-PAH, showing that sparse scribble annotations contain insufficient supervision information. Adding the consistency loss Lcons
+substantially improves segmentation performance to 0.770
+and 0.626 respectively, demonstrating the importance of
+exploiting pseudo-label supervision beyond the annotated
+pixels. Introducing the temporal consistency loss, Ltemp
+further increases Dice to 0.812 on CAMUS and 0.790
+on CardiacNet-PAH, indicating that coherence between
+neighboring frames provides valuable supervision. Finally,
+7
+
+--- PAGE 8 [pdf_text] ---
+Figure 3. Qualitative comparison on CardiacNet-ASD (LV) with the red segmentation mask overlayed on the image
+Figure 4. Qualitative comparison on CardiacNet-PAH (LV) with the red segmentation mask overlayed on the image
+Table 3. Ablation study on CAMUS LVendo and CardiacNet-PAH
+LV, reporting Dice (↑). Each row differs from the full model in one
+component while loss rows are cumulative. Trainable parameters
+exclude the frozen 85.7 M backbone.
+Variant
+Trainable
+CAMUS
+PAH
+Architecture
+Three-level pyramid
+3.00 M
+0.734
+0.763
+LoRA
+No LoRA
+3.78 M
+0.784
+0.771
+Framework
+Student only, no EMA
+3.81 M
+0.799
+0.772
+Losses
+LpCE only
+3.81 M
+0.613
+0.410
++ Lcons
+3.81 M
+0.770
+0.626
++ Ltemp
+3.81 M
+0.812
+0.790
++ LCRF (Full Model)
+3.81 M
+0.851
+0.781
+adding the gated-CRF loss, LCRF improves CAMUS from
+0.812 to 0.851 but reduces CardiacNet-PAH performance
+from 0.790 to 0.781. This suggests that boundary-aware
+regularization is beneficial only when image boundaries
+provide reliable cues.
+6. Conclusion and Future Work
+We propose a weakly-supervised framework for temporal
+echocardiography segmentation using only two scribbles on
+an anchor frame. By combining a mean-teacher framework,
+a LoRA-adapted DINOv3 encoder and connectivity-filtered
+pseudo-labels with spatial and temporal losses, supervision
+is propagated across unlabeled sequences. Experiments on
+CAMUS and CardiacNet demonstrate consistent improvements over existing scribble-supervised methods in Dice
+and HD95 while substantially reducing false-positive predictions. These results show that annotation cost can be decoupled from sequence length without sacrificing reliable
+temporal segmentation.
+8
+
+--- PAGE 9 [pdf_text] ---
+References
+[1] Yigit B Can, Krishna Chaitanya, Basil Mustafa, Lisa M
+Koch,
+Ender Konukoglu,
+and Christian F Baumgartner.
+Learning to segment medical images with scribblesupervision alone.
+In International Workshop on Deep
+Learning in Medical Image Analysis,
+pages 236–244.
+Springer, 2018. 1
+[2] Chen Chen, Chen Qin, Huaqi Qiu, Giacomo Tarroni, Jinming Duan, Wenjia Bai, and Daniel Rueckert. Deep learning
+for cardiac image segmentation: a review. Frontiers in cardiovascular medicine, 7:25, 2020. 1
+[3] Qiuhui Chen and Yi Hong. Scribble2d5: Weakly-supervised
+volumetric image segmentation via scribble annotations. In
+International conference on medical image computing and
+computer-assisted intervention, pages 234–243. Springer,
+2022. 1
+[4] Qiuhui Chen, Haiying Lyu, Xinyue Hu, Yong Lu, and Yi
+Hong. Volumetric medical image segmentation via scribble
+annotations and shape priors: Q. chen et al. Machine Vision
+and Applications, 36(1):22, 2025. 1
+[5] Xiaokang Chen, Yuhui Yuan, Gang Zeng, and Jingdong
+Wang. Semi-supervised semantic segmentation with cross
+pseudo supervision. In 2021 IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR), pages 2613–
+2622. IEEE, 2021. 1
+[6] Xinran Chen, Xiyuan Wang, Guangquan Zhou, and Chuan
+Chen. Automatic echocardiography segmentation via transition probability correlation for stable semantic extraction.
+arXiv preprint arXiv:2607.07580, 2026. 1
+[7] Edward J Hu, Yelong Shen, Phillip Wallis, Zeyuan AllenZhu, Yuanzhi Li, Shean Wang, Lu Wang, and Weizhu Chen.
+Lora: Low-rank adaptation of large language models. arXiv
+preprint arXiv:2106.09685, 2021. 2
+[8] Hoel Kervadec, Jose Dolz, Shanshan Wang, Eric Granger,
+and Ismail Ben Ayed. Bounding boxes for weakly supervised segmentation: Global constraints get close to full supervision.
+In Medical imaging with deep learning, pages
+365–381. PMLR, 2020. 1
+[9] Shiyi Lan, Zhiding Yu, Christopher Choy, Subhashree Radhakrishnan, Guilin Liu, Yuke Zhu, Larry S Davis, and Anima
+Anandkumar. Discobox: Weakly supervised instance segmentation and semantic correspondence from box supervision. In 2021 IEEE/CVF International Conference on Computer Vision (ICCV), pages 3386–3396. IEEE, 2021. 1
+[10] Sarah Leclerc, Erik Smistad, Joao Pedrosa, Andreas Østvik,
+Frederic Cervenansky, Florian Espinosa, Torvald Espeland,
+Erik Andreas Rye Berg, Pierre-Marc Jodoin, Thomas Grenier, et al. Deep learning for segmentation using an open
+large-scale dataset in 2d echocardiography. IEEE transactions on medical imaging, 38(9):2198–2210, 2019. 2
+[11] Johann Li, Guangming Zhu, Cong Hua, Mingtao Feng,
+Basheer Bennamoun, Ping Li, Xiaoyuan Lu, Juan Song,
+Peiyi Shen, Xu Xu, et al. A systematic collection of medical
+image datasets for deep learning. ACM Computing Surveys,
+56(5):1–51, 2023. 2
+[12] Zihan Li, Yuan Zheng, Dandan Shan, Shuzhou Yang, Qingde
+Li, Beizhan Wang, Yuanting Zhang, Qingqi Hong, and Dinggang Shen. Scribformer: Transformer makes cnn work better
+for scribble-based medical image segmentation. IEEE Transactions on Medical Imaging, 43(6):2254–2265, 2024. 2
+[13] Shanfu Lu, Zijian Zhang, Ziye Yan, Yiran Wang, Tingting Cheng, Rongrong Zhou, and Guang Yang.
+Mutually
+aided uncertainty incorporated dual consistency regularization with pseudo label for semi-supervised medical image
+segmentation. Neurocomputing, 548:126411, 2023. 1
+[14] Xiangde Luo, Minhao Hu, Wenjun Liao, Shuwei Zhai,
+Tao Song, Guotai Wang, and Shaoting Zhang.
+Scribblesupervised medical image segmentation via dual-branch network and dynamically mixed pseudo labels supervision. In
+International Conference on Medical Image Computing and
+Computer-Assisted Intervention, pages 528–538. Springer,
+2022. 4
+[15] Martin Rajchl, Matthew CH Lee, Ozan Oktay, Konstantinos Kamnitsas, Jonathan Passerat-Palmbach, Wenjia Bai,
+Mellisa Damodaram, Mary A Rutherford, Joseph V Hajnal,
+Bernhard Kainz, et al. Deepcut: Object segmentation from
+bounding box annotations using convolutional neural networks. IEEE transactions on medical imaging, 36(2):674–
+683, 2016. 1
+[16] Olaf Ronneberger, Philipp Fischer, and Thomas Brox. Unet: Convolutional networks for biomedical image segmentation. In International Conference on Medical image computing and computer-assisted intervention, pages 234–241.
+Springer, 2015. 2
+[17] Julio Silva-Rodr´ıguez, Jose Dolz, and Ismail Ben Ayed. Towards foundation models and few-shot parameter-efficient
+fine-tuning for volumetric organ segmentation. Medical Image Analysis, 103:103596, 2025. 2
+[18] Oriane Sim´eoni, Huy V Vo, Maximilian Seitzer, Federico
+Baldassarre, Maxime Oquab, Cijo Jose, Vasil Khalidov,
+Marc Szafraniec, Seungeun Yi, Micha¨el Ramamonjisoa,
+et al. Dinov3. arXiv preprint arXiv:2508.10104, 2025. 2
+[19] Nicharee Srikijkasemwat, Mauricio Villarroel, and Abhirup
+Banerjee. Multi-phase deep learning model for automated
+disease classification from cardiac cine mri. Journal of the
+Royal Society Interface, 22(231):20250303, 2025. 1
+[20] Nima Tajbakhsh, Laura Jeyaseelan, Qian Li, Jeffrey N Chiang, Zhihao Wu, and Xiaowei Ding. Embracing imperfect
+datasets: A review of deep learning solutions for medical
+image segmentation. Medical image analysis, 63:101693,
+2020. 1
+[21] Antti Tarvainen and Harri Valpola. Mean teachers are better
+role models: Weight-averaged consistency targets improve
+semi-supervised deep learning results. Advances in neural
+information processing systems, 30, 2017. 1
+[22] Shanshan Wang, Cheng Li, Rongpin Wang, Zaiyi Liu,
+Meiyun Wang, Hongna Tan, Yaping Wu, Xinfeng Liu, Hui
+Sun, Rui Yang, et al. Annotation-efficient deep learning for
+automatic medical image segmentation. Nature communications, 12(1):5915, 2021. 1
+[23] Guang Yang, Jingkun Chen, Xicheng Sheng, Shan Yang,
+Xiahai Zhuang, Betty Raman, Lei Li, and Vicente Grau.
+Contrast-free myocardial scar segmentation in cine mri using
+motion and texture fusion. In 2025 IEEE 22nd International
+9
+
+--- PAGE 10 [pdf_text] ---
+Symposium on Biomedical Imaging (ISBI), pages 1–5. IEEE,
+2025. 1
+[24] Guang Yang, Wentian Xu, Siyu Wang, Betty Raman, Lei Li,
+and Vicente Grau.
+Motion-conditioned multi-view fusion
+for myocardial infarction localization from echocardiography. In International Conference on Medical Image Computing and Computer-Assisted Intervention, pages 445–455.
+Springer, 2026. 1
+[25] Jiewen Yang, Yiqun Lin, Bin Pu, Jiarong Guo, Xiaowei Xu,
+and Xiaomeng Li. Cardiacnet: Learning to reconstruct abnormalities for cardiac disease assessment from echocardiogram videos. In European Conference on Computer Vision,
+pages 293–311. Springer, 2024. 2
+[26] Sangdoo Yun, Dongyoon Han, Seong Joon Oh, Sanghyuk
+Chun, Junsuk Choe, and Youngjoon Yoo. Cutmix: Regularization strategy to train strong classifiers with localizable
+features. In Proceedings of the IEEE/CVF international conference on computer vision, pages 6023–6032, 2019. 2
+[27] Shuwei Zhai, Guotai Wang, Xiangde Luo, Qiang Yue, Kang
+Li, and Shaoting Zhang. Pa-seg: Learning from point annotations for 3d medical image segmentation using contextual
+regularization and cross knowledge distillation. IEEE transactions on medical imaging, 42(8):2235–2246, 2023. 1
+[28] Ke Zhang and Xiahai Zhuang. Cyclemix: A holistic strategy
+for medical image segmentation from scribble supervision.
+In 2022 IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR), pages 11646–11655. IEEE, 2022.
+2
+[29] Xiao Zhang, Shaoxuan Wu, Peilin Zhang, Zhuo Jin,
+Xiaosong Xiong, Qirong Bu, Jingkun Chen, and Jun
+Feng. Helpnet: Hierarchical perturbations consistency and
+entropy-guided ensemble for scribble supervised medical
+image segmentation. Medical Image Analysis, page 103719,
+2025. 2
+[30] Tianyi Zhao and Zhaozheng Yin.
+Weakly supervised cell
+segmentation by point annotation.
+IEEE Transactions on
+Medical Imaging, 40(10):2736–2747, 2020. 1
+10

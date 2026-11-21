@@ -1,0 +1,658 @@
+--- PAGE 1 [pdf_text] ---
+© 2026 IEEE. Personal use of this material is permitted. Permission from IEEE must be obtained for all other uses, in any current or future media, including
+reprinting/republishing this material for advertising or promotional purposes, creating new collective works, for resale or redistribution to servers or lists, or reuse of any
+copyrighted component of this work in other works.
+TWINGUARD-LITE: A Rule-Based State-Admission Gateway
+for Generative Patient Digital Twins
+Wenhui Chu and Sheikh Rabiul Islam
+Department of Cybersecurity
+College of Emergency Preparedness, Homeland Security and Cybersecurity
+University at Albany, State University of New York
+Albany, NY, USA
+wchu3@albany.edu, sislam7@albany.edu
+Abstract—Future generative patient digital twins may combine
+longitudinal health records with language-model agents and
+keep information across sessions. The wording of a proposed
+update does not reveal whether it comes from an allowed
+source, conflicts with the patient’s record, or belongs to
+someone else. We present TWINGUARD-LITE, a rule-based
+gateway that admits an update to a twin’s persistent state
+only if it passes checkable approximations of two integrity
+properties. Grounded state consistency (GSC) is approximated
+by a provenance check and a contradiction check; cross-patient
+noninterference (CPN) is approximated by a namespace check
+against trusted transport metadata. We evaluate three attack
+families over 20 seeded person-level splits of a semi-synthetic
+stream built from the openly licensed eICU database demo,
+with 29,131 ± 2706 candidate updates per seed. A keyword
+filter and an anomaly detector detect 16% and 24% of attacks,
+respectively; a provenance-only ablation detects 59.9% but
+misses every cross-patient attack. Combining GSC and CPN
+yields 99.1% precision, 90.5% recall, a 94.6% F1 score, and a
+0.033% false-positive rate. Every attack the full gateway admits
+falsely claims a trusted source; when the retrieval channel does
+so, 92.9% of retrieval attacks are admitted. The results hold
+under stated trust assumptions, and no language model, agent,
+or retriever is executed: TWINGUARD-LITE is a mechanismlevel proof of concept that motivates authenticated, patientbound ingestion, not a clinical safeguard.
+Index Terms—Agentic AI security, data provenance, patient
+digital twins, prompt injection, state integrity
+1. Introduction
+Patient digital twins—patient-specific digital replicas
+that inform clinical decisions—are still largely preclinical,
+mostly simulation or monitoring models [1], [2]. We consider a future generative twin that keeps state across sessions
+and acts through language-model agents and clinical tools.
+Such a twin inherits the security problems of agentic AI:
+indirect prompt injection [3], [4], retrieval poisoning [5],
+memory poisoning [6], and poisoning of medical models [7].
+Recent HealthSec work traces the same attack paths through
+a healthcare system powered by large language models
+(LLMs) [8]. The patient setting adds a distinctive asset:
+a persistent, identity-bound clinical state. A corrupted fact
+survives across sessions and, if patient namespaces are not
+isolated, can spread between people.
+Content filters and anomaly detectors are tempting first
+defenses. The attacks that evade them, however, are textually
+unremarkable: a fact phrased like a legitimate record but
+lacking authorized provenance, a claim that silently contradicts an existing record, or a value copied from another
+patient. Such a write is invalid because of its source, its
+relation to the record, or its owner, not because of its wording. Following design-level prompt-injection defense [9] and
+classical integrity policy [10], [11], we therefore enforce
+patient-twin integrity through explicit rules checked on each
+state update.
+We make three contributions. First, we define four integrity properties, one for each of four relations a state
+update has (Section 2). Second, we build TWINGUARDLITE, a rule-based gateway that enforces checkable approximations of two of them before any update persists
+(Section 3). Third, we evaluate it on a semi-synthetic, realdata-backed benchmark with three attack families, two surface baselines, and a check-by-check ablation (Section 4).
+Section 5 discusses limits.
+2. Model and Integrity Properties
+2.1. Twin State and Candidate Writes
+A twin for patient namespace n at logical time t holds
+a canonical state zn,t of accepted clinical facts, a persistent
+memory, a capability set κn,t, and an append-only event and
+provenance ledger. A patient is a person, not an encounter.
+No input changes zn,t or κn,t directly: every input first
+becomes a candidate write, a proposed update that carries
+an event type, a claimed namespace, an origin label, an
+episode (one hospital admission), an event time, and a value.
+Inputs come from three trust zones (Fig. 1): authoritative
+patient evidence (authenticated but possibly erroneous), curated knowledge (versioned reference material, including
+arXiv:2610.09012v1 [cs.CR] 6 Oct 2026
+
+--- PAGE 2 [pdf_text] ---
+the retrieval store, not evidence about this patient), and
+untrusted context (free text, unvetted external content, model
+output). Only authoritative evidence may write patient state.
+2.2. Integrity Properties
+We consider four relations a write stands in: to its source
+and the record it joins, to its owner, to the sequence of states
+before it, and to the actions it enables. Asking one question
+about each relation defines one property.
+Is it supported? Grounded state consistency (GSC):
+every accepted fact f ∈zn,t has an unbroken provenance
+path to authoritative evidence and violates no declared contradiction rule, unless an explicit unresolved-conflict state
+records the violation.
+Whose is it? Cross-patient noninterference (CPN): for
+patients i ̸= j, changing only untrusted inputs in i’s history
+cannot change the canonical state, memory, or action trace
+of j, apart from a declared, minimized allow-list of shared
+metadata that carries no patient-distinguishing signal.
+Does it follow from the history? Longitudinal transition
+integrity (LTI): the sequence of admitted states follows a
+declared transition relation. What may it trigger? Authorized action integrity (AAI): every action taken on twin
+state is permitted by an explicit action policy.
+The four properties mirror classical integrity policy.
+GSC corresponds to the Clark–Wilson rule that unconstrained inputs are either validated into constrained data
+or rejected [10]. LTI corresponds to the Clark–Wilson requirement that transformations move data from one valid
+state to another, and AAI to its rules on who may run
+which transformation. CPN is noninterference [11] with
+patients as the security domains and the allow-list as the
+only sanctioned downgrading channel.
+The properties do not collapse into one another: individually grounded writes can trace an illegal trajectory (LTI),
+a grounded write can land in the wrong record (CPN),
+admissible state can drive an unauthorized action (AAI),
+and a correctly attributed write can be unsourced (GSC).
+We do not claim completeness; we argue coverage against
+Clark–Wilson instead. The append-only ledger realizes its
+logging rule, while periodic verification of stored data and
+separation of duty are not modeled. The set targets the
+integrity of persistent state against an attacker who can propose writes. Legality of transitions over time falls under LTI;
+interval-aware contradiction rules remain GSC checks on the
+current record. Clinical correctness of authoritative evidence
+is left to clinical validation, and confidentiality, availability,
+and model integrity are out of scope. TWINGUARD-LITE
+enforces per-write approximations of GSC and CPN, the
+two properties that need no transition relation or action
+policy. Because CPN relates two runs, the namespace check
+enforces a stronger per-write condition: no write crosses
+namespaces outside the allow-list. Under a trusted origin
+binding, this approximates CPN for direct writes on the
+canonical-state channel, the only channel implemented. Influence routed through shared stores, such as a retrieval
+index, needs lineage tracking: the namespace check does
+not see it, and only the GSC checks can stop it.
+2.3. Threat Model and Trust Assumptions
+The adversary seeks a target-state change, cross-patient
+influence, or an unauthorized action, and enters through a
+prompt, a retrieved document, a memory candidate, or a
+tool output. We parameterize capability rather than assume
+one universal attacker [12]. The evaluated attacker proposes
+candidate writes, may spoof the mutable origin label, and
+knows the frozen two-pair contradiction policy (Section 4.1),
+but it is nonadaptive at run time. It cannot alter the policy
+engine or the true originating namespace, which the benchmark supplies as trusted transport metadata.
+Two assumptions bound every result. (i) CPN is evaluated given a correct binding between each write and the
+patient it came from. A deployment must obtain that binding
+from an authenticated session or a signed, patient-bound
+event envelope. Our experiment validates the policy under
+this binding but does not show how to establish the binding;
+without the binding, CPN inherits the label-spoofing weakness of the provenance check (Section 3). (ii) Evaluation
+starts once a poisoned item has become a candidate write.
+We model neither index construction nor retrieval ranking,
+so we study retrieval-mediated state poisoning rather than
+end-to-end retrieval-augmented generation (RAG) poisoning.
+3. TWINGUARD-LITE: A Rule-Based Gateway
+Candidate writes from all three trust zones go through
+the three checks of Fig. 1, described here from top to bottom.
+(1) The provenance check (GSC) rejects a medication,
+diagnosis, or laboratory candidate whose origin label is not
+authoritative. It reads only the label: it builds no provenance
+chain and verifies no signature, so it is cheap but spoofable.
+Treatment candidates are outside its scope.
+(2) The contradiction check (GSC) rejects a medication
+candidate that forms a declared conflict pair with a medication already admitted to the same episode; drug names are
+matched after normalization. The prototype implements no
+unresolved-conflict state, so every match is rejected.
+(3) The namespace check (CPN) rejects a candidate
+whose true originating namespace, taken from trusted transport metadata, differs from the namespace it claims, unless
+its type is on the frozen shared-metadata allow-list.
+How the checks combine. Admission is a conjunction: a
+write enters canonical state only if all three checks pass, and
+any single failure rejects it. The checks are side-effect-free
+predicates, so their order decides only which rule the ledger
+records as the reason, never whether a write is admitted. We
+chose conjunction because each check encodes a hard invariant, not a score; weighted or learned fusion would let strong
+evidence on one property buy admission for a violation of
+another. Beyond the ablation arms and surface baselines in
+Table 1, we have not evaluated other combination rules;
+
+--- PAGE 3 [pdf_text] ---
+Attack surface
+Direct/indirect injection
+Retrieval-mediated state poisoning
+Cross-patient contamination
+Untrusted
+context
+Authoritative
+evidence
+Curated knowledge
+not authorized
+Candidate write
+event type · namespace · origin label
+episode · event time · value
+TwinGuard-Lite gateway
+admit only if all three checks pass
+GSC Provenance
+med/diagnosis/lab; label only
+GSC Contradiction
+vs. meds admitted in the episode
+CPN Namespace
+true origin via trusted metadata
+reject
+admit
+Reject
+triggering rule attached
+Canonical / trusted zone
+Canonical state
+per patient, by episode
+Append-only ledger
+Defined, not implemented
+LTI transition integrity
+AAI action integrity
+Figure 1. Architecture of TWINGUARD-LITE. The gateway applies the
+provenance and contradiction checks (GSC) and the namespace check
+(CPN); a write is admitted only if all three pass, and every decision
+is logged. Orange marks unauthorized origins and rejection, amber the
+spoofable label-only check, blue the authoritative-evidence zone and the
+canonical/trusted zone, green the gateway and admission, and gray the
+candidate write and what is defined but not implemented. A provenance
+spoof forges an authoritative label; a cross-patient write carries an origin
+valid for its source patient but claims the target’s namespace; poisoned
+retrieval enters through the curated-knowledge zone.
+risk-scored routing of borderline writes to clinician review
+is future work. Every decision is appended to the ledger
+together with its triggering rule, if any. The prototype keeps
+admitted medication state only for the contradiction check
+and implements no full clinical twin state, memory store,
+capability system, or action trace.
+4. Preliminary Evaluation
+4.1. Benchmark
+Benign trajectories come from the eICU Collaborative
+Research Database (eICU-CRD) Demo v2.0.1 [13], the
+openly licensed subset of the full eICU-CRD [14]. Namespaces are people, not intensive care unit (ICU) stays: our
+500 unit stays resolve to 362 people, and we split by
+person, 253 for calibration and 109 (148 ± 7 stays) for
+testing, so no person lies on both sides. Times in eICU are
+offsets from each unit stay’s own admission. We therefore
+rebuild a shared episode clock for each hospital admission
+as offset −hospitalAdmitOffset and replay admitted medication state within each episode (424 episodes;
+133 in the first seed’s test split). Events cover medications,
+diagnoses, laboratory results, and treatments.
+The cohort is the 500 smallest patientunitstayid
+values among Demo stays with at least 20 extracted events.
+This rule is exactly reproducible but not random: stay identifiers are not assigned at random with respect to hospital, and
+the event threshold favors data-rich stays. The cohort spans
+48 distinct de-identified values in the source hospitalid
+field (dataset codes, not a verified count of real sites), so
+the results should not be read as generalizing across sites
+or acuities. Once missing payloads are removed, 3 stays fall
+below 20 usable events (15 at the minimum); we keep them
+rather than reselect. Drug names are missing for 6137 of the
+16,335 medication rows (38%; 103,821 rows overall); they
+are dropped at load, so no medication attack or vocabulary
+uses a missing-value marker. However, 559 retained laboratory rows lack a numeric result, and cross-patient copies
+of them are still rejected by the namespace check. The
+medication table’s coded fields (drugHiclSeqno, GTC)
+are not used.
+Only the benign stream is observed data; every adversarial write, origin label, and namespace binding is generated by the benchmark. Three attack families are injected
+into the test split, giving 29,131 ± 2706 candidates per
+seed, 1090 ± 16 of them malicious. Direct/indirect injection has loud (instruction tokens), quiet (a plain fact), and
+provenance-spoof (a forged authoritative label) subtypes.
+Like the spoofs, retrieval-mediated state poisoning targets
+the declared conflict pairs, but it carries a curated origin.
+Cross-patient contamination copies an event type and its
+exact value from a different person’s real stream. The spoof
+attacker is targeted and causal: it reads only earlier records
+in the episode it writes to and places a real surface form
+of a declared-conflict drug at a strictly later episode time.
+The contradiction rule matches each declared drug name as
+a whole word anywhere in the payload, because eICU text
+often opens with a package quantity (2 ML - DIGOXIN
+0.25 MG/ML IJ SOLN). It covers only string-matchable
+conflicts and, in this corpus, one of the two declared
+pairs: apixaban never appears, so warfarin/apixaban never
+fires and every contradiction decision comes from amiodarone/digoxin.
+4.2. Defenses and Protocol
+The surface baselines are a keyword filter over the
+loud-injection generator’s own instruction tokens and an
+anomaly detector. The detector scores each write by its percharacter negative log-likelihood under a Laplace-smoothed
+fourth-order character Markov model fitted on calibration
+text only, and flags scores at least two standard deviations
+(2σ) above the mean score of benign calibration writes.
+Two choices keep this baseline honest. Text is case-folded
+and whitespace-collapsed before scoring, and every injected
+medication value is a verbatim corpus string; otherwise
+the detector would separate typography, not content. The
+structured arms ablate the gateway check by check: provenance only, contradiction only, GSC only (provenance +
+contradiction), CPN only (namespace), and TWINGUARDLITE (GSC+CPN). A no-defense arm flags nothing and
+gives the attack-success baseline.
+
+--- PAGE 4 [pdf_text] ---
+TABLE 1. DETECTION PERFORMANCE OVER 20 SEEDED PERSON-LEVEL SPLITS (MEAN ± POPULATION STANDARD DEVIATION (SD); 29,131 ± 2706
+CANDIDATES AND 1090 ± 16 MALICIOUS PER SEED). THE LOWER BLOCK ABLATES THE GATEWAY CHECK BY CHECK (GSC: PROVENANCE +
+CONTRADICTION; CPN: NAMESPACE). THE FALSE-POSITIVE RATE (FPR) IS A FRACTION; FP/SEED COUNTS FALSE POSITIVES PER SEED. THE SD
+REFLECTS RESPLITTING ONE FIXED COHORT AND REDRAWING ATTACKS, NOT POPULATION SAMPLING.
+Defense
+Precision
+Recall
+F1
+FPR
+FP/seed
+Generator-matched keyword filter
+1.000 ± 0.000
+0.158 ± 0.011
+0.273 ± 0.016
+0.00000 ± 0.00000
+0.00 ± 0.00
+Anomaly detector (2σ)
+0.160 ± 0.023
+0.236 ± 0.011
+0.190 ± 0.017
+0.04919 ± 0.00583
+1385.65 ± 256.08
+Provenance only
+1.000 ± 0.000
+0.599 ± 0.009
+0.749 ± 0.007
+0.00000 ± 0.00000
+0.00 ± 0.00
+Contradiction only
+0.764 ± 0.141
+0.028 ± 0.008
+0.054 ± 0.016
+0.00034 ± 0.00021
+9.40 ± 5.78
+GSC only (provenance + contradiction)
+0.986 ± 0.009
+0.605 ± 0.009
+0.750 ± 0.008
+0.00033 ± 0.00021
+9.35 ± 5.75
+CPN only (namespace)
+1.000 ± 0.000
+0.300 ± 0.005
+0.461 ± 0.006
+0.00000 ± 0.00000
+0.00 ± 0.00
+TwinGuard-Lite (GSC+CPN)
+0.991 ± 0.006
+0.905 ± 0.008
+0.946 ± 0.005
+0.00033 ± 0.00021
+9.35 ± 5.75
+We report precision, recall, F1, false-positive rate (FPR),
+and per-family attack success (the fraction of malicious
+writes admitted to canonical state). Each metric is computed per seed and macro-averaged, as mean ± population standard deviation (SD) over 20 seeds. This spread
+reflects resplitting one fixed cohort and redrawing attacks,
+not uncertainty about the eICU population or independent
+sites, and a macro-averaged ratio may differ slightly from
+the same ratio recomputed from pooled counts. Per-subtype
+and spoof-targeting rates are instead pooled over seeds,
+as are the false-positive ratios in Section 4.3, a pooled
+attribution audit dividing the 187 false-positive decisions
+by four nested benign counts. Given a seed, the pipeline
+is deterministic, and same-minute writes are ordered only
+by fields the gateway observes.
+4.3. Results
+Table 1 and Fig. 2 summarize the main run. The surface
+baselines are weak for a structural reason. The keyword
+filter recalls only 0.16: it catches every loud injection (1.00),
+while quiet, spoofed, poisoned, and cross-patient writes
+carry no token to match (0.00 on quiet injection, 0.00 on
+the provenance spoofs). The anomaly detector recalls 0.24
+(F1 = 0.190±0.017). It too sees mainly loud writes (0.84),
+falling to 0.19, 0.17, 0.16, and 0.04 on quiet, spoofed,
+retrieval-mediated, and cross-patient writes, respectively. It
+also flags 0.049 ± 0.006 of the mean 28,041 benign writes
+per seed, which rules it out as a standalone admission control. Provenance alone reaches recall 0.599 ± 0.009 with no
+false positives but misses every cross-patient write, whose
+origin is authoritative for its source patient. GSC alone
+reaches 0.605 ± 0.009 and CPN alone 0.300 ± 0.005. Only
+their combination reaches recall 0.905 ± 0.008 (precision
+0.991 ± 0.006, F1 = 0.946 ± 0.005) at a 0.033% FPR, or
+9.35 ± 5.75 rejected benign writes per seed, and it drives
+retrieval-mediated poisoning and, given the trusted binding,
+cross-patient contamination to 0% success.
+Why the combined row is nearly a sum. The recall
+and false-positive count of TWINGUARD-LITE are almost
+exactly the sums of the GSC-only and CPN-only values.
+This is not because one check is selected per write; every
+write must pass all three. The two properties catch nearly
+disjoint attacks, sharing only 1 of 19,742 pooled true positives (largely by construction; Section 5), and CPN adds no
+false positives.
+The contradiction check alone. By itself, the contradiction check reaches only recall 0.028 ± 0.008 (precision
+0.764±0.141; 9.40±5.78 false positives per seed), because
+it inspects only medication writes that name a declared drug.
+Its pooled false positives rise from 187 (GSC only) to 188
+because a malicious medication write that the provenance
+check would have rejected is admitted and becomes a conflict partner of a later benign write. It is therefore not a
+detector in its own right, but it is the only check that can stop
+a write with a forged authoritative label. In the full gateway,
+145 rejections are logged under it, all provenance spoofs
+except 1 cross-patient write that the namespace check also
+rejects. It thus stops 144 attacks that no other check stops but
+causes all 187 benign rejections, more than it alone prevents;
+its worth therefore depends on a better-sourced rule set.
+That role matters because the 0% retrieval result reflects
+trust-zone enforcement, not robustness to poisoned retrieval:
+the provenance check rejects the family’s curated origin
+first. We reran all seeds with the retrieval channel lying
+about its origin (authoritative), so that only the contradiction check can still reject those writes. Then 92.9%
+of that family is admitted, and TWINGUARD-LITE falls
+to recall 0.626 ± 0.010 (F1 = 0.766 ± 0.008), with the
+benign stream and its 187 false positives unchanged. The
+residual 24% injection success in the main run likewise
+consists entirely of provenance spoofs. Only 171 of 2211
+spoofs (7.7%) could be targeted at all—the rest landed in
+episodes with no drug whose declared partner the attacker
+could supply—and the check caught 84% of those, or 6.5%
+of all spoofs. Contradiction checking is a partial backstop
+against spoofing, not a substitute for authenticated ingestion.
+With the strictest episode boundary, where no state crosses
+a unit stay (500 episodes), the conclusions hold: recall
+0.904 ± 0.008, precision 0.993 ± 0.004, injection residual
+24%, 7.25 ± 4.25 false positives per seed, and 134 pooled
+contradiction true positives.
+Where the false positives come from. All 187 pooled
+false-positive decisions came from the contradiction rule
+(187 of 187) on 1 pair (amiodarone/digoxin), over 8 people
+whose episodes contain both drugs (9.35 per seed; repeated
+splits retest the same records, so these are decisions, not
+distinct records). A matched no-attack counterfactual—the
+
+--- PAGE 5 [pdf_text] ---
+Direct/indirect
+injection
+Retrieval-mediated
+state poisoning
+Cross-patient
+contamination
+0
+25
+50
+75
+100
+Attack success rate (%)
+100
+100
+100
+24
+0
+99.98
+100
+100
+0
+24
+0
+0
+No defense
+GSC only
+CPN only
+TwinGuard-Lite (GSC+CPN)
+Figure 2. Attack success by family (lower is better; mean ± population
+SD over 20 seeds): the percentage of each family’s malicious writes
+admitted to canonical state, out of 436/328/327 injection/retrieval/crosspatient attempts per seed (rounded means). Table 1 gives detection metrics
+for all arms. An open marker is a measured 0; 99.98% is printed to
+two decimals to distinguish it from the definitional 100%. The 0% and
+100% values follow from the policy construction and trust assumptions
+(Sections 2 and 5), not from a general detector.
+same benign stream, order, and gateway, with every malicious write deleted—yields 187 rejections and 0 changed
+decisions, so in the full gateway these false positives are the
+cost of the rule itself, not collateral damage from attacks.
+The whole-stream FPR understates this cost, since most
+benign writes never meet a contradiction rule. Pooled, the
+same 187 decisions are 0.033% of all benign writes (as in
+Table 1) and 0.31% of the 2997 benign medication writes
+per seed the rule is scoped to. They are 14.2% of the 66
+per seed naming one of the four drugs with a declared
+partner and 32.8% of the 28.5 naming a drug from a corpussupported pair. The 0.033% rate is what a deployment
+would see; the 32.8% rate characterizes the mechanism. The
+partner must also be admitted earlier in the episode, which
+happens 187 times in the pooled benign stream, equal to the
+numerator by construction because every match is rejected.
+Precision also depends on prevalence: attacks are 3.7% of
+writes here by construction, and at a realistic, much lower
+prevalence the same FPR would dominate precision.
+5. Discussion and Limitations
+We discuss the main limits, including those raised in
+review, and our view of each.
+Strength by construction. The benign data is real, but the
+origin labels, namespace bindings, and attacks are generated,
+so the structured checks are strong partly by construction.
+Likewise, the keyword list is the loud generator’s own, so
+its 1.00 loud recall is guaranteed, and neither baseline is
+state of the art. The near-disjointness of GSC and CPN
+detections also follows from the family construction, and the
+injection and retrieval families violate the same provenance
+check, so their separate rates report attack provenance, not
+independent defenses.
+Trusted patient binding. CPN’s 0% cross-patient success
+holds given a trusted true-origin binding. Once that binding
+exists, detecting a crossing is simple; the hard problem is
+establishing the binding through authenticated sessions or
+signed, patient-bound event envelopes, and this work does
+not solve it. The CPN allow-list is also unvalidated and
+unexercised: no evaluated write uses an allow-listed type, so
+the CPN numbers are those of a deny-every-crossing rule.
+Authenticated provenance. The provenance check reads a
+label, and the spoofed-retrieval run shows the consequence:
+92.9% of lying retrieval writes are admitted. Authenticated,
+origin-bound provenance is therefore central to making the
+approach usable, and the label check stands in for it here.
+The check also covers only medication, diagnosis, and laboratory writes, so the 12,172 treatment rows (12% of the
+corpus) pass it unexamined. No attack exploits this gap:
+treatment-type attacks occur only as cross-patient copies,
+which the namespace check rejects.
+Contradiction coverage. The declared list holds two drug
+pairs that we chose as demonstration policy, not drawn from
+an interaction authority, guideline, or prespecified protocol. It therefore carries a cherry-picking risk as well as a
+coverage limit, and the reported contradiction recall is an
+upper bound conditional on the list. Our extraction omits
+drugStopOffset, so medication state is cumulative and
+a flagged pair may never have been active at the same
+time. Even an active pair need not be an error: amiodarone
+with digoxin, the pair behind every false positive here, can
+be prescribed deliberately with a reduced digoxin dose. A
+larger, clinically grounded rule set with medication start and
+stop times would make the evaluation more convincing and
+reduce such rejections. Until then, flagged writes should be
+quarantined for clinician adjudication, with the ledger entry
+and rule attached, rather than silently rejected.
+End-to-end evaluation. No language model, agent, or
+retriever runs here. Starting at the admission boundary
+isolates the mechanism: the decision depends only on the
+candidate write, its transport metadata, and the admitted
+state, though the producing pipeline sets the fields the checks
+read, notably the origin label. It does not show how often,
+or in what form, real injected or retrieved content becomes a
+candidate write. A small end-to-end study, in which an LLM
+agent with retrieval produces writes that reach the gateway,
+is the most important next experiment. The attacker is also
+nonadaptive at run time. Ongoing work adds authenticated
+ingestion, a maintained rule set with medication intervals,
+LTI and AAI enforcement, adaptive attackers, and patientclustered statistics.
+6. Related Work
+Agentic prompt-injection benchmarks and defenses [3],
+[4], [9], [15], retrieval and memory poisoning [5], [6], and
+medical-model poisoning [7] establish the individual attack
+surfaces, and adversarial machine learning taxonomies [12]
+structure our threat model. At HealthSec’25, Nagaraja and
+Bahsi [8] apply goal-driven risk assessment to an LLMpowered healthcare system, including prompt injection and
+knowledge-base poisoning, and identify cross-patient context contamination through poor memory isolation as a risk;
+
+--- PAGE 6 [pdf_text] ---
+CPN addresses the integrity side of that risk for persistent state. At HealthSec’24, Hallajiyan et al. [16] anticipate inference-time false data injection attacks on machinelearning-enabled medical devices. Both study how corrupted
+inputs reach clinical systems; we add an enforcement point
+for the state they leave behind.
+CaMeL [9] stops untrusted data from steering control flow within one execution; TWINGUARD-LITE governs
+what an execution may persist across executions. Neither
+subsumes the other: a protected run can still commit an
+unsourced fact, and CPN quantifies over a second patient’s
+history, which no single trace expresses.
+7. Conclusion
+Attacks that evade surface filters are textually ordinary
+but structurally invalid. Enforcing rule-level approximations
+of GSC and CPN as auditable admission checks detects
+90.5% of the malicious writes here at a 0.033% falsepositive rate. Every admitted attack is a provenance spoof,
+calling for authenticated ingestion, and every rejected benign
+write comes from the contradiction rule, calling for rules
+from a maintained interaction authority. The main practical
+takeaway is a workflow for systems that persist patient state:
+bind every write to an authenticated source and patient,
+check it against declared rules before it persists, log each
+decision, and quarantine what the rules flag. As no language
+model, agent, or retriever is run, these results validate defined properties under stated trust assumptions, not clinical
+readiness.
+Ethics and Data
+Benign streams derive from the open-access eICU-CRD
+Demo v2.0.1 [13], which PhysioNet [17] distributes under
+the Open Database License (ODbL) 1.0 without a credentialing agreement; it is a de-identified subset of the full
+eICU-CRD [14]. Privacert certified its re-identification risk
+as meeting the Health Insurance Portability and Accountability Act (HIPAA) Safe Harbor standard (Certification
+no. 1031219-2). The study involves no interaction with
+human subjects and no direct identifiers, and we make no
+attempt to re-identify anyone; our derived tables remain
+under ODbL 1.0 with attribution. All adversarial writes
+are benchmark-generated; no real eICU record is labeled
+malicious.
+Acknowledgments
+We are deeply grateful to the three anonymous reviewers
+of HealthSec’26 for their careful, generous, and constructive reviews, which substantially improved this paper. They
+asked how the integrity properties were chosen and whether
+they are complete, how the implemented properties combine,
+and what the contradiction check contributes on its own.
+They helped us examine the trust assumptions behind the
+patient binding and the provenance check, the scope of the
+contradiction rules, and the missing end-to-end experiment,
+and they showed us how to organize the paper and name
+its properties clearly. The paper is clearer and more precise
+about its assumptions because of them. We also thank the
+HealthSec’26 workshop chair and program committee for
+their guidance.
+References
+[1]
+E. Katsoulakis et al., “Digital twins for health: A scoping review,”
+npj Digital Medicine, vol. 7, no. 1, p. 77, 2024.
+[2]
+D. Drummond and A. Gonsard, “Definitions and characteristics of
+patient digital twins being developed for clinical use: Scoping review,”
+Journal of Medical Internet Research, vol. 26, p. e58504, 2024.
+[3]
+Q. Zhan, Z. Liang, Z. Ying, and D. Kang, “InjecAgent: Benchmarking
+indirect prompt injections in tool-integrated large language model
+agents,” in Findings of the Association for Computational Linguistics:
+ACL 2024, 2024, pp. 10 471–10 506.
+[4]
+E.
+Debenedetti,
+J.
+Zhang,
+M.
+Balunovi´c,
+L.
+Beurer-Kellner,
+M. Fischer, and F. Tram`er, “AgentDojo: A dynamic environment to
+evaluate prompt injection attacks and defenses for LLM agents,” in
+Advances in Neural Information Processing Systems, Datasets and
+Benchmarks Track, vol. 37, 2024.
+[5]
+W. Zou, R. Geng, B. Wang, and J. Jia, “PoisonedRAG: Knowledge
+corruption attacks to retrieval-augmented generation of large language
+models,” in 34th USENIX Security Symposium (USENIX Security 25),
+2025, pp. 3827–3844.
+[6]
+Z. Chen, Z. Xiang, C. Xiao, D. Song, and B. Li, “AgentPoison: Redteaming LLM agents via poisoning memory or knowledge bases,” in
+Advances in Neural Information Processing Systems, vol. 37, 2024.
+[7]
+D. A. Alber et al., “Medical large language models are vulnerable to
+data-poisoning attacks,” Nature Medicine, vol. 31, no. 2, pp. 618–626,
+2025.
+[8]
+N. Nagaraja and H. Bahsi, “Goal-driven risk assessment for LLMpowered systems: A healthcare case study,” in Annual Computer Security Applications Conference Workshops (ACSACW), HealthSec’25,
+2025, pp. 290–297.
+[9]
+E. Debenedetti et al., “Defeating prompt injections by design,” in
+IEEE Conference on Secure and Trustworthy Machine Learning
+(SaTML), 2026.
+[10] D. D. Clark and D. R. Wilson, “A comparison of commercial and
+military computer security policies,” in IEEE Symposium on Security
+and Privacy, 1987, pp. 184–194.
+[11] J. A. Goguen and J. Meseguer, “Security policies and security models,” in IEEE Symposium on Security and Privacy, 1982, pp. 11–20.
+[12] A. Vassilev, A. Oprea, A. Fordyce, H. Anderson, X. Davies, and
+M. Hamin, “Adversarial machine learning: A taxonomy and terminology of attacks and mitigations,” NIST, Tech. Rep. AI 100-2e2025,
+2025.
+[13] A. Johnson, T. Pollard, O. Badawi, and J. Raffa, “eICU Collaborative
+Research Database Demo (version 2.0.1),” PhysioNet, 2021. [Online].
+Available: https://doi.org/10.13026/4mxk-na84
+[14] T. J. Pollard, A. E. W. Johnson, J. D. Raffa, L. A. Celi, R. G. Mark,
+and O. Badawi, “The eICU Collaborative Research Database, a freely
+available multi-center database for critical care research,” Scientific
+Data, vol. 5, p. 180178, 2018.
+[15] I. Evtimov, A. Zharmagambetov, A. Grattafiori, C. Guo, and
+K. Chaudhuri, “WASP: Benchmarking web agent security against
+prompt injection attacks,” in Advances in Neural Information Processing Systems, Datasets and Benchmarks Track, vol. 38, 2025.
+[16] M. Hallajiyan, A. P. Dharmalingam, G. Mitra, H. Alemzadeh,
+S. Iqbal, and K. Pattabiraman, “SAM: Foreseeing inference-time false
+data injection attacks on ML-enabled medical devices,” in Workshop
+on Cybersecurity in Healthcare (HealthSec’24), 2024, pp. 77–84.
+
+--- PAGE 7 [pdf_text] ---
+[17] T. Pollard et al., “PhysioNet as a global platform for biomedical
+research,” Nature Health, vol. 1, no. 8, pp. 792–795, 2026.

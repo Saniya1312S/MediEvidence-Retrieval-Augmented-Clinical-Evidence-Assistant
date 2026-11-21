@@ -1,0 +1,778 @@
+--- PAGE 1 [pdf_text] ---
+Treatment Response Optimized Clinical Decision
+Support AI System via Digital Twin Simulation
+Xinyu Qin†, Anil K. Sood‡, Ruiheng Yu†, Sara Corvigno‡, Elaine Stur‡, and Lu Wang†,††,∗
+†Department of Biomedical Engineering, University of Houston, USA
+{xqin5, ryu11}@cougarnet.uh.edu, lwang71@central.uh.edu
+††Department of Health Systems & Population Health Sciences, University of Houston, USA
+‡Department of Gynecologic Oncology and Reproductive Medicine, The University of Texas MD Anderson Cancer Center, USA
+{asood, SCorvigno, estur}@mdanderson.org
+Abstract—Clinical decision support AI systems (CDSASs) must
+adapt to evolving patient conditions in real-time while adhering
+to strict safety constraints. We present an online adaptive
+framework that integrates Treatment Effect (TE) estimation to
+quantify clinical benefits, a patient Digital Twin (DT) to simulate
+treatment trajectories, and Reinforcement Learning (RL) for
+sequential decision-making. The AI system is initially trained on
+historical medical records and operates in a continuous learning
+loop. To ensure safety, a rule-based module monitors vital signs
+and blocks contraindicated treatments. Cases with strong internal
+model disagreement are flagged for clinician review, simulated in
+our experiments via a pre-trained outcome model. We validate
+our framework using both a synthetic clinical simulator and
+a real-world ovarian cancer dataset from The Cancer Genome
+Atlas (TCGA). In both simulated and clinical settings, our
+method demonstrated superior effectiveness and stability in
+recommending treatments compared to standard computational
+baselines. Furthermore, the AI system maintains low latency
+and requires expert consultation for only a minority of cases
+in our experimental validation, demonstrating its potential as
+a safe, clinician-supervised tool for personalized medicine that
+continuously improves through practical use.
+Index
+Terms—Treatment
+Response,
+Digital
+Twin,
+Online
+Learning, Counterfactual Explanations, Reinforcement Learning,
+Clinical Decision Support AI System (CDSAS).
+I. INTRODUCTION
+Clinical decisions arrive in sequence and involve risk [1].
+Policies learned offline can be effective at deployment, yet
+dataset shift and limited coverage reduce value as conditions
+evolve [2]. Our objective is an online adaptive clinical decision
+support tool that learns during use while respecting safety.
+Treatment Effect (TE) estimation serves as the primary metric
+for clinical benefit, ensuring the AI system prioritizes interventions that offer the greatest evidence-based improvement
+for the patient under a clear counterfactual reference [3]. A
+patient Digital Twin (DT) provides a virtual environment to
+simulate patient responses and predict potential future health
+states based on real-time data [4]. Reinforcement Learning
+(RL) enables long-term treatment planning by modeling the
+relative value of different clinical actions over time [1, 5].
+We link these parts into a single AI system focused on
+online learning with guardrails. First, the AI system undergoes
+∗Corresponding author: Lu Wang (lwang71@central.uh.edu).
+Fig. 1: Overview of the proposed DT powered treatment
+response AI system. Dynamic multimodal data are ingested
+continuously to update the DT state, which supports treatment
+recommendation under safety constraints and uncertainty monitoring, and generates a treatment response report; an online
+updating loop flags uncertain cases for clinician follow-up and
+uses accumulated feedback for model updates.
+an offline training stage using historical medical records, ensuring that its recommendations remain within the boundaries
+of established clinical practices [6]. Second, during real-time
+operation, the tool suggests treatments by pooling insights
+from multiple internal models and only requests human expert
+guidance when these models show high uncertainty. This
+uncertainty is quantified by measuring the variation in predictions across the model ensemble, providing a reliable measure
+of confidence for clinical decision support [7, 8, 9]. Third,
+the AI system performs frequent, stable updates on recent
+patient data to adapt to evolving conditions without reacting
+erratically to new information [10]. To minimize the workload
+for clinicians, an automated selection process identifies only
+the most informative and diverse cases for expert review [11].
+The tool exposes lightweight controls for query threshold,
+stream rate, and batch size, enabling simple, rapid runtime
+behavior changes without requiring full retraining.
+This paper presents an online adaptive decision support
+framework that integrates TE estimation, DT, and RL into
+an online adaptive decision support tool. First, we establish
+a robust decision-making core by combining a stable model
+initialized from historical data with a responsive online update
+arXiv:2606.17405v1 [cs.AI] 16 Jun 2026
+
+--- PAGE 2 [pdf_text] ---
+Fig. 2: Tool overview of the deployed AI system. The left panel provides the data upload and preview interface with controls
+to launch model training, the right sidebar integrates a Large Language Model (LLM)-powered AI chatbot tool for interactive
+assistance and AI system guidance. The top-right panel shows patient data exploration with report generation and an in-page
+preview (a full report example is shown in Fig. 3). The middle-right panel displays a monitoring dashboard for data and training
+status, and the bottom-right panel offers parameter controls for configuring model training and settings.
+mechanism. Second, we integrate a patient DT that enables
+rapid and consistent health state simulations during real-time
+operation. Third, we guide the learning process using TE
+metrics, ensuring the AI system optimizes for clinically significant outcomes while maintaining safety through uncertainty
+monitoring and rule-based constraints.
+To validate these contributions and address the gap between
+simulation and clinical practice, we evaluate the framework on
+two datasets: a controlled synthetic environment for systematic
+analysis, and a real-world ovarian cancer treatment cohort
+derived from The Cancer Genome Atlas (TCGA) [12]. We
+selected ovarian cancer as the real-world case study because
+our clinical collaborator is an ovarian cancer specialist, providing a clinically grounded setting to validate our AI system’s
+decision-making behavior and reporting workflow. The ovarian
+cancer dataset presents clinical challenges, including infrequent positive treatment responses (occurring in only 27.5%
+of patients), complex combinations of up to 11 treatments,
+and detailed patient profiles encoding clinical staging and
+performance status. Our results demonstrate that the proposed
+method achieves significant improvements in both simulated
+and real-world clinical settings, reflecting its practical applicability. Overall, an illustration of our method is shown in Fig. 1,
+and our main contributions are briefly summarized below as
+follows:
+• Publicly deployed AI tool for immediate and broad
+access. The complete implementation of our framework,
+encompassing all methodological details presented in
+this paper, is publicly deployed as an interactive web
+application.1 The tool is available on-demand to any user
+without installation or registration. The complete AI tool
+overview is shown in Fig. 2.
+• A safety-aware online evaluation loop for Digital
+Twins in Healthcare. We integrate an uncertainty-driven
+query mechanism with explicit rule-based safety gates
+(such as vital-sign plausibility, medication dose bounds,
+and conflict checks) to trigger conservative fallbacks
+before any potential clinical violation.
+• Uncertainty-driven selective querying under real-time
+constraints. We formalize an automated querying process
+that identifies informative cases by evaluating the level of
+agreement across multiple internal models. [7, 13].
+• Seamless transition from historical data to real-time
+adaptation. We initialize the AI system using highperforming models trained on retrospective data and
+apply frequent, stable updates to balance the need for
+learning new patterns with the necessity of maintaining
+AI system stability [6, 10].
+• Privacy-preserving data processing. We implement a
+module to de-identify data at the point of entry, automatically removing direct identifiers and applying stan1https://huggingface.co/spaces/KingmaoQ/RLDT
+
+--- PAGE 3 [pdf_text] ---
+dard privacy protection techniques in compliance with
+the Health Insurance Portability and Accountability Act
+(HIPAA) Safe Harbor standards [14].
+II. METHODOLOGY
+A. Offline Training with Three-Stage Model Development
+Before any model consumes data, we run a policy-driven
+de-identification pass so all learning uses HIPAA Safe Harbor
+de-identification standard. Specifically, we remove direct identifiers (such as names and medical record numbers), replace internal record identifications with random study identifications,
+reduce the detail of potentially identifying fields (for example,
+we keep only the first three digits of Zone Improvement Plan
+(ZIP) codes and group ages into ranges), and shift dates by
+a small, fixed maximum amount to prevent re-identification
+while preserving the relative timing of events. As an additional
+safeguard, we verify k-anonymity (k), meaning that each
+record is indistinguishable from at least k other records on
+the fields that could indirectly identify a person.
+Stage 1: Dynamics Model (Ensemble of Five): We construct
+a patient DT that predicts the next state from recent history
+and the applied treatment. The model is a Transformer encoder
+that receives a sequence of state vectors and the aligned action
+tokens, with a causal attention mask and a padding mask [15].
+At each step the network predicts a residual change, and we
+apply a strictly bounded update to improve stability during
+iterative multi-step rollouts:
+st+1 = clip
+
+st + 0.05 tanh
+ fθ(s0:t, a0:t)
+
+, 0, 1
+
+.
+(1)
+Here st
+∈
+[0, 1]d is the normalized state and at
+∈
+{0, . . . , K −1} is the discrete action. The loss is computed
+only on valid timesteps within each sequence by a binary mask
+that ignores padding. We use a Smooth L1 objective over one
+step predictions:
+LDT(θ) =
+1
+|Ω|
+X
+(i,t)∈Ω
+ℓsmooth
+
+ˆs(i)
+t+1, s(i)
+t+1
+
+,
+(2)
+where Ωdenotes all valid positions in the mini batch.
+Training uses AdamW, gradient clipping, and a learning rate
+scheduler. We train five independent models under different
+seeds and keep all five for evaluation. During rollout we
+aggregate the predictions by the ensemble mean. We also use
+the ensemble variance as an uncertainty signal.
+Stage 2: Counterfactual Treatment Outcome and Reward
+Model: Network rϕ predicts the immediate outcome from
+(s, a). Let zhealth = gϕ(s) denote the health representation
+learned from state features. We apply adversarial deconfounding with a discriminator Dξ(a | zhealth), where Ladv is the
+action-prediction cross-entropy:
+min
+ϕ
+max
+ξ
+E(s,a,y)∼D
+
+| rϕ(s, a) −y | + λadv CE
+ Dξ(· | zhealth), a
+
+.
+(3)
+Here E(s,a,y)∼D denotes the expectation over the dataset D,
+| · | is the absolute prediction error, and CE(·, ·) is the crossentropy loss for training Dξ to predict a from zhealth. The
+weight λadv > 0 balances predictive accuracy and adversarial
+regularization, reducing dependence on observed confounding
+structure in the learned representation. It does not eliminate
+bias from unmeasured confounders.
+1) Stage 3: Offline Policy Learning with Batch-Constrained
+Q-learning (BCQ): The core of our decision-making logic is
+centered on the concept of Quality, represented by the quality
+value (Q-value). Specifically, Qψ(s, a) denotes the predicted
+long-term clinical benefit of applying a treatment action a
+to a patient in a given health state s (comprising vital signs
+and clinical covariates), as estimated by a neural Q-network
+with learned parameters ψ. To maintain clinical safety, we
+utilize BCQ, which limits the AI system’s recommendations
+to a validated subset of actions Avalid(s). The policy π(s) then
+identifies the optimal intervention by maximizing this quality
+score within the safe set:
+π(s) = arg
+max
+a∈Avalid(s) Qψ(s, a),
+Avalid(s) = { a ∈A : b(a | s) ≥τsupp }.
+(4)
+Within this framework, b(a | s) represents the behavior model,
+which characterizes the likelihood that a human expert would
+select action a from the total set of possible interventions A
+for a patient in state s. The support threshold, τsupp, acts as a
+safety gate to exclude actions that lack sufficient evidence in
+historical clinical data, ensuring the model avoids unproven or
+potentially hazardous decisions. This threshold is tuned during
+validation to effectively balance the optimization of treatment
+outcomes with rigorous safety requirements.
+B. Online Learning with Uncertainty-Based Sampling
+High-uncertainty candidates (˜u(st) > τquery) are buffered;
+once the buffer reaches k items (query batch size), apply kcenter selection (uncertainty-weighted farthest-first) to query
+a batch of diverse samples.
+1)
+Uncertainty-Based Selective Querying: We maintain
+a Q-ensemble of H = 5 independently trained Q-networks
+Qψk
+H
+k=1 initialized from the offline stage. Greedy action
+selection uses the ensemble mean:
+at = arg max
+a∈A
+1
+H
+H
+X
+k=1
+Qψk(st, a).
+(5)
+Ensemble mean and standard deviation:
+µa(st) =
+1
+H
+H
+X
+k=1
+Qψk(st, a),
+(6)
+σa(st) =
+v
+u
+u
+t
+1
+H −1
+H
+X
+k=1
+ Qψk(st, a) −µa(st)
+2.
+(7)
+Coefficient of variation:
+CVa(st) =
+σa(st)
+|µa(st)| + ϵ,
+ϵ = 10−8.
+(8)
+tanh-squashed uncertainty statistic:
+˜u(st) = tanh
+
+max
+a∈A CVa(st)
+
+.
+(9)
+Query expert if ˜u(st) > τ (default τ = 0.2). For BCQ without ensemble, use ˆu(st) = Var(st)/ maxs∈D Var(s) ∈[0, 1]
+with same threshold. The AI system supports two modes:
+manual mode where clinicians provide treatment labels and
+expected outcomes through the web interface, and automatic
+mode where the pre-trained outcome model generates reward
+labels for queried transitions. In our experimental validation,
+we use automatic mode to simulate expert feedback.
+K-center selection for batch size k. Let U be candidates
+exceeding threshold, d(·, ·) Euclidean distance:
+
+--- PAGE 4 [pdf_text] ---
+selected = arg
+max
+B⊆U, |B|=k
+min
+s∈U\B max
+s′∈B d(s, s′) · ˜u(s).
+(10)
+2) Incremental Model Updates: For Transformer ˆfθ with
+layers {l1, ..., ln}, freeze θ1:n−2, update only θn−1:n:
+θ(n−1:n)
+t+1
+= θ(n−1:n)
+t
+−η∇θn−1:nL(θt; Dnew
+t
+).
+(11)
+Exponential moving average for stability:
+¯θt+1 = α¯θt + (1 −α)θt+1,
+α = 0.99.
+(12)
+3) Experience Replay with Prioritization: Labeled buffer
+BL (10K) for expert-validated transitions; weak buffer BW
+(50K) for model predictions. Prioritized sampling:
+p(τi) ∝ωi · exp
+ −λt · (t −ti)
+
+,
+(13)
+where ωi is uncertainty weight, λt controls temporal decay.
+C. Hot Parameter Adaptation
+Three-tier
+adaptation
+without
+full
+retraining.
+Tier
+1
+(instant): uncertainty threshold τ, batch size B, stream
+rate r, candidate actions N, perturbation bound Φ. Tier
+2 (fast fine-tune, M
+=
+500 steps): discount γ, target exponential moving average (EMA) ρ, regularization
+λreg, imitation balance β; recompute targets yt
+= rt +
+γ maxa′∈AN(st+1) minj∈{1,2} Qθ−
+j (st+1, a′) on recent data.
+Tier 3 (full retrain): architecture changes, action generator
+changes, feature space changes, major distribution shift, or
+substantial drift.
+D. LLM Integration and Clinical Interface
+1) LLM-Based Interpretability: Tool-augmented LLM approach for natural-language explanations. LLM accesses functions (optimal action retrieval, trajectory simulation, feature
+importance) to generate rationales. Local LLM server [16,
+17, 18] with constraints: < 1200 words, cite tool outputs, no
+hallucinated data.
+2) Human-Computer Interface and Report Generation:
+Progressive disclosure interface: patient dashboard (vital signs
+with abnormality flags), treatment comparison panel (sideby-side projections), training monitor (live metrics). Three
+modes: consultation (natural-language queries), configuration
+(parameter tuning), monitoring (AI system performance).
+Auto-generated Hypertext Markup Language (HTML) report: (1) patient profile with flagged vitals, (2) primary
+recommendation with confidence and expected outcome, (3)
+treatment comparison table, (4) decision rationale emphasizing
+abnormal metrics and contrasting alternatives, (5) trajectory
+visualizations of simulated biomarker evolution.
+III. EXPERIMENTS AND RESULTS
+A. Evaluation Datasets
+We evaluate on two complementary datasets: a controlled
+synthetic simulator for systematic analysis and a real-world
+ovarian cancer cohort for clinical validation.
+1) Synthetic Clinical Simulator: 10-dimensional state space
+with physiologically relevant features: blood pressure (BP
+∼N(0.5, 0.152)), heart rate (HR ∼N(0.5, 0.12)), glucose
+(∼N(0.5, 0.22)), creatinine, hemoglobin, temperature, oxygen saturation (SpO2), age, gender, and Body Mass Index
+(BMI), all normalized to [0, 1]. Action space: K
+=
+5
+treatments. Reward structure incentivizes normal vital signs
+(SpO2> 0.9 yields bonus) while penalizing abnormal values;
+SpO2< 0.80 triggers conservative fallback and mandatory
+expert query. Dataset: 10,000 trajectories (max horizon 50),
+split 8,000/1,000/1,000 (train/val/test) by patient ID.
+2) Real-World Ovarian Cancer Dataset: TCGA Ovarian
+Cancer cohort with 587 patients, 2,552 treatment events
+[12]. Drug names normalized into 11 therapeutic classes:
+platinum, taxanes, anthracyclines, antimetabolites, topoisomerase inhibitors, alkylating agents, anti-angiogenics, hormonal agents, vinca alkaloids, radiation, and other, yielding
+K
+=
+47 treatment combinations via multi-hot encoding. State representation includes age, gender, tumor status,
+grade, stage, cumulative drug count, radiation history, Eastern
+Cooperative Oncology Group (ECOG) performance status,
+Karnofsky performance score, and reserved features. Binary
+reward: 1 if tumor-free transition, 0 otherwise (27.5% positive
+observed). Split: 469/59/59 patients (train/val/test, 80/10/10).
+Most frequent regimens: platinum-taxane (32%), platinumonly (27%), triplet combinations (11%).
+B. Comparative Methods
+Five methods evaluated with unified preprocessing, γ =
+0.99, five random seeds: Deep Q-Network (DQN) [19], Double Deep Q-Network (Double DQN) [20], Neural Fitted QIteration (NFQ) [21], Conservative Q-Learning (CQL) [22],
+and our BCQ-based approach. All methods trained on historical data using Transformer-based dynamics ensembles and
+treatment outcome model with adversarial deconfounding.
+Treatment strategies are evaluated via rollout in the learned
+DT environment, reporting discounted cumulative benefit.
+Safety monitoring: all recommendations verified against rulebased clinical constraints. For synthetic data, vital sign ranges
+(BP∈[0.3, 0.8], HR∈[0.4, 0.7], glucose∈[0.3, 0.7], SpO2∈
+[0.85, 1.0], temperature∈[0.45, 0.55]) and drug contraindication checks. For ovarian cancer data, safety constraints
+include stage validity (Stage I–IV only), tumor status validity
+(tumor-free/with-tumor only), and a conservative eligibility
+gate requiring ECOG ≤2 and age ∈[18, 90] strictly.
+C. Offline Evaluation and Analysis
+All methods are evaluated on held-out test data by rolling
+out learned policies in the DT environment and measuring
+cumulative treatment benefit, defined as the total reward accumulated over the rollout with future rewards discounted,
+together with selection consistency.
+a) Treatment Selection Performance: Table I summarizes
+offline and online results. On the synthetic simulator, our
+method achieves mean return 37.73, a 2.8% improvement
+over Double DQN (p = 0.02) with higher consistency across
+patient cases (Sharpe-like index 3.43 vs. 3.17). On the ovarian
+cancer dataset, our method demonstrates substantially better
+treatment selection with 136% higher predicted benefit (33.26
+vs. 14.06, p < 0.001). This advantage reflects the AI system’s ability to identify appropriate treatment combinations in
+sparse-reward scenarios where only 27.5% of treatment events
+lead to tumor-free outcomes. Our method also produces more
+consistent recommendations (action entropy 0.96 vs. DQN’s
+1.58), reliably suggesting the same treatment for similar patients rather than alternating between options, which is critical
+
+--- PAGE 5 [pdf_text] ---
+for maintaining physician confidence. All methods maintained
+perfect safety (100% compliance with vital sign constraints
+and contraindication checks).
+TABLE I: Comparative performance across offline and online
+evaluation. Mean return measures cumulative treatment benefit; Query rate indicates overall expert consultation frequency.
+Statistical significance: ∗p < 0.05, ∗∗p < 0.01 relative to our
+baseline method.
+Algorithm
+Offline (Return)
+Online (Query)
+Syn.
+Ova.
+Syn.
+Ova.
+Ours (BCQ)
+37.73
+33.26
+0.131
+0.399
+DQN
+36.70∗
+1.58∗∗
+0.155
+0.451
+Double DQN
+36.71∗
+14.06∗∗
+0.137
+0.427
+NFQ
+37.51
+7.03∗∗
+0.145
+0.574
+CQL
+16.26∗∗
+1.68∗∗
+0.208
+0.412
+Higher return = better; Lower query = less burden.
+D. Online Learning Evaluation
+We evaluated online adaptation by replaying test data
+chronologically under unified conditions. Our uncertaintybased querying achieved the lowest consultation rates: 13.1%
+for synthetic cases and 39.9% for ovarian cancer cases,
+representing 15.5–37.0% reductions versus baseline methods
+(Table I). This efficiency stems from accurate identification
+of clinically ambiguous scenarios via ensemble disagreement
+(Eq. 9). Higher query rates on ovarian data (39.9–57.4%
+across methods) reflect genuine clinical uncertainty in sparseoutcome settings where treatment success is variable. All
+methods maintained 100% compliance with clinical constraints throughout online operation. On the synthetic simulator, we introduced a population shift after 1000 cases
+(simulating an influx of older, higher-risk patients with shifted
+vital sign distributions). Our method adapted effectively, accumulating substantially more labeled data (1,620 samples vs.
+800–1,420 for baselines) and executing more frequent updates
+(80 blocks vs. 39–70) while maintaining rapid decision times,
+sustaining treatment quality despite the demographic shift.
+E. Model Component Evaluation
+We systematically assessed each component on held-out test
+data. The DT ensemble achieved strong predictive accuracy
+(R2 = 0.82) for forecasting patient state transitions across
+500 test trajectories, with prediction error remaining controlled
+even at 5-step projections (mean squared error (MSE)=0.006),
+validating the bounded update mechanism (Eq. 1). The treatment outcome model attained R2
+=
+0.87 across 7,395
+treatment-outcome observations with well-calibrated uncertainty estimates (expected calibration error (ECE)=0.105),
+confirming reliable treatment benefit predictions on average.
+IV. CLINICAL CASE ANALYSIS AND VALIDATION
+A. Representative Patient Cases
+To assess clinical plausibility, we reviewed five representative cases from the held-out TCGA test cohort. These cases
+span different ages, stages, grades, and treatment patterns.
+Table II compares the AI system’s top-ranked treatment class
+with the treatment recorded in the dataset. The table is intended as a qualitative illustration of plausibility and alignment
+with observed practice, not as a population-level accuracy
+analysis. Across these cases, the model did not produce
+clinically implausible or unsupported treatment combinations.
+Across these representative cases, the recommended treatment class matched the historical clinical decision in all five
+instances. These cases include patients aged 42–67 years, with
+advanced-stage disease (Stage IIIC–IV), variable tumor grade
+(2–3), and diverse treatment strategies including platinumbased monotherapy, platinum–taxane combinations, alternative
+agents, and triplet regimens. Rather than implying optimality
+of the historical treatment, this concordance demonstrates that
+the AI system’s learned policy remains aligned with realworld oncologic practice when operating under the same observational constraints. Importantly, the model did not propose
+clinically implausible or unsupported treatment combinations,
+reinforcing the effectiveness of the behavior-constrained action
+space and safety gating mechanisms.
+TABLE II: Five representative TCGA ovarian cancer cases
+used for qualitative comparison between the model recommendation and the recorded treatment.
+No.
+Patient Profile
+Rec.
+Actual
+Outcome
+1
+Age 50, Stage IIIC, Grade 3
+Plat+Tax
+Plat+Tax
+Tumor (5 yr)
+2
+Age 67, Stage IIIC, Grade 3
+Plat only
+Plat only
+Free (6 yr)
+3
+Age 42, Stage IV, Grade 3
+Alt. agent
+Alt. agent
+Free (6 yr)
+4
+Age 43, Stage IIIC, Grade 3
+Triplet Rx
+Triplet Rx
+Free (8 d)
+5
+Age 57, Stage IV, Grade 2
+Tax only
+Tax only
+Tumor (3 mo)
+Rec.=Recommendation; Plat=Platinum; Tax=Taxane; Alt=Alternative;
+Rx=Treatment; yr=years; d=days; mo=months.
+B. Automated Clinical Report Generation
+To illustrate how the AI system supports real-world clinical
+workflows, we present the automatically generated decision
+support report for Case #1 (TCGA-04-1367) in Fig. 3. This
+report demonstrates how complex model outputs, including
+DT simulations, TE estimates, and uncertainty metrics, are
+translated into a concise, clinician-oriented summary. The
+report ranks candidate treatment options according to predicted clinical response, where higher scores indicate greater
+expected benefit relative to a reference treatment. Each option
+corresponds to a historically observed regimen within the
+dataset, ensuring interpretability and clinical relevance. For
+this patient, the top-ranked recommendation (platinum + taxane; predicted response score = 0.0086) matched the treatment
+administered in clinical care.
+Beyond treatment ranking, the report integrates longitudinal
+clinical data (2009–2014), baseline covariates, and molecular
+context. Genomic features include copy number (CN) status
+for key ovarian cancer–associated genes (MYC, BRCA1,
+BRCA2, TP53, CCNE1), where CN = 2.0 indicates diploid
+status, CN > 2.0 amplification, and CN < 2.0 deletion [12].
+These features are presented for contextualization rather than
+direct causal attribution, consistent with the observational
+nature of the dataset.
+The report consolidates six integrated components: (1)
+Treatment Alignment, verifying concordance between AI system recommendation and actual treatment to establish trust
+
+--- PAGE 6 [pdf_text] ---
+Fig. 3: AI-generated patient report for TCGA-04-1367, integrating treatment rankings, clinical covariates, genomic profiles, and longitudinal outcomes.
+through demonstrated alignment with clinical practice; (2)
+Outcome Snapshot, presenting tumor status trajectory with
+model-generated evidence summary and qualitative confidence
+assessment; (3) Visit-Level Variables, documenting longitudinal treatment history and response patterns across multiple
+clinical encounters; (4) Clinical Covariates, providing structured summaries of demographics, disease staging, histology,
+and baseline characteristics; (5) Key Genomic Alterations,
+contextualizing recommendations within the patient’s molecular profile through copy number status display [12]; and (6)
+Treatment Response Ranking, presenting the top 10 treatment
+options with predicted response scores where positive values
+indicate expected benefit relative to reference treatment and
+negative values suggest potentially inferior outcomes. By integrating these elements into a unified interface, the AI system
+reduces the need for manual data synthesis across disparate
+sources and supports rapid clinical review.
+C. Clinical Interpretation and Expert Validation
+To evaluate interpretability and clinical acceptability, the
+generated reports are reviewed by domain experts with experience in gynecologic oncology and clinical trial design,
+consistent with established guidance that clinically deployed
+Clinical Decision Support AI System (CDSAS) should be assessed for explainability, usability, and end-user trust [23, 24].
+Expert feedback focused on three dimensions: (i) clinical
+plausibility of recommendations, (ii) clarity and completeness
+of the explanatory content, and (iii) perceived utility as a
+decision support aid rather than an autonomous decisionmaker, aligning with the prevailing view that AI-enabled
+CDSAS is intended to support rather than supplant clinician
+judgment [25, 26].
+Experts noted that the AI system’s recommendations were
+generally clinically plausible and remained within historically observed treatment classes and that uncertainty-driven
+escalation appropriately flagged ambiguous cases for human
+oversight, matching uncertainty-based referral paradigms that
+defer high-uncertainty cases to clinicians [27]. The presentation of alternative treatments with explicit comparative scores
+is viewed as particularly valuable for shared decision-making
+and hypothesis generation, especially in settings with sparse or
+heterogeneous evidence [28]. Importantly, experts emphasized
+that the AI system’s primary value lies in decision support
+rather than replacement of clinician judgment [25, 26]. The
+framework is perceived as most useful for synthesizing prior
+patient trajectories, exploring counterfactual treatment paths
+through DT simulation, and prioritizing options for further
+discussion or tumor board review. These observations align
+with the our AI system’s design philosophy, in which human
+expertise remains central and is selectively engaged when
+model uncertainty is high, which also helps mitigate welldescribed risks such as over-reliance on automated advice
+(automation bias) [26, 29].
+V. CONCLUSION
+We present a clinical decision-support framework that combines RL, a patient DT, and TE-based rewards with human
+oversight. On synthetic and retrospective ovarian cancer data,
+the method outperformed standard baselines while maintaining
+low query rates and rule-based safety. The results support the
+framework as a cohort-specific decision-support system within
+a learned DT environment. Limitations include retrospective
+evaluation, possible bias from unmeasured confounders, and
+the lack of external or prospective validation. Future work
+will study guideline-aware constraints, out-of-distribution detection, and multi-site prospective evaluation.
+REFERENCES
+[1] R. S. Sutton, A. G. Barto et al., Reinforcement learning:
+An introduction.
+MIT press Cambridge, 1998, vol. 1,
+no. 1.
+[2] S. Levine, A. Kumar, G. Tucker, and J. Fu, “Offline
+reinforcement learning: Tutorial, review, and perspectives
+on open problems,” 2020.
+[3] M. Hernan and J. Robins, Causal inference: What if
+chapman hall/crc, boca raton, 2020.
+[4] C. Meijer, H.-W. Uh, and S. El Bouhaddani, “Digital
+twins in healthcare: Methodological challenges and op-
+
+--- PAGE 7 [pdf_text] ---
+portunities,” Journal of personalized medicine, vol. 13,
+no. 10, p. 1522, 2023.
+[5] Z. Chen, F. Silvestri, J. Wang, H. Zhu, H. Ahn, and
+G. Tolomei, “Relax: Reinforcement learning agent explainer for arbitrary predictive models,” in Proceedings
+of the 31st ACM international conference on information
+& knowledge management, 2022, pp. 252–261.
+[6] S. Fujimoto, D. Meger, and D. Precup, “Off-policy deep
+reinforcement learning without exploration,” in International conference on machine learning.
+PMLR, 2019,
+pp. 2052–2062.
+[7] B. Lakshminarayanan, A. Pritzel, and C. Blundell, “Simple and scalable predictive uncertainty estimation using
+deep ensembles,” vol. 30, 2017.
+[8] Z. Chen, J. Cheng, H. Amiri, K. Nag, L. Lin, S. Liu,
+G. Tolomei, and X. Sun, “Frog: Fair removal on graph,”
+in Proceedings of the 34th ACM International Conference on Information and Knowledge Management, 2025,
+pp. 415–424.
+[9] W. H. Raza, A. B. Shah, Y. Wen, Y. Shen, J. D. M.
+Lemus, M. C. Schiess, T. M. Ellmore, R. Hu, and
+X. Fu, “Neuromoe: a transformer-based mixture-ofexperts framework for multi-modal neurological disorder
+classification,” in 2025 47th Annual International Conference of the IEEE Engineering in Medicine and Biology
+Society (EMBC).
+IEEE, 2025, pp. 1–7.
+[10] P. Jayaraman, J. Desman, M. Sabounchi, G. N. Nadkarni,
+and A. Sakhuja, “A primer on reinforcement learning in
+medicine for clinicians,” NPJ Digital Medicine, vol. 7,
+no. 1, p. 337, 2024.
+[11] O. Sener and S. Savarese, “Active learning for convolutional neural networks: A core-set approach,” 2017.
+[12] C. G. A. R. Network et al., “Integrated genomic analyses
+of ovarian carcinoma,” Nature, vol. 474, no. 7353, p. 609,
+2011.
+[13] A.
+Thuy
+and
+D.
+F.
+Benoit,
+“Reliable
+uncertainty
+with
+cheaper
+neural
+network
+ensembles:
+a
+case
+study in industrial parts classification,” arXiv preprint
+arXiv:2403.10182, 2024.
+[14] I. Portability and A. Act, “Guidance regarding methods
+for de-identification of protected health information in
+accordance with the health insurance portability and
+accountability act (hipaa) privacy rule,” Human Health
+Services: Washington, DC, USA, 2012.
+[15] L. Lai, Z. Cheng, K. Cheng, and X. Qi, “Do transformers
+always win? an empirical study of semantic embeddings
+for short-text e-commerce reviews,” in 2026 9th International Symposium on Big Data and Applied Statistics
+(ISBDAS).
+IEEE, 2026, pp. 525–529.
+[16] OpenAI, “Openai api documentation,” https://platform.
+openai.com/docs/, 2024, accessed: 2025-08-18.
+[17] Z.
+Chen,
+J.
+Cheng,
+Z.
+Fan,
+H.
+Amiri,
+Y.
+Yao,
+X. Sun, and Y. Zhang, “Cure: Circuit-aware unlearning for llm-based recommendation,” arXiv preprint
+arXiv:2604.04982, 2026.
+[18] J. Cao, Y. Ma, X. Li, Q. Ren, and X. Chen, “Taskspecific efficiency analysis: When small language models outperform large language models,” arXiv preprint
+arXiv:2603.21389, 2026.
+[19] V. Mnih, K. Kavukcuoglu, D. Silver, A. A. Rusu, J. Veness, M. G. Bellemare, A. Graves, M. Riedmiller, A. K.
+Fidjeland, G. Ostrovski et al., “Human-level control
+through deep reinforcement learning,” nature, vol. 518,
+no. 7540, pp. 529–533, 2015.
+[20] H. Van Hasselt, A. Guez, and D. Silver, “Deep reinforcement learning with double q-learning,” in Proceedings of
+the AAAI conference on artificial intelligence, vol. 30,
+no. 1, 2016.
+[21] M. Riedmiller, “Neural fitted q iteration–first experiences with a data efficient neural reinforcement learning
+method,” in European conference on machine learning.
+Springer, 2005, pp. 317–328.
+[22] A.
+Kumar,
+A.
+Zhou,
+G.
+Tucker,
+and
+S.
+Levine,
+“Conservative
+q-learning
+for
+offline
+reinforcement
+learning,”
+in
+NeurIPS,
+2020.
+[Online]. Available: https://papers.nips.cc/paper/2020/hash/
+0d2b2061826a5df3221116a5085a6052-Abstract.html
+[23] J. Amann, A. Blasimme, E. Vayena, D. Frey, V. I. Madai,
+and P. Consortium, “Explainability for artificial intelligence in healthcare: a multidisciplinary perspective,”
+BMC medical informatics and decision making, vol. 20,
+no. 1, p. 310, 2020.
+[24] S. Tonekaboni, S. Joshi, M. D. McCradden, and A. Goldenberg, “What clinicians want: contextualizing explainable machine learning for clinical end use,” in Machine
+learning for healthcare conference.
+PMLR, 2019, pp.
+359–380.
+[25] E. H. Shortliffe and M. J. Sep´ulveda, “Clinical decision
+support in the era of artificial intelligence,” Jama, vol.
+320, no. 21, pp. 2199–2200, 2018.
+[26] C. Jones, J. Thornton, and J. C. Wyatt, “Artificial intelligence and clinical decision support: clinicians’ perspectives on trust, trustworthiness, and liability,” Medical law
+review, vol. 31, no. 4, pp. 501–520, 2023.
+[27] R. Zhang, C. Gatsonis, and J. A. Steingrimsson, “Role of
+calibration in uncertainty-based referral for deep learning,” Statistical methods in medical research, vol. 32,
+no. 5, pp. 927–943, 2023.
+[28] G. Elwyn, D. Frosch, R. Thomson, N. Joseph-Williams,
+A. Lloyd, P. Kinnersley, E. Cording, D. Tomson,
+C. Dodd, S. Rollnick et al., “Shared decision making: a
+model for clinical practice,” Journal of general internal
+medicine, vol. 27, no. 10, pp. 1361–1367, 2012.
+[29] K. Goddard, A. Roudsari, and J. C. Wyatt, “Automation
+bias: a systematic review of frequency, effect mediators,
+and mitigators,” Journal of the American Medical Informatics Association, vol. 19, no. 1, pp. 121–127, 2012.

@@ -1,0 +1,1911 @@
+--- PAGE 1 [pdf_text] ---
+MedJev: Evaluating Zero-Shot System-One
+Decision Making in Medicine
+Simon A. Lee1, Jiahang Sha1, Moonseong Jeong1, Yunbei Pan1 and Jeffrey N. Chiang1,2
+1UCLA Computational Medicine, 2UCLA Neurosurgery
+System-One decision models such as Jev answer structured questions about a given state, including
+option selection and probability estimation, in a single forward pass without generating text. Their speed,
+low computational cost, and ability to produce calibrated probabilities make them promising for clinical
+decision support. We investigate the zero-shot performance of MedJev, an open System-One model that
+runs locally on a laptop, across ten medical benchmarks. Four benchmarks assess medical knowledge
+and diagnosis (MedQA, USMLE, NEJM, and DiagnosisArena), while six evaluate patient-level decisions
+using cohorts from MIMIC-IV (In-Hospital Mortality, Length of Stay > 7 Days, 30-Day Readmission, and
+ED Admission at 2 h) and MIMIC-IV-ED (ED Triage Admission and ED Triage Disposition). We compare
+MedJev against zero-shot LLM baselines, including Qwen3.5-9B, MedGemma-1.5-4B, Gemma-3-4B,
+Qwen3.5-2B, and Pythia-2.8B. We also compare against published results for GPT-3.5, GPT-4, GPT-4o,
+and o1 on the same benchmarks, as well as XGBoost and TF-IDF models. In the zero-shot setting, MedJev
+achieves accuracies of 72.5% on MedQA, 75.4% on USMLE, and 80.1% on NEJM, with well-calibrated
+confidence estimates (ECE 0.028–0.063). Its accuracy is within 2–4 percentage points of published
+zero-shot GPT-4 results on MedQA and USMLE (74.7% and 78.9%, respectively) and substantially
+exceeds that of GPT-3.5 (44.6% and 50.8%). On patient-level tasks, MedJev achieves an AUROC of 0.926
+for In-Hospital Mortality, matching or exceeding supervised models (XGBoost 0.902), and performs
+comparably on 30-Day Readmission. However, it underperforms supervised models on operational
+outcomes such as ED Triage Admission (0.745 vs. 0.809). Moreover, its patient-level probability
+estimates do not account for local outcome prevalence (In-Hospital Mortality ECE 0.286). To address
+this limitation, we introduce a lightweight, two-parameter recalibration method that adapts predicted
+probabilities to local patient populations using 50–200 labeled examples, reducing the In-Hospital
+Mortality ECE to 0.007. These findings highlight the potential of open System-One models as a new
+baseline for medical AI, offering a competitive zero-shot alternative to general-purpose LLMs and
+EHR-specific predictive models. We release our code and evaluation harness to support future research.
+Github: https://github.com/Simonlee711/MedJev
+HuggingFace: https://huggingface.co/Simonlee711/MedJev
+1. Introduction
+Large language models (LLMs) are increasingly evaluated on medical tasks, including clinical question
+answering, diagnosis, and patient outcome prediction [1]. Most evaluations use generative models
+that produce textual answers, which are subsequently parsed into decisions. However, many medical
+prediction tasks require a structured output rather than a generated response. For example, predicting
+in-hospital mortality requires estimating the probability of death given the information available at a
+particular point in a patient’s hospitalization, while emergency department triage requires selecting
+among possible dispositions. These tasks can be expressed as decisions over a fixed set of outcomes,
+making them suitable for models that directly estimate probabilities without generating text.
+System-One models provide an alternative to generative inference for such tasks. Inspired by the
+Corresponding author(s): simonlee711@g.ucla.edu
+© 2026 UCLA Computational Medicine. All rights reserved
+arXiv:2610.36006v1 [cs.CL] 26 Oct 2026
+
+--- PAGE 2 [pdf_text] ---
+MedJev: Evaluating Zero-Shot System-One Decision Making in Medicine
+distinction between fast and deliberative reasoning [2], System-One models directly answer structured
+questions about a given state in a single forward pass. Jev [3] implements this approach through
+typed requests that pair an input state, represented as text or JSON, with questions specifying
+the desired output. A CHOICE request returns a probability distribution over candidate answers,
+while a NOUL request estimates the probability of a binary outcome. Unlike conventional generative
+evaluation, which relies on decoding and parsing model responses, this interface produces structured
+probabilities directly. It therefore provides a common representation for evaluating multiple-choice
+medical questions and patient-level predictions from electronic health records (EHRs).
+Despite this interface, the applicability of System-One models to medical decision tasks remains
+unclear. Previous evaluations of Jev have demonstrated competitive zero-shot performance across
+general-purpose benchmarks [4], but medical knowledge, diagnostic reasoning, and EHR-based
+prediction present different challenges. Medical knowledge benchmarks require selecting correct
+answers from clinical vignettes that mimic differential diagnosis, whereas patient-level prediction
+requires interpreting heterogeneous longitudinal records and estimating outcomes whose prevalence
+may vary across clinical populations. Furthermore, a model that accurately ranks patients by risk
+does not necessarily produce probabilities that reflect observed outcome frequencies. Evaluating
+System-One models in medicine therefore requires examining both their predictive performance and
+probability calibration across different task types.
+In this work, we study how an open System-One model can be incorporated into a medical evaluation
+pipeline. We release MedJev which builds on OpenJev [5] and run a suite of evaluations. Our
+evaluation represents each benchmark as a Jev request consisting of an input state and a typed
+question. Medical question-answering and diagnosis benchmarks are formulated as CHOICE requests,
+while patient-level outcomes are primarily formulated as NOUL requests. For EHR-based tasks,
+we construct patient states using only information available at a predefined prediction time. This
+formulation allows the same inference interface to be applied across medical knowledge questions,
+longitudinal patient records, and emergency department triage data.
+We evaluate MedJev on ten medical benchmarks (expanding on the work of [6]) spanning medical
+knowledge, differential diagnosis, and patient-specific prediction. These include MedQA [7], USMLE
+[7], NEJM Case Challenges, and DiagnosisArena [8], together with six outcomes derived from MIMICIV [9] and MIMIC-IV-ED [9]. To assess the effect of System-One training, we compare MedJev against
+its underlying language model and other open-weight LLMs using identical prompts and probability
+readouts. We additionally consider published results from frontier LLMs and train supervised XGBoost
+and TF-IDF baselines for EHR specific tasks. Beyond predictive accuracy and discrimination, we
+evaluate probability calibration and examine whether lightweight post-hoc recalibration can adapt
+zero-shot predictions to local outcome prevalence. We also vary the number of labeled examples
+available to supervised models to characterize when task-specific training becomes preferable to
+zero-shot inference.
+Our results show that System-One models can serve as competitive zero-shot predictors across several
+medical tasks, although their effectiveness depends on the prediction target. MedJev achieves strong
+performance on medical knowledge benchmarks and competitive risk discrimination for outcomes
+such as in-hospital mortality, while supervised models perform better on operational outcomes
+such as emergency department admission. Although its confidence estimates are well calibrated on
+medical question-answering benchmarks, its patient-level probabilities require adjustment to local
+outcome frequencies. A lightweight recalibration procedure using a small number of labeled examples
+substantially reduces this error without changing patient risk rankings. These findings illustrate how
+System-One models can be evaluated within a unified medical prediction pipeline and clarify the role
+of zero-shot inference, local calibration, and supervised learning in clinical prediction settings.
+2
+
+--- PAGE 3 [pdf_text] ---
+MedJev: Evaluating Zero-Shot System-One Decision Making in Medicine
+2. Related Work
+System-One decision models.
+Most language models perform decision-making tasks through
+autoregressive generation, producing textual responses that must be interpreted or parsed to recover
+a final prediction. System-One decision models instead formulate inference as a direct mapping from
+an observed state and a structured question to a probability distribution over possible outcomes. Jev
+[3] implements this paradigm through three typed primitives: Choice, which returns a distribution
+over a finite set of alternatives; Noul, which estimates the probability of a binary outcome; and
+Score, which represents judgments on an ordinal scale. These primitives allow classification,
+probability estimation, and ordinal assessment to share a common inference interface without
+requiring autoregressive decoding. Deußer et. al, [4] systematically evaluate Jev in the zero-shot
+setting across 37 public datasets, comparing its predictive performance and computational efficiency
+against open-weight LLMs evaluated using exact option probabilities. Their results establish the
+feasibility of System-One inference for general-purpose classification and decision tasks. However,
+their evaluation includes only one biomedical dataset, PubMedQA [10], and does not examine patientlevel prediction from EHRs. More recently, OpenJev [5] provides an open-weight implementation
+of the Jev interface by fine-tuning Qwen3.5-9B [11]. OpenJev obtains structured predictions from
+the probability distribution over option-letter tokens, followed by temperature calibration. Our study
+extends prior System-One evaluations to medical knowledge, diagnosis, and longitudinal patient
+prediction, while examining both zero-shot predictive performance and the reliability of the resulting
+probabilities.
+Medical question answering and diagnosis.
+Medical question answering has become a standard
+approach for evaluating the clinical knowledge and reasoning capabilities of language models [12–16].
+MedQA [17] evaluates medical reasoning using multiple-choice questions derived from professional
+medical examinations, including the United States Medical Licensing Examination (USMLE). MedMCQA [18] provides a large collection of multiple-choice questions spanning medical subjects, while
+PubMedQA [10] evaluates biomedical question answering using research abstracts. These benchmarks
+have been widely used to measure the medical knowledge encoded in pretrained and instructiontuned language models. Work on medical LLMs, including Med-PaLM [1], demonstrates that large
+generative models can achieve strong performance on medical examination questions, motivating
+their use as reference models for medical AI evaluation. However, performance on examination-style
+questions does not necessarily characterize a model’s ability to interpret complex clinical presentations
+or make patient-specific predictions.
+Diagnostic benchmarks address this limitation by evaluating models on clinical cases rather than
+isolated knowledge questions. DiagnosisArena [8] constructs diagnostic tasks from published case
+reports, requiring models to distinguish among candidate diagnoses using clinical histories, examinations, and investigation findings. [19] investigate the diagnostic performance of GPT-3.5 and GPT-4
+on clinical vignettes using different reasoning prompts and clinician-graded open-ended responses.
+These studies predominantly evaluate generative models through textual answers, often allowing
+reasoning or explanation before a final diagnosis. In contrast, our evaluation formulates medical
+knowledge and diagnostic tasks as structured multiple-choice decisions, enabling direct probabilitybased comparisons among System-One models and conventional LLMs. Because multiple-choice and
+open-ended diagnosis differ in difficulty, previously reported generative results are treated as external
+reference points rather than strictly equivalent evaluations.
+Clinical prediction from electronic health records.
+Clinical prediction from multimodal clinical
+data [20–27] and EHRs [28–30] differs from medical question answering because models must
+3
+
+--- PAGE 4 [pdf_text] ---
+MedJev: Evaluating Zero-Shot System-One Decision Making in Medicine
+reason over heterogeneous patient information collected across time. Established prediction tasks
+include in-hospital mortality, length of stay, and hospital readmission, which have been widely studied
+using critical care datasets such as MIMIC [31–34]. These tasks require predictions at clinically
+meaningful decision times, making the availability and temporal ordering of patient information
+important aspects of benchmark construction. The Medical Event Data Standard (MEDS) [35–37]
+provides a standardized representation of longitudinal patient records as timestamped clinical events,
+facilitating the development and evaluation of models across EHR-derived tasks [28, 29, 38, 39].
+Emergency department prediction presents a related but distinct setting in which decisions must
+be made using information available early in the patient encounter. [40] study hospital admission
+prediction at emergency department triage using routinely collected patient characteristics, vital
+signs, and chief complaints. Gradient-boosted trees and other supervised tabular models provide
+strong baselines for such structured clinical prediction tasks. Language models offer an alternative by
+representing patient records as text and applying pretrained language understanding capabilities
+to the resulting sequences. [41] investigate this approach using serialized emergency department
+records, while EHRSHOT [42] introduces a framework for evaluating foundation models on EHR
+prediction tasks under limited-label settings. These studies motivate the evaluation of pretrained
+models on patient-level outcomes, but their settings generally involve either supervised adaptation,
+learned patient representations, or conventional language-model inference. We instead examine
+whether a System-One model can directly estimate clinical outcome probabilities from serialized EHR
+states without task-specific training.
+Language models for structured data and probability calibration.
+Applying language models to
+structured clinical records is closely related to research on language-based representations of tabular
+data [41, 43–45]. TabLLM [46] demonstrates that serializing tabular features into natural-language
+descriptions enables pretrained language models to perform classification with relatively few labeled
+examples. This approach is particularly relevant when task-specific training data are scarce, although
+conventional supervised methods often become more competitive as the number of labeled examples
+increases. [47] further demonstrate the strong performance of tree-based methods on typical tabular
+prediction tasks, motivating their inclusion as supervised baselines. For clinical prediction, this
+comparison is important because pretrained models may provide useful predictions without local
+labels, whereas models trained directly on EHR data can learn relationships specific to the target
+population and outcome.
+Beyond discrimination and accuracy, clinical prediction requires an assessment of probability calibration. A model may correctly rank patients by risk while systematically overestimating or underestimating the frequency of an outcome. This distinction is particularly important when a model is
+evaluated zero-shot on a patient population whose outcome prevalence differs from the distributions
+encountered during pretraining. Post-hoc calibration methods provide a lightweight mechanism for
+correcting predicted probabilities without retraining the underlying model. Platt scaling [48] learns a
+logistic transformation of model scores, while temperature scaling [49] adjusts the sharpness of a
+predicted probability distribution. These approaches preserve binary risk rankings or multiclass predicted labels, respectively, while modifying the reported confidence. In our evaluation, we distinguish
+the zero-shot predictive capabilities of System-One models from the calibration of their probabilities
+on local patient populations. We investigate whether a small number of labeled examples is sufficient
+for post-hoc recalibration and compare this adaptation strategy against supervised models trained
+under the same label budgets.
+4
+
+--- PAGE 5 [pdf_text] ---
+MedJev: Evaluating Zero-Shot System-One Decision Making in Medicine
+3. Methodology
+We evaluate MedJev across ten medical benchmarks using a common pipeline that converts each task
+into a structured decision request. The pipeline consists of constructing an input state, specifying a
+question and its possible outcomes, obtaining a probability distribution from the model, and evaluating
+the prediction against the ground-truth outcome. All models are evaluated on the same test examples,
+with additional comparisons against supervised baselines and locally recalibrated predictions.
+3.1. System-One Inference
+A Jev request consists of a state 𝑠, represented as text or JSON, and a set of typed questions 𝑄.
+We consider two question types. A Choice question specifies 𝐾candidate outcomes and returns
+a probability distribution over them, while a Noul question estimates the probability of a binary
+outcome. This interface supports both medical multiple-choice questions and patient-level predictions
+without requiring autoregressive answer generation.
+We use OpenJev Flash 9B [5], and adapt it on medical data (MIMIC-IV Note) to obtain MedJev
+throughout the evaluation. Each request is rendered as a prompt containing the state, question
+instructions, and candidate outcomes labeled with single-token letters. The model produces logits
+ℓ1, . . . , ℓ𝐾for the candidate tokens at the first answer position. The corresponding probabilities are
+computed as
+𝑝𝑖=
+exp(ℓ𝑖/𝑇)
+Í𝐾
+𝑗=1 exp(ℓ𝑗/𝑇)
+,
+(1)
+where 𝑇is the readout temperature. For binary Noul questions, the two-option probability 𝑝1 is
+further transformed as
+𝑝yes = 𝜎
+ 1
+𝑇N
+log
+𝑝1
+1 −𝑝1
++ 𝑏
+
+,
+(2)
+where 𝜎denotes the logistic sigmoid function. We use the published MLX configuration with 𝑇= 1.07,
+𝑇N = 1.0748, and 𝑏= 0, together with the frozen inference helper (SHA-256 prefix 81a22f1b). The
+zero-shot LLM baselines use the same request construction and probability readout, with modelspecific chat templates and tokenization where required.
+3.2. Medical Benchmarks
+We evaluate four medical knowledge and diagnosis benchmarks and six patient-level prediction
+benchmarks. All tasks are formulated using the same Jev request interface, with Choice for
+categorical outcomes and Noul for binary outcomes. Table 1 summarizes the dataset sizes, prediction
+units, and label distributions.
+Medical knowledge and diagnosis.
+We use MedQA, USMLE, NEJM, and DiagnosisArena to evaluate
+medical knowledge and diagnostic decision-making. MedQA and USMLE correspond to the fiveoption BigBio and four-option MedQA-USMLE releases of USMLE-style examination questions [17].
+DiagnosisArena [8] contains 915 publicly available case reports with four candidate diagnoses. NEJM
+[19] contains 512 diagnostic vignettes originally evaluated using open-ended responses from GPT-3.5
+and GPT-4.
+All four benchmarks are represented as Choice requests. For NEJM, vignettes overlapping with
+MedQA retain their original five answer options. For the remaining cases, we construct five-option
+questions using the correct diagnosis, up to four clinician-graded incorrect GPT responses, and
+5
+
+--- PAGE 6 [pdf_text] ---
+MedJev: Evaluating Zero-Shot System-One Decision Making in Medicine
+diagnoses from other vignettes when additional options are needed. Because this formulation differs
+from the original open-ended evaluation, published GPT results are used only as external references.
+Longitudinal EHR prediction.
+We construct four patient-level benchmarks using MIMIC-IV [31]
+represented in the Medical Event Data Standard (MEDS) [37]. The tasks are In-Hospital Mortality,
+Length of Stay > 7 Days, 30-Day Readmission, and ED Admission at 2 h. Each task is defined by an
+outcome and a fixed prediction time 𝑡∗.
+In-Hospital Mortality and Length of Stay > 7 Days are predicted 24 h after hospital admission among
+adult patients who remain hospitalized at that time. 30-Day Readmission is predicted at discharge,
+and ED Admission at 2 h is predicted two hours after emergency department arrival. For each
+prediction, the model receives only events within (𝑡∗−365 d, 𝑡∗]. The available events are serialized
+into a compact JSON state containing patient demographics, clinical history, care units, laboratory
+measurements, and medications when available.
+We exclude information that would not be available at the specified prediction time. In particular,
+discharge-stamped diagnoses and diagnosis-related groups are excluded from the 24 h prediction
+tasks. For ED Admission at 2 h, we additionally remove admission-only demographic fields, ED and
+admission bookkeeping codes beginning 24 h before arrival, and nonlaboratory events recorded after
+ED arrival. These restrictions prevent outcome-related information from entering the input state.
+Emergency department triage.
+We construct two additional benchmarks from MIMIC-IV-ED [50]:
+ED Triage Admission and ED Triage Disposition. Both are evaluated at the time of triage using
+information available at that point in the encounter. The input state includes age, sex, race, arrival
+transport, triage vital signs, pain score, Emergency Severity Index acuity, chief complaint, and
+emergency department visits within the preceding year. Subsequent medications, vital signs, diagnoses,
+and medication reconciliation records are excluded.
+ED Triage Admission is a binary Noul task predicting whether the visit results in hospital admission.
+ED Triage Disposition is a six-option Choice task predicting discharge home, admission, transfer,
+departure before completion, death, or another disposition. Figure 1 provides an example of the
+serialized input and corresponding question.
+Dataset preparation.
+The longitudinal benchmarks use a MEDS-Transforms extract [51] of MIMICIV v2.2 containing 299,712 patients distributed across five training shards, one tuning shard, and
+one held-out shard. Training examples are drawn from the training shards and test examples from
+the held-out shard. MIMIC-IV-ED v2.2 contains 425,087 emergency department stays. We retain
+adult patients with a corresponding MEDS birth record and assign each patient to the MEDS split
+associated with their subject_id. This ensures patient-disjoint training and test partitions across
+the EHR benchmarks.
+3.3. Models and Baselines
+We compare zero-shot MedJev with conventional language models, previously reported frontier-model
+results, and supervised models trained on local EHR labels.
+Zero-shot language models.
+We evaluate Qwen3.5-9B [11], the base model from which OpenJev
+was fine-tuned, to assess the effect of System-One training. Qwen3.5-2B provides a smaller model
+6
+
+--- PAGE 7 [pdf_text] ---
+MedJev: Evaluating Zero-Shot System-One Decision Making in Medicine
+{"decision_time": "at emergency department triage",
+"patient": {"age": 67, "sex": "male", "race": "WHITE"},
+"arrival_transport": "AMBULANCE",
+"triage": {
+"temperature_F": 100.9,
+"heart_rate_bpm": 118,
+"respiratory_rate": 24,
+"o2_saturation_pct": 91,
+"systolic_bp_mmHg": 96,
+"diastolic_bp_mmHg": 58,
+"pain": "4",
+"acuity_esi": 2,
+"chief_complaint": "Dyspnea"},
+"past_year_emergency_department_history": {
+"visits": 3,
+"visits_ending_in_admission": 2}}
+Question (Noul):
+Based on the information available at emergency
+department triage, will this visit end with the
+patient admitted to the hospital?
+Figure 1 | Illustrative synthetic input for ED Triage Admission. The state contains information
+available at triage and a binary question specifying the prediction target. No real patient information
+is shown.
+Table 1 | Statistics of the ten medical benchmarks. Train, validation, and test refer to the corresponding benchmark splits. EHR benchmarks use the MEDS train, tuning, and held_out
+patient partitions. Patients denotes the number of distinct patients, and label balance denotes answer
+distributions or outcome prevalence.
+Benchmark
+Format
+Unit
+Train
+Validation
+Test
+Patients
+Label balance
+MedQA
+Choice (5)
+questions
+10,178
+1,272
+1,273
+–
+answers A–E: 21/22/20/21/16%
+USMLE
+Choice (4)
+questions
+10,178
+–
+1,273
+–
+answers A–D: 28/24/27/21%
+NEJM
+Choice (5)
+vignettes
+–
+–
+512
+–
+answers A–E: 21/20/21/22/16%
+DiagnosisArena
+Choice (4)
+cases
+–
+–
+915
+–
+answers A–D: 24/25/24/27%
+ED Triage Disposition
+Choice (6)
+ED stays
+339,994
+42,463
+42,625
+205,500
+home 56.8%, admitted 37.2%, left 3.2%,
+transfer 1.7%, other 1.0%, expired 0.1%
+ED Triage Admission
+Noul
+ED stays
+339,994
+42,463
+42,625
+205,500
+37.2% positive
+ED Admission at 2 h
+Noul
+ED visits
+501,124
+62,155
+62,589
+280,504
+47.3% positive
+In-Hospital Mortality
+Noul
+admissions
+265,273
+32,696
+33,234
+148,256
+2.2% positive
+Length of Stay > 7 Days
+Noul
+admissions
+265,273
+32,696
+33,234
+148,256
+21.5% positive
+30-Day Readmission
+Noul
+admissions
+338,477
+41,988
+42,181
+176,934
+20.2% positive
+from the same family, while Pythia-2.8B [52] serves as a pretrained model without instruction tuning.
+On the medical knowledge and diagnosis benchmarks, we additionally evaluate MedGemma-1.5-4B
+[53] and its general-purpose base model, Gemma-3-4B [54], to examine the effect of medical-domain
+specialization.
+All models receive the same task states, question instructions, and candidate outcomes. Predictions
+are obtained from their option-token probabilities rather than generated answers. Each model uses its
+corresponding chat template when applicable. Pythia-2.8B receives the rendered prompt followed by
+Answer:; inputs exceeding its 2,048-token context window are truncated from the left to preserve
+the question and candidate options.
+Published frontier-model references.
+We include previously reported GPT-3.5 and GPT-4 accuracies
+on the five-option MedQA and four-option USMLE benchmarks [55]. For NEJM, we report cliniciangraded open-ended diagnostic accuracy from [19]. We also include GPT-4o and o1 results reported
+7
+
+--- PAGE 8 [pdf_text] ---
+MedJev: Evaluating Zero-Shot System-One Decision Making in Medicine
+on DiagnosisArena [8]. These models are not re-evaluated in our pipeline. Differences in prompting,
+answer format, and benchmark subsets preclude paired statistical comparisons. In particular, the
+published DiagnosisArena results use 1,113 cases, whereas our evaluation uses the 915 publicly
+available cases.
+Supervised EHR baselines.
+We evaluate XGBoost [56] and TF-IDF with logistic regression as
+supervised baselines for the six patient-level tasks. For longitudinal MEDS records, XGBoost uses
+bag-of-codes features, including event counts and last observed values. For emergency department
+triage, it uses structured triage features and chief-complaint tokens, following established tabular
+approaches [40]. TF-IDF with logistic regression operates directly on the serialized patient state.
+Both supervised models are trained using locally labeled examples from the corresponding training
+partitions. XGBoost tree depth, column subsampling, minimum child weight, and number of trees are
+selected by five-fold cross-validation. TF-IDF 𝑛-gram ranges and logistic regression regularization
+are selected using the same procedure. The selected models are refitted using all available training
+examples. We evaluate supervised performance with up to 1,000 labeled examples per task.
+3.4. Calibration and Evaluation Protocol
+We evaluate MedJev in the zero-shot setting without task-specific training or local labels. To examine
+the calibration of patient-level probabilities, we additionally consider post-hoc recalibration using
+labeled examples from the corresponding training partitions. For binary Noul tasks, we apply Platt
+scaling [48] to the predicted logits. For multiclass Choice tasks, we apply temperature scaling [49]
+to the predicted distributions. These transformations use at most two fitted parameters and do not
+update the underlying language model. For medical knowledge benchmarks, a shared temperature is
+fitted using MedQA training questions. For patient-level tasks, recalibration is fitted separately for
+each outcome using local labels.
+All models are evaluated on identical test examples. Models requiring labeled data, including
+supervised baselines and post-hoc recalibration, use the same patient-disjoint training partitions.
+Model selection and calibration fitting do not use test labels. We additionally vary the available label
+budget from 25 to 1,000 examples to compare the label efficiency of supervised learning and post-hoc
+recalibration.
+For Choice tasks, we report top-1 accuracy and expected calibration error (ECE) computed from
+the probability assigned to the predicted class using 15 equal-width bins [49]. For binary Noul
+tasks, we report the area under the receiver operating characteristic curve (AUROC), area under
+the precision-recall curve (AUPRC), ECE, and Brier score. We compute 95% percentile bootstrap
+confidence intervals over test examples [57]. Differences between MedJev and directly evaluated
+baselines are assessed using paired bootstrap resampling of the same test examples.
+Implementation.
+All language models are evaluated locally using 8-bit MLX builds [58] on an
+Apple silicon laptop with 48 GB of unified memory. Our inference engine uses the frozen OpenJev
+helper and replaces only the underlying model client. We verify that local inference reproduces the
+outputs of the MedJev HTTP server on a verification sample, with a maximum absolute probability
+difference of zero. MedJev requires approximately 0.5 s for a MedQA question and 2 s for a serialized
+MEDS state. All EHR processing and model inference are performed locally, without transmitting
+patient records to external services.
+8
+
+--- PAGE 9 [pdf_text] ---
+MedJev: Evaluating Zero-Shot System-One Decision Making in Medicine
+Table 2 | Multiple-choice benchmarks: accuracy (%) and expected calibration error (ECE) in
+parentheses. Supervised baselines are evaluated only on ED Triage Disposition. Published results are
+included for reference. † indicates open-ended evaluation.
+Model
+MedQA
+USMLE
+NEJM
+DiagnosisArena
+ED Triage Disposition
+MedJev (zero-shot)
+72.5 (0.04)
+75.4 (0.03)
+80.1 (0.06)
+55.5 (0.07)
+62.6 (0.14)
++ local recalibration
+72.5 (0.05)
+75.4 (0.04)
+80.1 (0.06)
+55.5 (0.11)
+62.6 (0.08)
+Qwen3.5-9B (base)
+68.6 (0.05)
+70.8 (0.05)
+77.0 (0.04)
+54.4 (0.20)
+62.4 (0.20)
+MedGemma-1.5-4B
+47.7 (0.30)
+54.0 (0.26)
+60.4 (0.21)
+42.3 (0.38)
+–
+Gemma-3-4B
+39.7 (0.59)
+47.1 (0.52)
+40.6 (0.58)
+36.3 (0.63)
+–
+Qwen3.5-2B
+39.4 (0.16)
+43.4 (0.15)
+48.8 (0.12)
+41.7 (0.24)
+60.9 (0.28)
+Pythia-2.8B
+19.2 (0.07)
+27.4 (0.01)
+20.7 (0.04)
+23.3 (0.04)
+4.2 (0.14)
+XGBoost (supervised)
+–
+–
+–
+–
+70.6 (0.03)
+TF-IDF + LR (supervised)
+–
+–
+–
+–
+67.0 (0.03)
+Reported in the literature
+GPT-4
+74.7
+78.9
+75.8†
+–
+–
+GPT-3.5
+44.6
+50.8
+47.5†
+–
+–
+GPT-4o
+–
+–
+–
+36.4
+–
+o1
+–
+–
+–
+61.9
+–
+Chance
+20.0
+25.0
+20.0
+25.0
+16.7
+Table 3 | Binary EHR benchmarks: AUROC and ECE in parentheses. Post-hoc recalibration adjusts
+predicted probabilities without changing AUROC.
+Model
+ED Triage Admission
+ED Admission at 2 h
+In-Hospital Mortality
+Length of Stay > 7 Days
+30-Day Readmission
+MedJev (zero-shot)
+0.745 (0.15)
+0.742 (0.08)
+0.926 (0.29)
+0.688 (0.19)
+0.671 (0.27)
++ local recalibration
+0.745 (0.04)
+0.742 (0.05)
+0.926 (0.01)
+0.688 (0.03)
+0.671 (0.02)
+Qwen3.5-9B (base)
+0.756 (0.22)
+0.769 (0.14)
+0.899 (0.43)
+0.664 (0.35)
+0.650 (0.37)
+Qwen3.5-2B
+0.694 (0.29)
+0.686 (0.38)
+0.711 (0.02)
+0.421 (0.15)
+0.501 (0.19)
+Pythia-2.8B
+0.490 (0.06)
+0.631 (0.07)
+0.764 (0.43)
+0.629 (0.24)
+0.555 (0.28)
+XGBoost (supervised)
+0.809 (0.04)
+0.824 (0.04)
+0.902 (0.01)
+0.719 (0.06)
+0.684 (0.05)
+TF-IDF + LR (supervised)
+0.742 (0.05)
+0.784 (0.04)
+0.879 (0.00)
+0.734 (0.04)
+0.654 (0.02)
+Positive rate (%)
+37.9
+44.9
+2.6
+22.9
+20.5
+4. Results
+Tables 2 and 3 summarize the performance of all models across the ten benchmarks. Table 4 reports
+paired differences relative to zero-shot MedJev. We examine performance on medical knowledge and
+diagnosis, patient-level prediction, probability calibration, and the effect of local training data.
+4.1. Medical Knowledge and Diagnosis
+MedJev achieves zero-shot accuracies of 72.5% on MedQA (95% CI 69.8–75.3), 75.4% on USMLE
+(73.0–77.6), 80.1% on NEJM (76.6–83.4), and 55.5% on DiagnosisArena (52.5–58.8). These results
+exceed the corresponding chance accuracies of 20–25% across all four benchmarks (fig. 2).
+We first compare MedJev with Qwen3.5-9B, its underlying language model. Under identical prompts
+and probability readouts, Qwen3.5-9B performs -3.9 and -4.6 percentage points below MedJev
+on MedQA and USMLE, respectively, with paired confidence intervals of -6.3 to -1.4 and -6.8 to
+-2.4. The differences on NEJM (-3.1) and DiagnosisArena (-1.1) are smaller and not statistically
+significant. These comparisons indicate that System-One training improves performance on the
+medical examination benchmarks, although the improvement is not consistent across all diagnostic
+tasks.
+Model size also affects performance. Qwen3.5-2B achieves accuracies of 39.4%, 43.4%, 48.8%, and
+41.7% on the four benchmarks, respectively. Pythia-2.8B, which does not undergo instruction tuning,
+9
+
+--- PAGE 10 [pdf_text] ---
+MedJev: Evaluating Zero-Shot System-One Decision Making in Medicine
+0.0
+0.2
+0.4
+0.6
+0.8
+1.0
+Top-1 accuracy (95% bootstrap CI); grey bar: chance
+MedQA
+USMLE
+NEJM
+DiagnosisArena
+ED Triage Disposition
+MedJev (zero-shot)
+Qwen3.5-9B (zero-shot)
+Qwen3.5-2B (zero-shot)
+MedGemma-1.5-4B (zero-shot)
+Gemma-3-4B (zero-shot)
+Pythia-2.8B (zero-shot)
+XGBoost (supervised)
+TF-IDF + LR (supervised)
+GPT-4 (reported)
+GPT-3.5 (reported)
+GPT-4o (reported)
+o1 (reported)
+Figure 2 | Accuracy on multiple-choice benchmarks with 95% bootstrap confidence intervals. Grey
+bars indicate chance performance. Published results include GPT-3.5 and GPT-4 on MedQA and
+USMLE [55], GPT-3.5 and GPT-4 on NEJM [19], and GPT-4o and o1 on DiagnosisArena [8].
+achieves 19.2%, 27.4%, 20.7%, and 23.3%, with performance near chance across these tasks.
+We additionally evaluate MedGemma-1.5-4B and Gemma-3-4B to examine the effect of medicaldomain training. MedGemma achieves 47.7% on MedQA, 54.0% on USMLE, 60.4% on NEJM, and
+42.3% on DiagnosisArena. Its accuracy exceeds that of Gemma-3-4B, which achieves 39.7%, 47.1%,
+40.6%, and 36.3%, respectively. However, MedGemma remains below MedJev on all four benchmarks,
+with paired differences ranging from -24.8 to -13.2. MedGemma also exhibits higher calibration
+error than MedJev, with ECE ranging from 0.210 to 0.376. Gemma-3-4B has higher ECE, ranging
+from 0.515 to 0.626. These results show that medical-domain training improves the performance
+of Gemma-3-4B, but does not close the gap with MedJev under the probability-based evaluation
+protocol.
+We compare these results with previously reported frontier-model performance. On the five-option
+MedQA benchmark, GPT-4 achieves 74.7% and GPT-3.5 achieves 44.6% [55]. On the four-option
+10
+
+--- PAGE 11 [pdf_text] ---
+MedJev: Evaluating Zero-Shot System-One Decision Making in Medicine
+0.4
+0.5
+0.6
+0.7
+0.8
+0.9
+1.0
+AUROC (95% bootstrap CI); grey bar: chance
+ED Triage Admission
+ED Admission at 2 h
+In-Hospital Mortality
+Length of Stay > 7 Days
+30-Day Readmission
+MedJev (zero-shot)
+Pythia-2.8B (zero-shot)
+Qwen3.5-9B (zero-shot)
+XGBoost (supervised)
+Qwen3.5-2B (zero-shot)
+TF-IDF + LR (supervised)
+Figure 3 | AUROC on binary EHR benchmarks with 95% bootstrap confidence intervals. Zero-shot
+models are evaluated without task-specific labels. Supervised baselines are trained using local labeled
+examples. All models are evaluated on the same test examples.
+USMLE benchmark, their reported accuracies are 78.9% and 50.8%, respectively. MedJev performs
+within 2–4 percentage points of the reported GPT-4 results and substantially exceeds those of GPT-3.5.
+On NEJM, MedJev achieves 80.1% accuracy, compared with reported GPT-4 accuracies of 70.3–75.8%
+and GPT-3.5 accuracies of 37.7–47.5% across reasoning prompts [19]. However, the published results
+use open-ended clinician-graded diagnoses, whereas our evaluation uses multiple-choice questions.
+These results are therefore not directly comparable. On DiagnosisArena, MedJev achieves 55.5%,
+compared with reported accuracies of 36.4% for GPT-4o and 61.9% for o1 [8]. The published results
+use the full benchmark, while our evaluation uses its 915 publicly available cases.
+4.2. Patient-Level Prediction from EHRs
+Figure 3 and table 4 compare MedJev with zero-shot language models and supervised baselines on
+patient-level prediction tasks. Performance varies by outcome, with stronger zero-shot results for
+clinical severity prediction than for hospital operational outcomes.
+On In-Hospital Mortality, MedJev achieves an AUROC of 0.926 (95% CI 0.881–0.960). XGBoost
+trained on labeled admissions achieves 0.902, with a paired difference of -0.023 (95% CI -0.054 to
++0.006). TF-IDF with logistic regression achieves 0.879, with a paired difference of -0.046 (95%
+CI -0.089 to -0.007). MedJev therefore achieves mortality discrimination comparable to or better
+11
+
+--- PAGE 12 [pdf_text] ---
+MedJev: Evaluating Zero-Shot System-One Decision Making in Medicine
+Table 4 | Paired performance differences relative to zero-shot MedJev with 95% bootstrap
+confidence intervals. Differences are measured in AUROC for binary tasks and percentage points for
+multiple-choice tasks. Negative values indicate lower performance than MedJev.
+Benchmark
+Qwen3.5-9B (base)
+MedGemma-1.5-4B
+Gemma-3-4B
+Qwen3.5-2B
+Pythia-2.8B
+XGBoost
+TF-IDF + LR
+MedQA (accuracy pts)
+-3.9 [-6.3 to -1.4]
+-24.8 [-28.4 to -20.9]
+-32.8 [-36.4 to -28.8]
+-33.1 [-36.6 to -29.6]
+-53.3 [-57.0 to -49.3]
+–
+–
+USMLE (accuracy pts)
+-4.6 [-6.8 to -2.4]
+-21.4 [-24.4 to -18.5]
+-28.3 [-31.6 to -24.6]
+-32.1 [-35.2 to -28.8]
+-48.0 [-51.1 to -44.7]
+–
+–
+NEJM (accuracy pts)
+-3.1 [-6.6 to +0.2]
+-19.7 [-24.4 to -15.2]
+-39.5 [-44.7 to -34.4]
+-31.2 [-36.1 to -26.6]
+-59.4 [-64.3 to -54.1]
+–
+–
+DiagnosisArena (accuracy pts)
+-1.1 [-3.9 to +1.9]
+-13.2 [-17.3 to -9.3]
+-19.2 [-23.0 to -15.2]
+-13.8 [-17.3 to -10.2]
+-32.2 [-36.4 to -28.2]
+–
+–
+ED Triage Disposition (accuracy pts)
+-0.2 [-1.9 to +1.5]
+–
+–
+-1.7 [-4.3 to +1.0]
+-58.4 [-61.6 to -54.9]
++8.0 [+4.9 to +11.1]
++4.4 [+1.1 to +7.7]
+ED Triage Admission (AUROC)
++0.012 [-0.003 to +0.027]
+–
+–
+-0.050 [-0.077 to -0.024]
+-0.255 [-0.303 to -0.206]
++0.064 [+0.034 to +0.093]
+-0.003 [-0.039 to +0.031]
+ED Admission at 2 h (AUROC)
++0.026 [+0.007 to +0.045]
+–
+–
+-0.056 [-0.089 to -0.025]
+-0.111 [-0.149 to -0.074]
++0.081 [+0.053 to +0.113]
++0.042 [+0.010 to +0.074]
+In-Hospital Mortality (AUROC)
+-0.027 [-0.054 to -0.006]
+–
+–
+-0.214 [-0.294 to -0.136]
+-0.161 [-0.258 to -0.064]
+-0.023 [-0.054 to +0.006]
+-0.046 [-0.089 to -0.007]
+Length of Stay > 7 Days (AUROC)
+-0.024 [-0.045 to -0.006]
+–
+–
+-0.267 [-0.323 to -0.206]
+-0.059 [-0.104 to -0.019]
++0.031 [-0.009 to +0.069]
++0.045 [+0.011 to +0.080]
+30-Day Readmission (AUROC)
+-0.022 [-0.047 to +0.004]
+–
+–
+-0.171 [-0.225 to -0.111]
+-0.117 [-0.165 to -0.063]
++0.012 [-0.028 to +0.053]
+-0.017 [-0.052 to +0.018]
+than the supervised baselines without task-specific training. On 30-Day Readmission, MedJev and the
+supervised baselines achieve AUROCs between 0.65 and 0.69. The difference between XGBoost and
+MedJev is +0.012 (95% CI -0.028 to +0.053), indicating no statistically significant improvement
+from supervision at this label budget.
+Supervised models perform better on several operational outcomes. On ED Triage Admission, XGBoost
+exceeds MedJev by +0.064 AUROC (95% CI +0.034 to +0.093). The corresponding difference for
+ED Admission at 2 h is +0.081 (95% CI +0.053 to +0.113). On ED Triage Disposition, XGBoost
+achieves an accuracy improvement of +8.0 percentage points (95% CI +4.9 to +11.1). For Length
+of Stay > 7 Days, TF-IDF exceeds MedJev by +0.045 AUROC (95% CI +0.011 to +0.080). These
+results indicate that supervised models are more effective for outcomes associated with local hospital
+operations.
+Among zero-shot models, MedJev outperforms its base model on In-Hospital Mortality and Length
+of Stay > 7 Days, with paired differences of -0.027 and -0.024, respectively. However, Qwen3.5-9B
+performs better on ED Admission at 2 h, with a difference of +0.026. Qwen3.5-2B achieves an AUROC
+of 0.711 on In-Hospital Mortality, 0.501 on 30-Day Readmission, and 0.421 on Length of Stay >
+7 Days. Pythia-2.8B achieves AUROCs of 0.764 and 0.629 on In-Hospital Mortality and Length of
+Stay > 7 Days, respectively, but performs near chance on ED Triage Admission (0.490). Its accuracy
+on ED Triage Disposition is 4.2%. Overall, MedJev achieves stronger performance than the smaller
+zero-shot models on most patient-level tasks, although System-One training does not consistently
+improve performance over its base model.
+4.3. Probability Calibration
+We evaluate whether the probabilities produced by MedJev correspond to observed outcome frequencies. Figures 4 and 5 present expected calibration error and calibration curves across the benchmarks.
+MedJev is well calibrated on medical knowledge benchmarks, with ECE values of 0.039 on MedQA,
+0.028 on USMLE, and 0.063 on NEJM. In contrast, its zero-shot probabilities are poorly calibrated on
+patient-level outcomes. For In-Hospital Mortality, the mean predicted probability is 0.312, compared
+with an observed mortality rate of 2.6%, resulting in an ECE of 0.286. The corresponding ECE values
+are 0.191 for Length of Stay > 7 Days, 0.272 for 30-Day Readmission, and 0.147 for ED Triage
+Admission. These results indicate that good risk discrimination does not necessarily imply calibrated
+outcome probabilities in the zero-shot setting.
+We apply post-hoc recalibration using labeled examples from the corresponding training partitions.
+Recalibration reduces ECE to 0.007 on In-Hospital Mortality, 0.027 on Length of Stay > 7 Days, 0.024
+on 30-Day Readmission, and 0.041 on ED Triage Admission. These values are comparable to those
+obtained by XGBoost, which achieves ECE values of 0.014, 0.059, 0.046, and 0.042 on the same tasks.
+Recalibration changes the probability estimates without changing the reported AUROC.
+12
+
+--- PAGE 13 [pdf_text] ---
+MedJev: Evaluating Zero-Shot System-One Decision Making in Medicine
+0.00
+0.05
+0.10
+0.15
+0.20
+0.25
+0.30
+0.35
+0.40
+Expected calibration error (lower is better)
+MedQA
+USMLE
+NEJM
+DiagnosisArena
+ED Triage Disposition
+ED Triage Admission
+ED Admission at 2 h
+In-Hospital Mortality
+Length of Stay > 7 Days
+30-Day Readmission
+MedJev (zero-shot)
+MedJev + recalibration
+Qwen3.5-9B (zero-shot)
+XGBoost (supervised)
+Figure 4 | Expected calibration error across the ten benchmarks for zero-shot MedJev, recalibrated MedJev, Qwen3.5-9B, and XGBoost. Lower values indicate better calibration.
+We also examine the effect of System-One training on calibration. Qwen3.5-9B has ECE values of
+0.426, 0.348, and 0.372 on In-Hospital Mortality, Length of Stay > 7 Days, and 30-Day Readmission,
+respectively. These values are higher than those of MedJev, indicating that System-One training
+improves probability calibration even when local recalibration remains necessary.
+Calibration parameters do not consistently transfer across benchmarks. Applying a temperature fitted
+on MedQA training questions changes ECE from 0.028 to 0.038 on USMLE and from 0.063 to 0.061 on
+NEJM. On DiagnosisArena, ECE increases from 0.071 to 0.112. These results indicate that calibration
+fitted on one benchmark does not necessarily improve probability estimates on another.
+4.4. Effect of Local Training Data
+We vary the number of labeled training examples from 25 to 1,000 to assess the data requirements of
+recalibration and supervised learning (fig. 6). For MedJev, we fit post-hoc calibration parameters
+using each label budget while keeping the model predictions fixed. For the supervised baselines, we
+train separate models using the corresponding labeled examples.
+Recalibration improves probability estimates with relatively few labeled examples. On In-Hospital
+Mortality, Platt scaling reduces ECE from 0.286 to approximately 0.03 using 50 labeled examples.
+With 200 examples, ECE ranges from 0.014 to 0.064 across the binary patient-level benchmarks.
+Because recalibration does not change the reported AUROC, these improvements are obtained without
+13
+
+--- PAGE 14 [pdf_text] ---
+MedJev: Evaluating Zero-Shot System-One Decision Making in Medicine
+0.0
+0.5
+1.0
+0.0
+0.5
+1.0
+Observed frequency
+MedQA
+0.0
+0.5
+1.0
+0.0
+0.5
+1.0
+NEJM
+0.0
+0.5
+1.0
+0.0
+0.5
+1.0
+DiagnosisArena
+0.0
+0.5
+1.0
+Mean predicted probability
+0.0
+0.5
+1.0
+Observed frequency
+ED Triage Admission
+0.0
+0.5
+1.0
+Mean predicted probability
+0.0
+0.5
+1.0
+In-Hospital Mortality
+0.0
+0.5
+1.0
+Mean predicted probability
+0.0
+0.5
+1.0
+30-Day Readmission
+MedJev (zero-shot)
+MedJev + recalibration
+Qwen3.5-9B (zero-shot)
+XGBoost (supervised)
+Figure 5 | Calibration curves based on prediction deciles. For multiple-choice tasks, observed
+accuracy is plotted against predicted confidence. For binary tasks, observed outcome frequency is
+plotted against predicted probability. The dashed diagonal indicates perfect calibration.
+modifying the underlying model or its discrimination performance.
+The number of labels required for supervised models to match zero-shot MedJev varies across tasks.
+XGBoost reaches comparable AUROC with approximately 100 labels on ED Admission at 2 h and 200
+labels on ED Triage Admission. TF-IDF requires approximately 200 labels to match MedJev on Length
+of Stay > 7 Days. On 30-Day Readmission, comparable performance is reached with approximately
+1,000 labels. For In-Hospital Mortality, neither supervised baseline matches the zero-shot AUROC of
+MedJev within the evaluated label budgets.
+These results indicate that the relative benefit of zero-shot prediction depends on the task and the
+availability of local labels. Recalibration requires fewer labels than supervised training to improve
+probability estimates, while supervised models can provide better discrimination for some outcomes
+when sufficient labeled examples are available.
+4.5. Selective Prediction
+We evaluate selective prediction by ranking examples according to the probability assigned to the
+predicted class and measuring accuracy at different coverage levels. This analysis examines whether
+model confidence can identify predictions that are more likely to be correct.
+14
+
+--- PAGE 15 [pdf_text] ---
+MedJev: Evaluating Zero-Shot System-One Decision Making in Medicine
+0.05
+0.10
+0.15
+ECE
+ED Triage Admission
+0.050
+0.075
+0.100
+0.125
+0.150
+0.175
+ED Admission at 2 h
+0.0
+0.1
+0.2
+0.3
+In-Hospital Mortality
+0.05
+0.10
+0.15
+Length of Stay > 7 Days
+0.05
+0.10
+0.15
+0.20
+0.25
+30-Day Readmission
+25
+100
+1k
+Labels
+0.60
+0.65
+0.70
+0.75
+0.80
+AUROC
+25
+100
+1k
+Labels
+0.60
+0.65
+0.70
+0.75
+0.80
+25
+100
+1k
+Labels
+0.5
+0.6
+0.7
+0.8
+0.9
+25
+100
+1k
+Labels
+0.55
+0.60
+0.65
+0.70
+25
+100
+1k
+Labels
+0.50
+0.55
+0.60
+0.65
+MedJev + recalibration
+XGBoost (supervised)
+TF-IDF + LR (supervised)
+MedJev zero-shot
+Figure 6 | Effect of the number of local labels on probability calibration and supervised prediction
+performance. The upper panels show ECE for recalibrated MedJev, and the lower panels show AUROC
+for XGBoost and TF-IDF with logistic regression. Dashed lines indicate zero-shot MedJev performance.
+Results are reported as mean ± standard deviation over 10 random draws per label budget.
+As shown in fig. 7, MedJev generally achieves higher accuracy as coverage decreases on the medical
+knowledge and diagnosis benchmarks. Its accuracy also exceeds that of Qwen3.5-9B across most
+coverage levels. These results indicate that MedJev’s confidence estimates contain information about
+prediction correctness and can support confidence-based selection of model outputs.
+5. Discussion
+Our results show that System-One models can perform medical decision tasks without autoregressive
+generation. MedJev achieves competitive performance on medical knowledge and diagnosis benchmarks and provides useful discrimination for several patient-level outcomes. However, its performance
+varies across clinical tasks, and its zero-shot probability estimates do not consistently reflect local
+outcome frequencies. These findings suggest that System-One models can serve as zero-shot baselines
+for medical prediction, with local recalibration or supervised training required depending on the task.
+Zero-shot predictive performance.
+MedJev achieves strong accuracy and calibration on medical
+knowledge benchmarks using a single forward pass. Its performance on MedQA and USMLE is within
+a few percentage points of published zero-shot GPT-4 results and substantially exceeds reported
+GPT-3.5 accuracy. On DiagnosisArena, MedJev outperforms the reported GPT-4o result but remains
+below o1. These comparisons are limited by differences in evaluation protocols, particularly for
+benchmarks originally evaluated using open-ended responses. Nevertheless, the results demonstrate
+that structured probability estimation can provide competitive performance on medical questionanswering tasks without generating textual answers.
+15
+
+--- PAGE 16 [pdf_text] ---
+MedJev: Evaluating Zero-Shot System-One Decision Making in Medicine
+0.0
+0.5
+1.0
+Coverage
+0.2
+0.4
+0.6
+0.8
+1.0
+Accuracy of answered
+MedQA
+0.0
+0.5
+1.0
+Coverage
+0.4
+0.6
+0.8
+1.0
+USMLE
+0.0
+0.5
+1.0
+Coverage
+0.2
+0.4
+0.6
+0.8
+1.0
+NEJM
+0.0
+0.5
+1.0
+Coverage
+0.2
+0.4
+0.6
+0.8
+DiagnosisArena
+0.0
+0.5
+1.0
+Coverage
+0.00
+0.25
+0.50
+0.75
+1.00
+ED Triage Disposition
+MedJev (zero-shot)
+MedGemma-1.5-4B (zero-shot)
+XGBoost (supervised)
+Qwen3.5-9B (zero-shot)
+Gemma-3-4B (zero-shot)
+TF-IDF + LR (supervised)
+Qwen3.5-2B (zero-shot)
+Pythia-2.8B (zero-shot)
+Figure 7 | Accuracy as a function of coverage on the multiple-choice benchmarks. Coverage
+denotes the fraction of examples retained after selecting predictions with the highest confidence.
+On patient-level prediction, MedJev achieves an AUROC of 0.926 for In-Hospital Mortality, comparable
+to supervised models trained on labeled examples. Performance is also comparable to supervised
+baselines on 30-Day Readmission. In contrast, supervised models perform better on ED admission
+and length-of-stay prediction. These differences may reflect the extent to which outcomes depend on
+patient characteristics and local clinical practices. Mortality is closely associated with clinical severity,
+whereas admission and discharge decisions are also influenced by institutional policies, resource
+availability, and care processes. Consequently, the relative performance of zero-shot and supervised
+models depends on the prediction target.
+Comparisons with Qwen3.5-9B further indicate that System-One training contributes to predictive
+performance. MedJev improves accuracy on MedQA and USMLE and discrimination on In-Hospital
+Mortality and Length of Stay > 7 Days under the same prompting and readout procedure. It also
+produces better-calibrated probabilities than its base model across several benchmarks. However, these
+improvements are not consistent across all tasks, as Qwen3.5-9B performs better on ED admission
+prediction. System-One training therefore improves performance on selected medical tasks but does
+not uniformly outperform the underlying language model.
+Probability calibration and local adaptation.
+Although MedJev produces well-calibrated confidence estimates on medical knowledge benchmarks, its patient-level predictions exhibit substantial
+calibration error. In particular, the model overestimates the probability of in-hospital mortality relative
+to the observed event rate. This distinction is important because discrimination measures whether a
+model correctly ranks patients by risk, whereas calibration measures whether predicted probabilities
+correspond to observed outcome frequencies. A model can achieve high AUROC while producing
+probabilities that are unsuitable for direct interpretation as patient risk.
+Post-hoc recalibration substantially reduces this error without retraining MedJev. Using Platt scaling
+fitted on local labeled examples, we obtain calibration performance comparable to supervised baselines
+while preserving the original risk ranking. The label-efficiency experiments show that 50–200 labeled
+examples can substantially improve calibration across patient-level tasks. In comparison, supervised
+models generally require more labeled examples to match the discrimination of zero-shot MedJev,
+although this varies by outcome. Calibration parameters fitted on one medical knowledge benchmark
+16
+
+--- PAGE 17 [pdf_text] ---
+MedJev: Evaluating Zero-Shot System-One Decision Making in Medicine
+do not consistently improve calibration on other benchmarks, indicating that calibration depends on
+the target task and population.
+These results support separating zero-shot prediction from local probability calibration in the evaluation pipeline. The System-One model provides an initial prediction without task-specific training,
+while a small labeled dataset can be used to adjust the probability estimates to the local population.
+However, recalibration does not improve discrimination and cannot address limitations in the underlying risk ranking. For tasks where supervised models achieve higher AUROC, additional local
+training remains beneficial.
+Implications for medical evaluation.
+The structured request interface allows medical knowledge
+questions and patient-level prediction tasks to be evaluated using the same inference procedure. Each
+task is represented by an input state, a question, and a set of possible outcomes, and the model
+returns probabilities that can be evaluated for accuracy, discrimination, and calibration. This removes
+the need to generate and parse textual responses and allows direct comparisons with other language
+models using the same probability readout.
+The results also indicate that evaluation of System-One models should consider both zero-shot
+performance and the effect of local adaptation. Zero-shot evaluation measures predictive performance
+without task-specific labels, while recalibration measures whether the predicted probabilities can
+be adjusted using limited local data. Supervised baselines provide a reference for the performance
+achievable through task-specific training. Considering these settings together helps determine when a
+System-One model provides a useful alternative to conventional predictive models. The local inference
+setup further allows these evaluations to be conducted without transmitting patient records to external
+model services.
+Limitations.
+Several limitations should be considered when interpreting these results. First, the
+number of positive outcomes is small for some tasks. In-Hospital Mortality contains only 2.6% deaths
+in the test set, resulting in wide confidence intervals for AUROC. Second, we evaluate a single prompt
+and serialization format for each task. The questions, input representations, and event limits are fixed
+rather than optimized, although prior work has shown that serialization choices can affect languagemodel performance on structured data [46]. Third, the NEJM benchmark was originally evaluated
+using open-ended diagnoses, whereas our evaluation uses multiple-choice questions. Published GPT
+results therefore provide contextual references rather than directly comparable estimates.
+The medical knowledge benchmarks also have potential overlap with model pretraining data. MedQA
+and USMLE share question stems, and MedQA has been publicly available since 2020. We cannot
+exclude the possibility that some evaluation questions appeared during pretraining. For the EHR
+benchmarks, the MEDS extract does not provide a complete ICU item dictionary. We identify bedside
+measurements using standard MIMIC-IV item identifiers, but omit other chart events that cannot be
+reliably interpreted. Finally, MIMIC-IV and MIMIC-IV-ED originate from a single academic medical
+center. The results may not generalize to institutions with different patient populations, clinical
+practices, or outcome prevalence. Evaluation on additional clinical datasets is needed to assess
+generalizability.
+Data use and ethics.
+MIMIC-IV and MIMIC-IV-ED were accessed under the PhysioNet credentialed
+data use agreement. All data processing and model inference were performed locally, with the model
+server restricted to the loopback interface. No individual-level patient records are included in this
+paper, and calibration parameters fitted on credentialed data are not publicly released. The evaluated
+17
+
+--- PAGE 18 [pdf_text] ---
+MedJev: Evaluating Zero-Shot System-One Decision Making in Medicine
+models are research artifacts and have not been validated for clinical deployment. Their predictions
+should not be used to guide patient care.
+References
+[1] Karan Singhal, Shekoofeh Azizi, Tao Tu, et al. Large language models encode clinical knowledge.
+Nature, 620:172–180, 2023.
+[2] Daniel Kahneman. Thinking, Fast and Slow. Farrar, Straus and Giroux, 2011.
+[3] TypeSafe. Jev: TypeSafe’s system one model – documentation. https://docs.typesafe.
+ai/introduction, 2026.
+[4] Tobias Deußer, Lorenz Sparrenberg, and Rafet Sifa. Evaluating and benchmarking the system
+one model Jev, 2026.
+[5] OpenJev. OpenJev Flash 9B: an open Jev-compatible decision model (MLX 8-bit build). https:
+//huggingface.co/openjev/OpenJev-Flash-9B-MLX, 2026.
+[6] Alfredo Madrid-García and Beatriz Merino-Barbancho. Jev in medicine: A benchmark evaluation,
+2026.
+[7] Di Jin, Eileen Pan, Nassim Oufattole, Wei-Hung Weng, Hanyi Fang, and Peter Szolovits. What
+disease does this patient have? a large-scale open domain question answering dataset from
+medical exams. Applied Sciences, 11(14):6421, 2021.
+[8] Yakun Zhu, Zhongzhen Huang, Linjie Mu, Yutong Huang, Wei Nie, Jiaji Liu, Shaoting Zhang,
+Pengfei Liu, and Xiaofan Zhang. Diagnosisarena: benchmarking diagnostic reasoning for large
+language models. In Findings of the Association for Computational Linguistics: ACL 2026, pages
+3074–3098, 2026.
+[9] Alistair EW Johnson, Lucas Bulgarelli, Lu Shen, Alvin Gayles, Ayad Shammout, Steven Horng,
+Tom J Pollard, Sicheng Hao, Benjamin Moody, Brian Gow, et al. Mimic-iv, a freely accessible
+electronic health record dataset. Scientific data, 10(1):1, 2023.
+[10] Qiao Jin, Bhuwan Dhingra, Zhengping Liu, William Cohen, and Xinghua Lu. PubMedQA: A
+dataset for biomedical research question answering. In Proceedings of EMNLP-IJCNLP, 2019.
+[11] Qwen Team. Qwen3.5-9B. https://huggingface.co/Qwen/Qwen3.5-9B, 2026. Model
+card.
+[12] Jiyoun Kim, Muhan Yeo, Eunhye Jang, Jeewon Yang, Hangyul Yoon, Su Ji Lee, Hee Jo Han, HeeJae Jung, Doyun Kwon, Jaehun Lee, et al. Ehrnote-chatqa: A benchmark for evidence-grounded
+multi-turn clinical question answering over longitudinal discharge summaries. arXiv preprint
+arXiv:2606.15735, 2026.
+[13] Simon A Lee and Timothy Lindsey. Can large language models abstract medical coded language?
+arXiv preprint arXiv:2403.10822, 2024.
+[14] Shuyue S Li, Vidhisha Balachandran, Shangbin Feng, Jonathan S Ilgen, Emma Pierson, Pang W
+Koh, and Yulia Tsvetkov. Mediq: Question-asking llms and a benchmark for reliable interactive
+clinical reasoning. Advances in Neural Information Processing Systems, 37:28858–28888, 2024.
+18
+
+--- PAGE 19 [pdf_text] ---
+MedJev: Evaluating Zero-Shot System-One Decision Making in Medicine
+[15] Yihan Lin, Zhirong Bella Yu, and Simon Lee. A case study exploring the current landscape of
+synthetic medical record generation with commercial llms. arXiv preprint arXiv:2504.14657,
+2025.
+[16] Simon A Lee, Anthony Wu, and Jeffrey N Chiang. Clinical modernbert: An efficient and long
+context encoder for biomedical text. arXiv preprint arXiv:2504.03964, 2025.
+[17] Di Jin, Eileen Pan, Nassim Oufattole, Wei-Hung Weng, Hanyi Fang, and Peter Szolovits. What
+disease does this patient have? A large-scale open domain question answering dataset from
+medical exams. Applied Sciences, 11(14):6421, 2021.
+[18] Ankit Pal, Logesh Kumar Umapathi, and Malaikannan Sankarasubbu. MedMCQA: A large-scale
+multi-subject multi-choice dataset for medical domain question answering. In Proceedings of
+the Conference on Health, Inference, and Learning (CHIL), volume 174 of PMLR, pages 248–260,
+2022.
+[19] Thomas Savage, Ashwin Nayak, Robert Gallo, Ekanath Rangan, and Jonathan H Chen. Diagnostic
+reasoning prompts reveal the potential for large language model interpretability in medicine.
+NPJ Digital Medicine, 7(1):20, 2024.
+[20] Ulzee An, Moonseong Jeong, Simon A Lee, Aditya Gorla, Yuzhe Yang, and Sriram Sankararaman. Raptor: Scalable train-free embeddings for 3d medical volumes leveraging pretrained 2d
+foundation models. Proceedings of machine learning research, 267:1462, 2025.
+[21] Hao Zhou, Simon A Lee, Cyrus Tanade, Keum San Chun, Juhyeon Lee, Migyeong Gwak,
+Megha Thukral, Justin Sung, Eugene Hwang, Mehrab Bin Morshed, et al. Physiology-aware
+masked cross-modal reconstruction for biosignal representation learning.
+arXiv preprint
+arXiv:2605.00973, 2026.
+[22] Alicia Huerta-Chagoya, Joohyun Kim, Ravi Mandla, Yingchang Lu, Ken Suzuki, Lauren E Petty,
+Hong Kiat Ng, Jaewon Choi, Simon Lee, Madhusmita Rout, et al. Multi-ancestry polygenic risk
+scores for the prediction of type 2 diabetes and complications in diverse ancestries. The Lancet
+Diabetes & Endocrinology, 14(7):558–569, 2026.
+[23] Juhyeon Lee, Simon A Lee, Cyrus Tanade, Viswam Nathan, Megha Thukral, Hao Zhou, Keum
+San Chun, and Sharanya Arcot Desai. Multimodal self-supervised learning for wearable sleep
+staging using photoplethysmography and accelerometer signals. In ICASSP 2026-2026 IEEE
+International Conference on Acoustics, Speech and Signal Processing (ICASSP), pages 7852–7856.
+IEEE, 2026.
+[24] Yunbei Pan, Jiahang Sha, Simon A Lee, Maxime Cannesson, Wei Wang, and Jeffrey N Chiang.
+Hipno: Symmetry-aware physics-informed neural operators for noninvasive hemodynamic
+inference. arXiv preprint arXiv:2608.10011, 2026.
+[25] Simon A Lee, Cyrus Tanade, Hao Zhou, Juhyeon Lee, Megha Thukral, Baiying Lu, and Sharanya Arcot Desai. Towards on-device foundation models for raw wearable signals. In NeurIPS
+2025 Workshop on Learning from Time Series for Health, 2025.
+[26] Ariel Larey, Elay Dahan, Amit Bleiweiss, Raizy Kellerman, Guy Leib, Omri Nayshool, Dan Ofer,
+Tal Zinger, Dan Dominissini, Gideon Rechavi, et al. Jepa-dna: Grounding genomic foundation
+models through joint-embedding predictive architectures. arXiv preprint arXiv:2602.17162,
+2026.
+19
+
+--- PAGE 20 [pdf_text] ---
+MedJev: Evaluating Zero-Shot System-One Decision Making in Medicine
+[27] Simon Lee, Cyrus Tanade, Hao Zhou, Juhyeon Lee, Megha Thukral, Md Sazzad Hissain Khan,
+Keum San Chun, Baiying Lu, Migyeong Gwak, Mehrab Bin Morshed, et al. Himae: Hierarchical masked autoencoders discover resolution-specific structure in wearable time series. In
+International Conference on Learning Representations, volume 2026, pages 64859–64895, 2026.
+[28] Ethan Steinberg, Jason Fries, Yizhe Xu, and Nigam Shah. Motor: A time-to-event foundation
+model for structured medical records. In International Conference on Learning Representations,
+volume 2024, pages 41038–41077, 2024.
+[29] Zilin Jing, Vincent Jeanselme, Yuta Kobayashi, Simon A Lee, Chao Pang, Aparajita Kashyap,
+Yanwei Li, Xinzhuo Jiang, and Shalmali Joshi. One loss to rule them all: Marked time-to-event
+for structured ehr foundation models. arXiv preprint arXiv:2602.00541, 2026.
+[30] Michael Wornow, Yizhe Xu, Rahul Thapa, Birju Patel, Ethan Steinberg, Scott Fleming, Michael A
+Pfeffer, Jason Fries, and Nigam H Shah. The shaky foundations of large language models and
+foundation models for electronic health records. npj digital medicine, 6(1):135, 2023.
+[31] Alistair E. W. Johnson, Lucas Bulgarelli, Lu Shen, Alvin Gayles, Ayad Shammout, Steven Horng,
+Tom J. Pollard, Sicheng Hao, Benjamin Moody, Brian Gow, Li-wei H. Lehman, Leo A. Celi, and
+Roger G. Mark. MIMIC-IV, a freely accessible electronic health record dataset. Scientific Data,
+10:1, 2023.
+[32] Hrayr Harutyunyan, Hrant Khachatrian, David C. Kale, Greg Ver Steeg, and Aram Galstyan.
+Multitask learning and benchmarking with clinical time series data. Scientific Data, 6:96, 2019.
+[33] Aleksia Kolo, Chao Pang, Edward Choi, Ethan Steinberg, Hyewon Jeong, Jack Gallifant, Jason A
+Fries, Jeffrey N Chiang, Jungwoo Oh, Justin Xu, et al. Meds decentralized, extensible validation
+(meds-dev) benchmark: Establishing reproducibility and comparability in ml for health. ML4H
+2024 Demo Track, 2024.
+[34] Vincent Jeanselme, Zilin Jing, Aparajita Kashyap, Chao Pang, Florent Pollet, Young Sang
+Choi, Xinzhuo Jiang, Yuta Kobayashi, Yanwei Li, Sara Matijevic, et al. Fomoh: A clinically
+meaningful foundation model evaluation for structured electronic health records. arXiv preprint
+arXiv:2505.16941, 2025.
+[35] Bert Arnrich, Edward Choi, Jason Alan Fries, Matthew BA McDermott, Jungwoo Oh, Tom
+Pollard, Nigam Shah, Ethan Steinberg, Michael Wornow, and Robin van de Water. Medical
+event data standard (meds): Facilitating machine learning for health. In ICLR 2024 Workshop
+on Learning from Time Series For Health, pages 03–08, 2024.
+[36] Matthew McDermott, Justin Xu, Teya Bergamaschi, Hyewon Jeong, Simon Lee, Nassim Oufattole,
+Patrick Rockenschaub, Ethan Steinberg, Jimeng Sun, Robin Water, et al. Meds: Building models
+and tools in a reproducible health ai ecosystem. In Proceedings of the 31st ACM SIGKDD Conference
+on Knowledge Discovery and Data Mining, 2025.
+[37] Matthew BA McDermott, Ethan Steinberg, Jason A Fries, Robin P van de Water, Chao
+Pang, Patrick Rockenschaub, Pawel Renc, Jungwoo Oh, Kamil˙e Stankeviči¯ut˙e, Justin Xu,
+et al. Meds—an emerging data standard and ecosystem for health ai research. NEJM AI,
+3(6):AIra2501253, 2026.
+[38] Simon A Lee, Jiahang Hank Sha, Soomin Chung, Kai Akamatsu, Eran Halperin, and Jeffrey N Chiang. Forecasting patient trajectories from the electronic health records with action-conditioned
+world models. arXiv preprint arXiv:2610.23862, 2026.
+20
+
+--- PAGE 21 [pdf_text] ---
+MedJev: Evaluating Zero-Shot System-One Decision Making in Medicine
+[39] Ulzee An, Simon A Lee, Moonseong Jeong, Aditya Gorla, Jeffrey N Chiang, and Sriram Sankararaman. Dk-behrt: Teaching language models international classification of disease (icd) codes
+using known disease descriptions. In AAAI Bridge Program on AI for Medicine and Healthcare,
+pages 133–143. PMLR, 2025.
+[40] Woo Suk Hong, Adrian Daniel Haimovich, and R. Andrew Taylor. Predicting hospital admission
+at emergency department triage using machine learning. PLoS ONE, 13(7):e0201016, 2018.
+[41] Simon A Lee, Sujay Jain, Alex Chen, Kyoka Ono, Arabdha Biswas, Ákos Rudas, Jennifer Fang,
+and Jeffrey N Chiang. Clinical decision support using pseudo-notes from multiple streams of
+ehr data. npj Digital Medicine, 8(1):394, 2025.
+[42] Michael Wornow, Rahul Thapa, Ethan Steinberg, Jason Fries, and Nigam Shah. EHRSHOT: An
+EHR benchmark for few-shot evaluation of foundation models. In Advances in Neural Information
+Processing Systems (Datasets and Benchmarks Track), 2023.
+[43] Simon A. Lee, Helio Halperin, Yanai Halperin, Trevor Brokowski, and Jeffrey N. Chiang. Using
+foundation models to prescribe patients proper antibiotics. In Junde Wu, Jiayuan Zhu, Min Xu,
+and Yueming Jin, editors, Proceedings of The First AAAI Bridge Program on AI for Medicine and
+Healthcare, volume 281 of Proceedings of Machine Learning Research, pages 121–132. PMLR, 25
+Feb 2025.
+[44] Sukriti Jaitly, Tanay Shah, Ashish Shugani, and Razik Singh Grewal. Towards better serialization of tabular data for few-shot classification with large language models. arXiv preprint
+arXiv:2312.12464, 2023.
+[45] Scott L Fleming, Alejandro Lozano, William J Haberkorn, Jenelle A Jindal, Eduardo Reis, Rahul
+Thapa, Louis Blankemeier, Julian Z Genkins, Ethan Steinberg, Ashwin Nayak, et al. Medalign:
+A clinician-generated dataset for instruction following with electronic medical records. In
+Proceedings of the AAAI Conference on Artificial Intelligence, volume 38, pages 22021–22030,
+2024.
+[46] Stefan Hegselmann, Alejandro Buendia, Hunter Lang, Monica Agrawal, Xiaoyi Jiang, and
+David Sontag. TabLLM: Few-shot classification of tabular data with large language models.
+In Proceedings of the International Conference on Artificial Intelligence and Statistics (AISTATS),
+volume 206 of PMLR, 2023.
+[47] Léo Grinsztajn, Edouard Oyallon, and Gaël Varoquaux. Why do tree-based models still outperform deep learning on typical tabular data? In Advances in Neural Information Processing
+Systems (Datasets and Benchmarks Track), 2022.
+[48] John Platt. Probabilistic outputs for support vector machines and comparisons to regularized
+likelihood methods. In Advances in Large Margin Classifiers, pages 61–74. MIT Press, 1999.
+[49] Chuan Guo, Geoff Pleiss, Yu Sun, and Kilian Q. Weinberger. On calibration of modern neural
+networks. In Proceedings of the 34th International Conference on Machine Learning (ICML), 2017.
+[50] Alistair Johnson, Lucas Bulgarelli, Tom Pollard, Leo Anthony Celi, Roger Mark, and Steven
+Horng. MIMIC-IV-ED (version 2.2). PhysioNet, https://doi.org/10.13026/5ntk-km72,
+2023.
+[51] Matthew B. A. McDermott et al. MEDS-Transforms: ETL and pre-processing pipelines for MEDS
+datasets. https://github.com/mmcdermott/MEDS_transforms, 2024.
+21
+
+--- PAGE 22 [pdf_text] ---
+MedJev: Evaluating Zero-Shot System-One Decision Making in Medicine
+[52] Stella Biderman, Hailey Schoelkopf, Quentin Anthony, Herbie Bradley, Kyle O’Brien, Eric Hallahan, Mohammad Aflah Khan, Shivanshu Purohit, USVSN Sai Prashanth, Edward Raff, Aviya
+Skowron, Lintang Sutawika, and Oskar van der Wal. Pythia: A suite for analyzing large language models across training and scaling. In Proceedings of the 40th International Conference on
+Machine Learning (ICML), 2023.
+[53] Andrew Sellergren, Sahar Kazemzadeh, Tiam Jaroensri, Atilla Kiraly, Madeleine Traverse, Timo
+Kohlberger, Shawn Xu, Fayaz Jamil, Cían Hughes, Charles Lau, Justin Chen, Fereshteh Mahvar,
+Liron Yatziv, Tiffany Chen, Bram Sterling, Stefanie Anna Baby, Susanna Maria Baby, Jeremy Lai,
+Samuel Schmidgall, Lu Yang, Kejia Chen, Per Bjornsson, Shashir Reddy, Ryan Brush, Kenneth
+Philbrick, Mercy Asiedu, Ines Mezerreg, Howard Hu, Howard Yang, Richa Tiwari, Sunny Jansen,
+Preeti Singh, Yun Liu, Shekoofeh Azizi, Aishwarya Kamath, Johan Ferret, Shreya Pathak, Nino
+Vieillard, Ramona Merhej, Sarah Perrin, Tatiana Matejovicova, Alexandre Ramé, Morgane
+Riviere, Louis Rouillard, Thomas Mesnard, Geoffrey Cideron, Jean bastien Grill, Sabela Ramos,
+Edouard Yvinec, Michelle Casbon, Elena Buchatskaya, Jean-Baptiste Alayrac, Dmitry Lepikhin,
+Vlad Feinberg, Sebastian Borgeaud, Alek Andreev, Cassidy Hardin, Robert Dadashi, Léonard
+Hussenot, Armand Joulin, Olivier Bachem, Yossi Matias, Katherine Chou, Avinatan Hassidim,
+Kavi Goel, Clement Farabet, Joelle Barral, Tris Warkentin, Jonathon Shlens, David Fleet, Victor
+Cotruta, Omar Sanseviero, Gus Martins, Phoebe Kirk, Anand Rao, Shravya Shetty, David F.
+Steiner, Can Kirmizibayrak, Rory Pilgrim, Daniel Golden, and Lin Yang. Medgemma technical
+report, 2026.
+[54] Gemma Team, Aishwarya Kamath, Johan Ferret, Shreya Pathak, Nino Vieillard, Ramona Merhej,
+Sarah Perrin, Tatiana Matejovicova, Alexandre Ramé, Morgane Rivière, Louis Rouillard, Thomas
+Mesnard, Geoffrey Cideron, Jean bastien Grill, Sabela Ramos, Edouard Yvinec, Michelle Casbon,
+Etienne Pot, Ivo Penchev, Gaël Liu, Francesco Visin, Kathleen Kenealy, Lucas Beyer, Xiaohai Zhai,
+Anton Tsitsulin, Robert Busa-Fekete, Alex Feng, Noveen Sachdeva, Benjamin Coleman, Yi Gao,
+Basil Mustafa, Iain Barr, Emilio Parisotto, David Tian, Matan Eyal, Colin Cherry, Jan-Thorsten
+Peter, Danila Sinopalnikov, Surya Bhupatiraju, Rishabh Agarwal, Mehran Kazemi, Dan Malkin,
+Ravin Kumar, David Vilar, Idan Brusilovsky, Jiaming Luo, Andreas Steiner, Abe Friesen, Abhanshu
+Sharma, Abheesht Sharma, Adi Mayrav Gilady, Adrian Goedeckemeyer, Alaa Saade, Alex Feng,
+Alexander Kolesnikov, Alexei Bendebury, Alvin Abdagic, Amit Vadi, András György, André Susano
+Pinto, Anil Das, Ankur Bapna, Antoine Miech, Antoine Yang, Antonia Paterson, Ashish Shenoy,
+Ayan Chakrabarti, Bilal Piot, Bo Wu, Bobak Shahriari, Bryce Petrini, Charlie Chen, Charline Le
+Lan, Christopher A. Choquette-Choo, CJ Carey, Cormac Brick, Daniel Deutsch, Danielle Eisenbud,
+Dee Cattle, Derek Cheng, Dimitris Paparas, Divyashree Shivakumar Sreepathihalli, Doug Reid,
+Dustin Tran, Dustin Zelle, Eric Noland, Erwin Huizenga, Eugene Kharitonov, Frederick Liu,
+Gagik Amirkhanyan, Glenn Cameron, Hadi Hashemi, Hanna Klimczak-Plucińska, Harman Singh,
+Harsh Mehta, Harshal Tushar Lehri, Hussein Hazimeh, Ian Ballantyne, Idan Szpektor, Ivan
+Nardini, Jean Pouget-Abadie, Jetha Chan, Joe Stanton, John Wieting, Jonathan Lai, Jordi Orbay,
+Joseph Fernandez, Josh Newlan, Ju yeong Ji, Jyotinder Singh, Kat Black, Kathy Yu, Kevin Hui,
+Kiran Vodrahalli, Klaus Greff, Linhai Qiu, Marcella Valentine, Marina Coelho, Marvin Ritter,
+Matt Hoffman, Matthew Watson, Mayank Chaturvedi, Michael Moynihan, Min Ma, Nabila Babar,
+Natasha Noy, Nathan Byrd, Nick Roy, Nikola Momchev, Nilay Chauhan, Noveen Sachdeva, Oskar
+Bunyan, Pankil Botarda, Paul Caron, Paul Kishan Rubenstein, Phil Culliton, Philipp Schmid,
+Pier Giuseppe Sessa, Pingmei Xu, Piotr Stanczyk, Pouya Tafti, Rakesh Shivanna, Renjie Wu,
+Renke Pan, Reza Rokni, Rob Willoughby, Rohith Vallu, Ryan Mullins, Sammy Jerome, Sara
+Smoot, Sertan Girgin, Shariq Iqbal, Shashir Reddy, Shruti Sheth, Siim Põder, Sijal Bhatnagar,
+Sindhu Raghuram Panyam, Sivan Eiger, Susan Zhang, Tianqi Liu, Trevor Yacovone, Tyler
+Liechty, Uday Kalra, Utku Evci, Vedant Misra, Vincent Roseberry, Vlad Feinberg, Vlad Kolesnikov,
+22
+
+--- PAGE 23 [pdf_text] ---
+MedJev: Evaluating Zero-Shot System-One Decision Making in Medicine
+Woohyun Han, Woosuk Kwon, Xi Chen, Yinlam Chow, Yuvein Zhu, Zichuan Wei, Zoltan Egyed,
+Victor Cotruta, Minh Giang, Phoebe Kirk, Anand Rao, Kat Black, Nabila Babar, Jessica Lo,
+Erica Moreira, Luiz Gustavo Martins, Omar Sanseviero, Lucas Gonzalez, Zach Gleicher, Tris
+Warkentin, Vahab Mirrokni, Evan Senter, Eli Collins, Joelle Barral, Zoubin Ghahramani, Raia
+Hadsell, Yossi Matias, D. Sculley, Slav Petrov, Noah Fiedel, Noam Shazeer, Oriol Vinyals, Jeff
+Dean, Demis Hassabis, Koray Kavukcuoglu, Clement Farabet, Elena Buchatskaya, Jean-Baptiste
+Alayrac, Rohan Anil, Dmitry, Lepikhin, Sebastian Borgeaud, Olivier Bachem, Armand Joulin,
+Alek Andreev, Cassidy Hardin, Robert Dadashi, and Léonard Hussenot. Gemma 3 technical
+report, 2025.
+[55] Harsha Nori, Nicholas King, Scott Mayer McKinney, Dean Carignan, and Eric Horvitz. Capabilities
+of GPT-4 on medical challenge problems, 2023.
+[56] Tianqi Chen and Carlos Guestrin. XGBoost: A scalable tree boosting system. In Proceedings of
+the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining, pages
+785–794, 2016.
+[57] Bradley Efron and Robert J. Tibshirani. An Introduction to the Bootstrap. Chapman & Hall, 1993.
+[58] Awni Hannun, Jagrit Digani, Angelos Katharopoulos, and Ronan Collobert. MLX: Efficient and
+flexible machine learning on Apple silicon. https://github.com/ml-explore/mlx, 2023.
+23
+
+--- PAGE 24 [pdf_text] ---
+MedJev: Evaluating Zero-Shot System-One Decision Making in Medicine
+Appendix Table of Contents
+A
+Question Formats
+25
+B
+Worked examples
+26
+C
+Supervised references
+31
+D Reproducibility
+31
+24
+
+--- PAGE 25 [pdf_text] ---
+MedJev: Evaluating Zero-Shot System-One Decision Making in Medicine
+Appendix
+A. Question Formats
+All benchmarks are represented as Jev requests consisting of a state and a typed question. Choice
+questions return a probability distribution over candidate answers, while Noul questions return the
+probability of a binary outcome. Table 1 summarizes the questions used for each benchmark.
+Benchmark
+Type
+Question or outcome
+MedQA, USMLE, NEJM
+Choice
+Which option correctly answers the question? Five options for
+MedQA and NEJM, four for USMLE.
+DiagnosisArena
+Choice
+Which option is the most likely final diagnosis for the patient
+described in the state? Four candidate diagnoses.
+In-Hospital Mortality
+Noul
+Will this patient die before being discharged from the current
+hospital admission?
+Length of Stay > 7 Days
+Noul
+Will the current hospital stay last longer than 7 days in total?
+30-Day Readmission
+Noul
+Will the patient be admitted again within 30 days after this
+discharge?
+ED Admission at 2 h
+Noul
+Based on the information available 2 hours after arrival, will
+this ED visit end in admission to the hospital?
+ED Triage Admission
+Noul
+Based on the information available at triage, will this visit end
+with the patient admitted to the hospital?
+ED Triage Disposition
+Choice
+What will the disposition of this ED visit be? Options: home,
+admitted, transfer, left before completion, expired, or other.
+Supplementary Table 1 | Question formats used across the ten medical benchmarks.
+Prompt construction.
+Each question is rendered as a prompt containing the serialized state, question
+instructions, and candidate options. For Choice questions, the options are assigned single-token
+letter labels. The prompt follows the format below.
+State:
+<state JSON>
+Question:
+<instructions>
+Options:
+[A] <option 1>: <description>
+[B] <option 2>: <description>
+...
+Answer with the letter of the best option only.
+For Noul questions, the candidate outcomes correspond to true and false, with optional descriptions
+specifying each outcome. MedJev reads the option-token probabilities at the first answer position
+and applies the transformations in eqs. (1) and (2) to obtain the final probability distribution.
+25
+
+--- PAGE 26 [pdf_text] ---
+MedJev: Evaluating Zero-Shot System-One Decision Making in Medicine
+B. Worked examples
+One example per benchmark, with MedJev’s actual zero-shot output. For the knowledge benchmarks
+we show a real test item: the one at the 10th percentile of question length, so it is neither handpicked nor trivially short, together with its gold answer and MedJev’s full option distribution (long
+DiagnosisArena fields are abridged with [...]). Individual-level MIMIC data may not be published,
+so the EHR examples use synthetic patients written in exactly each benchmark’s state format; MedJev
+answered them live, and they have no gold outcome. For a Noul, p(yes) is the probability that the
+statement is true.
+MedQA
+[MedQA]
+real test item test/420
+STATE
+{
+"subject": "medicine (USMLE)",
+"question": "A 15-year-old boy is brought to the physician for evaluation of a learning disability.
+His
+teachers have reported hyperactivity during class, difficulties with social interaction, and
+poor scores on
+reading and writing assessments. Molecular analysis shows an increased number of CGG
+trinucleotide repeats.
+Which of the following findings are most likely to be seen on physical examination of this
+patient?"
+}
+QUESTION (Choice): Which option correctly answers ‘question‘?
+A
+Frontal balding and cataracts
+B
+Long face and large everted ears
+C
+Almond-shaped eyes and downturned mouth
+D
+Flat facies and protruding tongue
+E
+Thin upper lip and receding chin
+GOLD: B
+MEDJEV: B
+(p = 0.41)
+-> correct
+probabilities: A 0.08
+B 0.41
+C 0.12
+D 0.26
+E 0.13
+USMLE
+[USMLE]
+real test item 296
+STATE
+{
+"subject": "medicine (USMLE)",
+"question": "A 52-year-old fisherman presents to the clinic for an evaluation of a pigmented lesion
+on his
+neck. He states that he first noticed the lesion last year, but he believes that it has been
+slowly growing
+in size. Dermatopathology determines that the lesion contains neoplastic cells of melanocytic
+origin. Which
+of the following characteristics of the lesion would likely be found on physical examination?"
+}
+QUESTION (Choice): Which option correctly answers ‘question‘?
+A
+Brown-black color in one area of the lesion to red-white in a different area
+B
+Macule that is 5mm in diameter
+C
+Well-circumscribed papule with smooth borders
+D
+Itching and pain to palpation
+GOLD: A
+MEDJEV: A
+(p = 0.87)
+-> correct
+probabilities: A 0.87
+B 0.06
+C 0.03
+D 0.04
+26
+
+--- PAGE 27 [pdf_text] ---
+MedJev: Evaluating Zero-Shot System-One Decision Making in Medicine
+NEJM
+[NEJM]
+real test item 202
+STATE
+{
+"question": "A 32-year-old G1P0 woman presents to her obstetrician for a prenatal visit. She is 30
+weeks
+pregnant. She reports some fatigue and complains of urinary urgency. Prior to this pregnancy,
+she had no
+significant medical history. She takes a prenatal vitamin and folate supplements daily. Her
+mother has
+diabetes, and her brother has coronary artery disease. On physical examination, the fundal
+height is 25
+centimeters. A fetal ultrasound shows a proportional reduction in head circumference, trunk size
+, and limb
+length. What is the most likely cause of the patient’s presentation?"
+}
+QUESTION (Choice): Which option correctly answers ‘question‘?
+A
+Antiphospholipid syndrome
+B
+Cigarette smoking
+C
+Gestational diabetes
+D
+Pre-eclampsia
+E
+Rubella infection
+GOLD: E
+MEDJEV: B
+(p = 0.85)
+-> wrong
+probabilities: A 0.04
+B 0.85
+C 0.06
+D 0.02
+E 0.04
+DiagnosisArena
+[DiagnosisArena]
+real test item 150
+STATE
+{
+"case_information": "A woman in her 50s presented with bilateral nasal obstruction, thick nasal
+discharge, and
+facial pain and pressure. Her condition was recalcitrant to 3 prior surgeries, immunotherapy,
+and medical
+therapy.",
+"physical_examination": "Initial post-procedure examination showed:- Binocular horizontal diplopia
+with left
+lateral gaze- Inability for the left eye to track beyond the midline- Left eye was not proptotic
+,
+ecchymotic, or tense- Bedside intraocular pressure measurements: 15 OD, 16 OS (normal)- National
+Institutes
+of Health stroke score of 1",
+"diagnostic_tests": "{’Clinical Images’: {’Figure 1’: {’Title’: ’Clinical Images’, ’Description’: ’
+Images
+showing left-sided abducens nerve palsy immediately following surgery and its resolution by
+postoperative
+day 1’}, ’Figure 2’: {’Title’: ’Illustrative Representations of the Proposed Mechanisms’, ’
+Description’:
+’Diagrams showing different hypotheses for abducens ne [...]"
+}
+QUESTION (Choice): Which option is the most likely final diagnosis for the patient described in the
+state?
+A
+Allergic fungal rhinosinusitis
+B
+Transient left abducens (cranial nerve VI) nerve palsy
+C
+Chronic rhinosinusitis with nasal polyps
+D
+Iatrogenic Abducens Nerve Palsy
+GOLD: B
+MEDJEV: B
+(p = 0.70)
+-> correct
+probabilities: A 0.01
+B 0.70
+C 0.01
+D 0.28
+27
+
+--- PAGE 28 [pdf_text] ---
+MedJev: Evaluating Zero-Shot System-One Decision Making in Medicine
+ED Triage Admission
+[ED Triage Admission]
+synthetic patient, live MedJev answer
+STATE
+{
+"decision_time": "at emergency department triage",
+"patient": {"age": 67, "sex": "male", "race": "WHITE"},
+"arrival_transport": "AMBULANCE",
+"triage": {"temperature_F": 100.9, "heart_rate_bpm": 118, "respiratory_rate": 24, "o2_saturation_pct
+": 91,
+"systolic_bp_mmHg": 96, "diastolic_bp_mmHg": 58, "pain": "4", "acuity_esi": 2, "chief_complaint
+": "Dyspnea,
+fever"},
+"past_year_emergency_department_history": {"visits": 3, "visits_ending_in_admission": 2}
+}
+QUESTION (Noul): Based on the information available at emergency department triage, will this visit
+end with the
+patient admitted to the hospital?
+true:
+The emergency department disposition is admission to the hospital.
+false: The patient is not admitted (discharged home, transferred, leaves, or another disposition).
+GOLD: (synthetic patient, no outcome)
+MEDJEV: p(yes) = 0.92
+ED Triage Disposition
+[ED Triage Disposition]
+synthetic patient, live MedJev answer
+STATE
+{
+"decision_time": "at emergency department triage",
+"patient": {"age": 67, "sex": "male", "race": "WHITE"},
+"arrival_transport": "AMBULANCE",
+"triage": {"temperature_F": 100.9, "heart_rate_bpm": 118, "respiratory_rate": 24, "o2_saturation_pct
+": 91,
+"systolic_bp_mmHg": 96, "diastolic_bp_mmHg": 58, "pain": "4", "acuity_esi": 2, "chief_complaint
+": "Dyspnea,
+fever"},
+"past_year_emergency_department_history": {"visits": 3, "visits_ending_in_admission": 2}
+}
+QUESTION (Choice): Based on the information available at emergency department triage, what will the
+disposition
+of this emergency department visit be?
+home
+Discharged home from the emergency department.
+admitted
+Admitted to the hospital.
+transfer
+Transferred to another facility.
+left
+Left before the visit was complete (without being seen, eloped, or against medical advice).
+expired
+Died in the emergency department.
+other
+Another disposition.
+GOLD: (synthetic patient, no outcome)
+MEDJEV: admitted
+(p = 0.94)
+probabilities: home 0.02
+admitted 0.94
+transfer 0.01
+left 0.00
+expired 0.01
+other 0.02
+28
+
+--- PAGE 29 [pdf_text] ---
+MedJev: Evaluating Zero-Shot System-One Decision Making in Medicine
+ED Admission at 2 h
+[ED Admission at 2 h]
+synthetic patient, live MedJev answer
+STATE
+{
+"prediction_time": "2 hours after arrival in the emergency department",
+"patient": {"age": 34, "sex": "female"},
+"past_year_before_this_visit": {"hospital_admissions": 0, "emergency_department_visits": 1, "
+diagnoses":
+["Migraine without aura, not intractable"]},
+"this_ed_visit_so_far": {"labs_latest": ["Leukocytes [#/volume] in Blood by Automated count: 7.2 K/
+uL",
+"Hemoglobin [Mass/volume] in Blood: 13.1 g/dL", "Creatinine [Mass/volume] in Serum or Plasma:
+0.7 mg/dL",
+"Glucose [Mass/volume] in Serum or Plasma: 96 mg/dL", "Sodium [Moles/volume] in Serum or Plasma:
+139
+mEq/L", "Potassium [Moles/volume] in Serum or Plasma: 4 mEq/L"]}
+}
+QUESTION (Noul): Based on the patient’s record up to now, 2 hours after arriving in the emergency
+department,
+will this emergency department visit end in admission to the hospital?
+true:
+The patient is admitted to the hospital (including observation) from this visit.
+false: The patient leaves the emergency department without being admitted.
+GOLD: (synthetic patient, no outcome)
+MEDJEV: p(yes) = 0.12
+In-Hospital Mortality
+[In-Hospital Mortality]
+synthetic patient, live MedJev answer
+STATE
+{
+"prediction_time": "24 hours after hospital admission",
+"patient": {"age": 81, "sex": "female", "race": "WHITE", "insurance": "Medicare", "language": "
+ENGLISH",
+"marital_status": "WIDOWED"},
+"current_admission": {"admission_type": "EW EMER.", "admitted_from": "EMERGENCY ROOM", "
+hours_since_admission":
+24},
+"past_year_before_this_admission": {"hospital_admissions": 2, "diagnoses": ["Chronic diastolic (
+congestive)
+heart failure", "Chronic kidney disease, stage 4 (severe)", "Unspecified atrial fibrillation"]},
+"this_admission_so_far": {"care_units": ["Emergency Department", "Medical Intensive Care Unit (MICU)
+"],
+"bedside_measurements_latest": ["Heart rate: 112 bpm", "Non-invasive BP mean: 58 mmHg", "
+Respiratory rate:
+28 insp/min", "SpO2 (pulse oximetry): 89 %", "GCS verbal response: 3"], "labs_latest": ["Lactate
+[Moles/volume] in Blood: 5.2 mmol/L (high)", "Creatinine [Mass/volume] in Serum or Plasma: 3.9
+mg/dL
+(high)", "Leukocytes [#/volume] in Blood by Automated count: 21.4 K/uL (high)", "Bicarbonate [
+Moles/volume]
+in Serum or Plasma: 14 mEq/L (low)"], "medications": ["Piperacillin-Tazobactam", "Vancomycin", "
+Heparin"],
+"infusions": ["norepinephrine Injection"]}
+}
+QUESTION (Noul): Based on the patient’s record up to now, will this patient die before being
+discharged from the
+current hospital admission?
+true:
+The patient dies during the current hospital admission.
+false: The patient survives to hospital discharge.
+GOLD: (synthetic patient, no outcome)
+MEDJEV: p(yes) = 0.86
+29
+
+--- PAGE 30 [pdf_text] ---
+MedJev: Evaluating Zero-Shot System-One Decision Making in Medicine
+Length of Stay > 7 Days
+[Length of Stay > 7 Days]
+synthetic patient, live MedJev answer
+STATE
+{
+"prediction_time": "24 hours after hospital admission",
+"patient": {"age": 81, "sex": "female", "race": "WHITE", "insurance": "Medicare", "language": "
+ENGLISH",
+"marital_status": "WIDOWED"},
+"current_admission": {"admission_type": "EW EMER.", "admitted_from": "EMERGENCY ROOM", "
+hours_since_admission":
+24},
+"past_year_before_this_admission": {"hospital_admissions": 2, "diagnoses": ["Chronic diastolic (
+congestive)
+heart failure", "Chronic kidney disease, stage 4 (severe)", "Unspecified atrial fibrillation"]},
+"this_admission_so_far": {"care_units": ["Emergency Department", "Medical Intensive Care Unit (MICU)
+"],
+"bedside_measurements_latest": ["Heart rate: 112 bpm", "Non-invasive BP mean: 58 mmHg", "
+Respiratory rate:
+28 insp/min", "SpO2 (pulse oximetry): 89 %", "GCS verbal response: 3"], "labs_latest": ["Lactate
+[Moles/volume] in Blood: 5.2 mmol/L (high)", "Creatinine [Mass/volume] in Serum or Plasma: 3.9
+mg/dL
+(high)", "Leukocytes [#/volume] in Blood by Automated count: 21.4 K/uL (high)", "Bicarbonate [
+Moles/volume]
+in Serum or Plasma: 14 mEq/L (low)"], "medications": ["Piperacillin-Tazobactam", "Vancomycin", "
+Heparin"],
+"infusions": ["norepinephrine Injection"]}
+}
+QUESTION (Noul): Based on the patient’s record up to now, will the current hospital stay last longer
+than 7 days
+in total, counted from admission to discharge?
+true:
+The hospital stay lasts more than 7 days.
+false: The patient is discharged (or dies) within 7 days of admission.
+GOLD: (synthetic patient, no outcome)
+MEDJEV: p(yes) = 0.73
+30
+
+--- PAGE 31 [pdf_text] ---
+MedJev: Evaluating Zero-Shot System-One Decision Making in Medicine
+30-Day Readmission
+[30-Day Readmission]
+synthetic patient, live MedJev answer
+STATE
+{
+"prediction_time": "at discharge from the current hospital admission",
+"patient": {"age": 72, "sex": "male", "race": "BLACK/AFRICAN AMERICAN", "insurance": "Medicare", "
+language":
+"ENGLISH", "marital_status": "MARRIED"},
+"current_admission": {"admission_type": "EW EMER.", "admitted_from": "EMERGENCY ROOM", "
+length_of_stay_days":
+9.5, "discharge_location": "HOME HEALTH CARE"},
+"past_year_before_this_admission": {"hospital_admissions": 3, "diagnoses": ["Chronic systolic (
+congestive)
+heart failure", "Chronic obstructive pulmonary disease, unspecified"]},
+"this_admission_so_far": {"care_units": ["Emergency Department", "Medicine"], "labs_latest": ["
+Creatinine
+[Mass/volume] in Serum or Plasma: 1.9 mg/dL", "Sodium [Moles/volume] in Serum or Plasma: 131 mEq
+/L (low)",
+"Hemoglobin [Mass/volume] in Blood: 10.2 g/dL"], "medications": ["Furosemide", "Metoprolol
+Succinate XL",
+"Lisinopril", "Insulin"], "diagnoses": ["Acute on chronic systolic (congestive) heart failure",
+"Chronic
+obstructive pulmonary disease with (acute) exacerbation", "Type 2 diabetes mellitus"], "drg": ["
+HEART
+FAILURE & SHOCK"]}
+}
+QUESTION (Noul): Based on the patient’s record up to this discharge, will the patient be admitted to
+the
+hospital again within 30 days after this discharge?
+true:
+A new hospital admission starts within 30 days of this discharge.
+false: No new hospital admission within 30 days of this discharge.
+GOLD: (synthetic patient, no outcome)
+MEDJEV: p(yes) = 0.73
+C. Supervised references
+Hyperparameters chosen by five-fold cross-validation on the training examples. XGBoost: learning
+rate 0.05, subsampling 0.8, a grid over depth {2, 3, 5}, minimum child weight {1, 5} and column
+subsampling {0.3, 0.7}, with the number of trees set by early stopping inside each fold. TF-IDF: word
+𝑛-grams {(1, 1), (1, 2)}, 50k features, sublinear term frequency, ℓ2 strength 𝐶∈{0.01, 0.1, 1, 10}. For
+ED Triage Disposition, classes with fewer than 10 training stays (e.g. expired) are merged into “other”
+during training.
+D. Reproducibility
+Everything is produced by the scripts in src/scripts/: prepare_data.py (Jev requests and training sets), extract_jev.py and run_variants_gpu.sh (zero-shot answers for every language
+model; MLX), train_probes.py (recalibration), run_baselines.py (supervised references),
+label_efficiency.py (label budgets, from cached outputs), evaluate.py (scores and metrics),
+make_paper_assets.py (tables and every number in this paper) and make_figures.py (figures).
+Every model output is cached on disk, keyed by the exact request.
+31

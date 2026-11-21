@@ -1,0 +1,737 @@
+[
+  {
+    "id": "Q01",
+    "category": "In-Domain Factual",
+    "status": "FAIL (Paper Mismatch)",
+    "expected_paper": "MED-DT-001",
+    "expected_page": 2,
+    "retrieved_paper": "MED-DT-002",
+    "retrieved_page": 2,
+    "paper_match": false,
+    "page_match": false,
+    "answer_preview": "According to the indexed research findings, ABSTRACT  Digital twins are virtual replicas of physical entities and are po..."
+  },
+  {
+    "id": "Q02",
+    "category": "In-Domain Factual",
+    "status": "PASS",
+    "expected_paper": "MED-IMG-002",
+    "expected_page": 1,
+    "retrieved_paper": "MED-IMG-002",
+    "retrieved_page": 1,
+    "paper_match": true,
+    "page_match": true,
+    "answer_preview": "According to the indexed research findings, LeViT-UNet++: Towards Balanced Fine-Grained Details and Context for Efficien..."
+  },
+  {
+    "id": "Q03",
+    "category": "In-Domain Factual",
+    "status": "PASS",
+    "expected_paper": "MED-IMG-001",
+    "expected_page": 1,
+    "retrieved_paper": "MED-IMG-001",
+    "retrieved_page": 1,
+    "paper_match": true,
+    "page_match": true,
+    "answer_preview": "According to the indexed research findings, Published in Transactions on Machine Learning Research (10/2026) Retrieval-A..."
+  },
+  {
+    "id": "Q04",
+    "category": "In-Domain Factual",
+    "status": "PASS",
+    "expected_paper": "MED-DHM-001",
+    "expected_page": 1,
+    "retrieved_paper": "MED-DHM-001",
+    "retrieved_page": 1,
+    "paper_match": true,
+    "page_match": true,
+    "answer_preview": "According to the indexed research findings, All rights reserved  Ragusa \u2022 Guiducci \u2022 Cavallo  www.annualreviews.org \u2022 [G..."
+  },
+  {
+    "id": "Q05",
+    "category": "In-Domain Factual",
+    "status": "PASS",
+    "expected_paper": "MED-DHM-002",
+    "expected_page": 1,
+    "retrieved_paper": "MED-DHM-002",
+    "retrieved_page": 1,
+    "paper_match": true,
+    "page_match": true,
+    "answer_preview": "According to the indexed research findings, 1    Digitally Supported Transitional Care Pathways for Older Adults: A Mult..."
+  },
+  {
+    "id": "Q06",
+    "category": "In-Domain Factual",
+    "status": "PASS",
+    "expected_paper": "MED-DHM-004",
+    "expected_page": 1,
+    "retrieved_paper": "MED-DHM-004",
+    "retrieved_page": 1,
+    "paper_match": true,
+    "page_match": true,
+    "answer_preview": "According to the indexed research findings, To address this limitation, this study introduces a novel Starlink-assisted ..."
+  },
+  {
+    "id": "Q07",
+    "category": "In-Domain Factual",
+    "status": "PASS",
+    "expected_paper": "MED-DT-004",
+    "expected_page": 1,
+    "retrieved_paper": "MED-DT-004",
+    "retrieved_page": 2,
+    "paper_match": true,
+    "page_match": true,
+    "answer_preview": "According to the indexed research findings, Highlights HAPI-EP: Towards Hybrid, Adaptive, and Predictive Digital Twins o..."
+  },
+  {
+    "id": "Q08",
+    "category": "In-Domain Factual",
+    "status": "PASS",
+    "expected_paper": "MED-IOT-001",
+    "expected_page": 4,
+    "retrieved_paper": "MED-IOT-001",
+    "retrieved_page": 4,
+    "paper_match": true,
+    "page_match": true,
+    "answer_preview": "According to the indexed research findings, Prior work therefore covers time-series-to-language modeling, wearable and p..."
+  },
+  {
+    "id": "Q09",
+    "category": "In-Domain Factual",
+    "status": "PASS",
+    "expected_paper": "MED-CDS-001",
+    "expected_page": 1,
+    "retrieved_paper": "MED-CDS-001",
+    "retrieved_page": 1,
+    "paper_match": true,
+    "page_match": true,
+    "answer_preview": "According to the indexed research findings, RAG-Enhanced LLMs for Interactive Explainability in Clinical Decision Suppor..."
+  },
+  {
+    "id": "Q10",
+    "category": "In-Domain Factual",
+    "status": "PASS",
+    "expected_paper": "MED-CDS-002",
+    "expected_page": 1,
+    "retrieved_paper": "MED-CDS-002",
+    "retrieved_page": 1,
+    "paper_match": true,
+    "page_match": true,
+    "answer_preview": "According to the indexed research findings, To address this gap, we design an Operation-aware Multimodal Clinical Decisi..."
+  },
+  {
+    "id": "Q11",
+    "category": "Exact Passage",
+    "status": "PASS",
+    "expected_paper": "MED-DT-001",
+    "expected_page": 1,
+    "retrieved_paper": "MED-DT-001",
+    "retrieved_page": 2,
+    "paper_match": true,
+    "page_match": true,
+    "answer_preview": "The exact passage was verified in the indexed literature: \"In contrast, the use of DTs enables a shift toward precision ..."
+  },
+  {
+    "id": "Q12",
+    "category": "Exact Passage",
+    "status": "PASS",
+    "expected_paper": "MED-IMG-002",
+    "expected_page": 1,
+    "retrieved_paper": "MED-IMG-002",
+    "retrieved_page": 1,
+    "paper_match": true,
+    "page_match": true,
+    "answer_preview": "The exact passage was verified in the indexed literature: \"efficient medical image segmentation is essential for clinica..."
+  },
+  {
+    "id": "Q13",
+    "category": "Exact Passage",
+    "status": "PASS",
+    "expected_paper": "MED-DHM-001",
+    "expected_page": 1,
+    "retrieved_paper": "MED-DHM-001",
+    "retrieved_page": 2,
+    "paper_match": true,
+    "page_match": true,
+    "answer_preview": "The exact passage was verified in the indexed literature: \"global aging and the expansion of care beyond\" [From AI-Enabl..."
+  },
+  {
+    "id": "Q14",
+    "category": "Exact Passage",
+    "status": "PASS",
+    "expected_paper": "MED-IOT-001",
+    "expected_page": 1,
+    "retrieved_paper": "MED-IOT-001",
+    "retrieved_page": 1,
+    "paper_match": true,
+    "page_match": true,
+    "answer_preview": "The exact passage was verified in the indexed literature: \"deploying an on-device soft-prompt time-series language model..."
+  },
+  {
+    "id": "Q15",
+    "category": "Exact Passage",
+    "status": "PASS",
+    "expected_paper": "MED-CDS-001",
+    "expected_page": 1,
+    "retrieved_paper": "MED-CDS-001",
+    "retrieved_page": 1,
+    "paper_match": true,
+    "page_match": true,
+    "answer_preview": "The exact passage was verified in the indexed literature: \"Interactive Explainability in Clinical Decision Support Syste..."
+  },
+  {
+    "id": "Q16",
+    "category": "Semantic Retrieval",
+    "status": "PARTIAL (Paper Match, Page Mismatch)",
+    "expected_paper": "MED-DT-001",
+    "expected_page": 2,
+    "retrieved_paper": "MED-DT-001",
+    "retrieved_page": 11,
+    "paper_match": true,
+    "page_match": false,
+    "answer_preview": "According to the indexed research findings, This architecture supports dynamic simulations, allowing clinicians to visua..."
+  },
+  {
+    "id": "Q17",
+    "category": "Semantic Retrieval",
+    "status": "PARTIAL (Paper Match, Page Mismatch)",
+    "expected_paper": "MED-IMG-002",
+    "expected_page": 1,
+    "retrieved_paper": "MED-IMG-002",
+    "retrieved_page": 3,
+    "paper_match": true,
+    "page_match": false,
+    "answer_preview": "According to the indexed research findings, Specifically, it adopts vanilla  LeViT [8] (a lightweight hybrid convolution..."
+  },
+  {
+    "id": "Q18",
+    "category": "Semantic Retrieval",
+    "status": "PARTIAL (Paper Match, Page Mismatch)",
+    "expected_paper": "MED-DHM-001",
+    "expected_page": 1,
+    "retrieved_paper": "MED-DHM-001",
+    "retrieved_page": 20,
+    "paper_match": true,
+    "page_match": false,
+    "answer_preview": "According to the indexed research findings, Digital-twin validation of Pepper in a simulated smart-home environment (38)..."
+  },
+  {
+    "id": "Q19",
+    "category": "Semantic Retrieval",
+    "status": "FAIL (False Refusal)",
+    "is_refusal": true,
+    "explanation": "Cross-encoder relevance score (0.015) fell below minimum required clinical confidence."
+  },
+  {
+    "id": "Q20",
+    "category": "Semantic Retrieval",
+    "status": "FAIL (Paper Mismatch)",
+    "expected_paper": "MED-CDS-001",
+    "expected_page": 1,
+    "retrieved_paper": "MED-CDS-004",
+    "retrieved_page": 1,
+    "paper_match": false,
+    "page_match": false,
+    "answer_preview": "According to the indexed research findings, Therefore, this problem can be solved by generative artificial intelligence ..."
+  },
+  {
+    "id": "Q21",
+    "category": "Numerical Findings",
+    "status": "FAIL (False Refusal)",
+    "is_refusal": true,
+    "explanation": "Cross-encoder relevance score (0.002) fell below minimum required clinical confidence."
+  },
+  {
+    "id": "Q22",
+    "category": "Numerical Findings",
+    "status": "PASS",
+    "expected_paper": "MED-DHM-005",
+    "expected_page": 4,
+    "retrieved_paper": "MED-DHM-005",
+    "retrieved_page": 1,
+    "paper_match": true,
+    "page_match": true,
+    "answer_preview": "According to the indexed research findings, Here we present CODE-II, a large-scale real-world dataset of 2,735,269 12-le..."
+  },
+  {
+    "id": "Q23",
+    "category": "Numerical Findings",
+    "status": "PASS",
+    "expected_paper": "MED-IMG-006",
+    "expected_page": 2,
+    "retrieved_paper": "MED-IMG-006",
+    "retrieved_page": 1,
+    "paper_match": true,
+    "page_match": true,
+    "answer_preview": "According to the indexed research findings, DeVAR: Low-Dose CT Denoising via Visual Autoregressive Modeling Xizhuo Zhang..."
+  },
+  {
+    "id": "Q24",
+    "category": "Numerical Findings",
+    "status": "PASS",
+    "expected_paper": "MED-DHM-004",
+    "expected_page": 1,
+    "retrieved_paper": "MED-DHM-004",
+    "retrieved_page": 1,
+    "paper_match": true,
+    "page_match": true,
+    "answer_preview": "According to the indexed research findings, 2025 IEEE International Conference on Biomedical Engineering, Computer and I..."
+  },
+  {
+    "id": "Q25",
+    "category": "Numerical Findings",
+    "status": "PASS",
+    "expected_paper": "MED-CDS-005",
+    "expected_page": 1,
+    "retrieved_paper": "MED-CDS-005",
+    "retrieved_page": 1,
+    "paper_match": true,
+    "page_match": true,
+    "answer_preview": "According to the indexed research findings, MedJev: Evaluating Zero-Shot System-One Decision Making in Medicine Simon A...."
+  },
+  {
+    "id": "Q26",
+    "category": "Methodology",
+    "status": "PASS",
+    "expected_paper": "MED-IMG-003",
+    "expected_page": 1,
+    "retrieved_paper": "MED-IMG-003",
+    "retrieved_page": 1,
+    "paper_match": true,
+    "page_match": true,
+    "answer_preview": "According to the indexed research findings, Scribble Once, Segment the Sequence: Bidirectional Temporal Consistency for ..."
+  },
+  {
+    "id": "Q27",
+    "category": "Methodology",
+    "status": "PARTIAL (Paper Match, Page Mismatch)",
+    "expected_paper": "MED-IMG-004",
+    "expected_page": 15,
+    "retrieved_paper": "MED-IMG-004",
+    "retrieved_page": 3,
+    "paper_match": true,
+    "page_match": false,
+    "answer_preview": "According to the indexed research findings, By combining representationlevel domain adaptation with Fisher-guided parame..."
+  },
+  {
+    "id": "Q28",
+    "category": "Methodology",
+    "status": "PASS",
+    "expected_paper": "MED-IOT-004",
+    "expected_page": 1,
+    "retrieved_paper": "MED-IOT-004",
+    "retrieved_page": 1,
+    "paper_match": true,
+    "page_match": true,
+    "answer_preview": "According to the indexed research findings, Index Terms\u2014Anomaly Detection, Central Nervous System  Oxygen Toxicity (CNS-..."
+  },
+  {
+    "id": "Q29",
+    "category": "Methodology",
+    "status": "PASS",
+    "expected_paper": "MED-DT-005",
+    "expected_page": 1,
+    "retrieved_paper": "MED-DT-005",
+    "retrieved_page": 1,
+    "paper_match": true,
+    "page_match": true,
+    "answer_preview": "According to the indexed research findings, Digital Twins in Coronary Artery Disease: A Mathematical Roadmap Alessandro ..."
+  },
+  {
+    "id": "Q30",
+    "category": "Methodology",
+    "status": "PASS",
+    "expected_paper": "MED-CDS-003",
+    "expected_page": 1,
+    "retrieved_paper": "MED-CDS-003",
+    "retrieved_page": 1,
+    "paper_match": true,
+    "page_match": true,
+    "answer_preview": "According to the indexed research findings, RADIOLOGY GUIDELINE-DERIVED DECISION GRAPH FOR EFFICIENT CLINICAL DECISION S..."
+  },
+  {
+    "id": "Q31",
+    "category": "Limitations",
+    "status": "PASS",
+    "expected_paper": "MED-DHM-003",
+    "expected_page": 1,
+    "retrieved_paper": "MED-DHM-003",
+    "retrieved_page": 1,
+    "paper_match": true,
+    "page_match": true,
+    "answer_preview": "According to the indexed research findings, A SCOPING REVIEW OF AI-DRIVEN DIGITAL INTERVENTIONS IN MENTAL HEALTH CARE: M..."
+  },
+  {
+    "id": "Q32",
+    "category": "Limitations",
+    "status": "PASS",
+    "expected_paper": "MED-IMG-005",
+    "expected_page": 1,
+    "retrieved_paper": "MED-IMG-005",
+    "retrieved_page": 1,
+    "paper_match": true,
+    "page_match": true,
+    "answer_preview": "According to the indexed research findings, Medical Image Segmentation: Foundation Model Adaptation versus Task-Specific..."
+  },
+  {
+    "id": "Q33",
+    "category": "Limitations",
+    "status": "PASS",
+    "expected_paper": "MED-DT-006",
+    "expected_page": 1,
+    "retrieved_paper": "MED-DT-006",
+    "retrieved_page": 1,
+    "paper_match": true,
+    "page_match": true,
+    "answer_preview": "According to the indexed research findings, TWINGUARD-LITE: A Rule-Based State-Admission Gateway for Generative Patient ..."
+  },
+  {
+    "id": "Q34",
+    "category": "Limitations",
+    "status": "PASS",
+    "expected_paper": "MED-CDS-006",
+    "expected_page": 1,
+    "retrieved_paper": "MED-CDS-006",
+    "retrieved_page": 1,
+    "paper_match": true,
+    "page_match": true,
+    "answer_preview": "According to the indexed research findings, Decisions by Discrimination: Differential Evidence for Medical Reasoning Yun..."
+  },
+  {
+    "id": "Q35",
+    "category": "Multi-Paper",
+    "status": "PASS",
+    "expected_paper": "MED-DT-001",
+    "expected_page": 12,
+    "retrieved_paper": "MED-DT-001",
+    "retrieved_page": 12,
+    "paper_match": true,
+    "page_match": true,
+    "answer_preview": "According to the indexed research findings, Another study, \u201cA Systematic Review: DT in Healthcare\u201d (112) and \u201cDT Technol..."
+  },
+  {
+    "id": "Q36",
+    "category": "Multi-Paper",
+    "status": "FAIL (False Refusal)",
+    "is_refusal": true,
+    "explanation": "Cross-encoder relevance score (0.109) fell below minimum required clinical confidence."
+  },
+  {
+    "id": "Q37",
+    "category": "Multi-Paper",
+    "status": "PARTIAL (Paper Match, Page Mismatch)",
+    "expected_paper": "MED-CDS-001",
+    "expected_page": 1,
+    "retrieved_paper": "MED-CDS-001",
+    "retrieved_page": 3,
+    "paper_match": true,
+    "page_match": false,
+    "answer_preview": "According to the indexed research findings, In this work, we present, to the best of our knowledge, the first Clinical D..."
+  },
+  {
+    "id": "Q38",
+    "category": "Multi-Paper",
+    "status": "FAIL (Paper Mismatch)",
+    "expected_paper": "MED-DHM-004",
+    "expected_page": 1,
+    "retrieved_paper": "MED-IOT-005",
+    "retrieved_page": 1,
+    "paper_match": false,
+    "page_match": false,
+    "answer_preview": "According to the indexed research findings, SmartEdge: Smart Healthcare End-to-End  Integrated Edge and Cloud Computing ..."
+  },
+  {
+    "id": "Q39",
+    "category": "Paper-Specific",
+    "status": "PARTIAL (Paper Match, Page Mismatch)",
+    "expected_paper": "MED-DT-001",
+    "expected_page": 13,
+    "retrieved_paper": "MED-DT-001",
+    "retrieved_page": 19,
+    "paper_match": true,
+    "page_match": false,
+    "answer_preview": "According to the indexed research findings, AI-driven digital twinning AI-driven DTs in healthcare use machine learning,..."
+  },
+  {
+    "id": "Q40",
+    "category": "Paper-Specific",
+    "status": "PASS",
+    "expected_paper": "MED-IOT-003",
+    "expected_page": 1,
+    "retrieved_paper": "MED-IOT-003",
+    "retrieved_page": 1,
+    "paper_match": true,
+    "page_match": true,
+    "answer_preview": "According to the indexed research findings, A Hybrid Predictive Ensemble of Machine Learning and Deep Neural Networks fo..."
+  },
+  {
+    "id": "Q41",
+    "category": "Paper-Specific",
+    "status": "PASS",
+    "expected_paper": "MED-CDS-004",
+    "expected_page": 1,
+    "retrieved_paper": "MED-CDS-004",
+    "retrieved_page": 1,
+    "paper_match": true,
+    "page_match": true,
+    "answer_preview": "According to the indexed research findings, DocTalk: Enhancing Medical Knowledge Retrieval via Fine-tuned Large  Languag..."
+  },
+  {
+    "id": "Q42",
+    "category": "Paper-Specific",
+    "status": "PASS",
+    "expected_paper": "MED-IOT-005",
+    "expected_page": 1,
+    "retrieved_paper": "MED-IOT-005",
+    "retrieved_page": 1,
+    "paper_match": true,
+    "page_match": true,
+    "answer_preview": "According to the indexed research findings, SmartEdge: Smart Healthcare End-to-End  Integrated Edge and Cloud Computing ..."
+  },
+  {
+    "id": "Q43",
+    "category": "Numerical Findings",
+    "status": "PARTIAL (Paper Match, Page Mismatch)",
+    "expected_paper": "MED-IMG-002",
+    "expected_page": 7,
+    "retrieved_paper": "MED-IMG-002",
+    "retrieved_page": 14,
+    "paper_match": true,
+    "page_match": false,
+    "answer_preview": "According to the indexed research findings, Quantitative results in terms of the Dice similarity  coefficient (DSC) and ..."
+  },
+  {
+    "id": "Q44",
+    "category": "Numerical Findings",
+    "status": "PASS",
+    "expected_paper": "MED-DHM-006",
+    "expected_page": 6,
+    "retrieved_paper": "MED-DHM-006",
+    "retrieved_page": 1,
+    "paper_match": true,
+    "page_match": true,
+    "answer_preview": "According to the indexed research findings, 1 Instant Preliminary Cardiac Analysis from Smartphone Auscultation: A Real-..."
+  },
+  {
+    "id": "Q45",
+    "category": "IoT & Edge Architecture",
+    "status": "PASS",
+    "expected_paper": "MED-IOT-002",
+    "expected_page": 8,
+    "retrieved_paper": "MED-IOT-002",
+    "retrieved_page": 12,
+    "paper_match": true,
+    "page_match": true,
+    "answer_preview": "According to the indexed research findings, Scenario IP delivery ratio NDN delivery ratio No-loss 1.00 1.00 Packet-loss ..."
+  },
+  {
+    "id": "Q46",
+    "category": "Out-of-Domain (Sports)",
+    "status": "PASS (OOD Refused)",
+    "is_refusal": true,
+    "explanation": "Query matches an explicitly unsupported out-of-domain topic (e.g. sports, cooking, automotive, geography, entertainment, finance)."
+  },
+  {
+    "id": "Q47",
+    "category": "Out-of-Domain (Sports)",
+    "status": "PASS (OOD Refused)",
+    "is_refusal": true,
+    "explanation": "Query matches an explicitly unsupported out-of-domain topic (e.g. sports, cooking, automotive, geography, entertainment, finance)."
+  },
+  {
+    "id": "Q48",
+    "category": "Out-of-Domain (Sports)",
+    "status": "PASS (OOD Refused)",
+    "is_refusal": true,
+    "explanation": "Query matches an explicitly unsupported out-of-domain topic (e.g. sports, cooking, automotive, geography, entertainment, finance)."
+  },
+  {
+    "id": "Q49",
+    "category": "Out-of-Domain (Cooking)",
+    "status": "PASS (OOD Refused)",
+    "is_refusal": true,
+    "explanation": "Query matches an explicitly unsupported out-of-domain topic (e.g. sports, cooking, automotive, geography, entertainment, finance)."
+  },
+  {
+    "id": "Q50",
+    "category": "Out-of-Domain (Cooking)",
+    "status": "PASS (OOD Refused)",
+    "is_refusal": true,
+    "explanation": "Query matches an explicitly unsupported out-of-domain topic (e.g. sports, cooking, automotive, geography, entertainment, finance)."
+  },
+  {
+    "id": "Q51",
+    "category": "Out-of-Domain (Cooking)",
+    "status": "PASS (OOD Refused)",
+    "is_refusal": true,
+    "explanation": "Query matches an explicitly unsupported out-of-domain topic (e.g. sports, cooking, automotive, geography, entertainment, finance)."
+  },
+  {
+    "id": "Q52",
+    "category": "Out-of-Domain (Automotive)",
+    "status": "PASS (OOD Refused)",
+    "is_refusal": true,
+    "explanation": "Query matches an explicitly unsupported out-of-domain topic (e.g. sports, cooking, automotive, geography, entertainment, finance)."
+  },
+  {
+    "id": "Q53",
+    "category": "Out-of-Domain (Automotive)",
+    "status": "PASS (OOD Refused)",
+    "is_refusal": true,
+    "explanation": "Cross-encoder relevance score (0.000) fell below minimum required clinical confidence."
+  },
+  {
+    "id": "Q54",
+    "category": "Out-of-Domain (Automotive)",
+    "status": "PASS (OOD Refused)",
+    "is_refusal": true,
+    "explanation": "Cross-encoder relevance score (0.000) fell below minimum required clinical confidence."
+  },
+  {
+    "id": "Q55",
+    "category": "Out-of-Domain (Geography)",
+    "status": "PASS (OOD Refused)",
+    "is_refusal": true,
+    "explanation": "Cross-encoder relevance score (0.000) fell below minimum required clinical confidence."
+  },
+  {
+    "id": "Q56",
+    "category": "Out-of-Domain (Geography)",
+    "status": "PASS (OOD Refused)",
+    "is_refusal": true,
+    "explanation": "Cross-encoder relevance score (0.000) fell below minimum required clinical confidence."
+  },
+  {
+    "id": "Q57",
+    "category": "Out-of-Domain (Geography)",
+    "status": "PASS (OOD Refused)",
+    "is_refusal": true,
+    "explanation": "Query matches an explicitly unsupported out-of-domain topic (e.g. sports, cooking, automotive, geography, entertainment, finance)."
+  },
+  {
+    "id": "Q58",
+    "category": "Out-of-Domain (Entertainment)",
+    "status": "PASS (OOD Refused)",
+    "is_refusal": true,
+    "explanation": "Query matches an explicitly unsupported out-of-domain topic (e.g. sports, cooking, automotive, geography, entertainment, finance)."
+  },
+  {
+    "id": "Q59",
+    "category": "Out-of-Domain (Entertainment)",
+    "status": "PASS (OOD Refused)",
+    "is_refusal": true,
+    "explanation": "Cross-encoder relevance score (0.000) fell below minimum required clinical confidence."
+  },
+  {
+    "id": "Q60",
+    "category": "Out-of-Domain (Entertainment)",
+    "status": "PASS (OOD Refused)",
+    "is_refusal": true,
+    "explanation": "Query matches an explicitly unsupported out-of-domain topic (e.g. sports, cooking, automotive, geography, entertainment, finance)."
+  },
+  {
+    "id": "Q61",
+    "category": "Out-of-Domain (Finance)",
+    "status": "PASS (OOD Refused)",
+    "is_refusal": true,
+    "explanation": "Query matches an explicitly unsupported out-of-domain topic (e.g. sports, cooking, automotive, geography, entertainment, finance)."
+  },
+  {
+    "id": "Q62",
+    "category": "Out-of-Domain (Finance)",
+    "status": "PASS (OOD Refused)",
+    "is_refusal": true,
+    "explanation": "Cross-encoder relevance score (0.000) fell below minimum required clinical confidence."
+  },
+  {
+    "id": "Q63",
+    "category": "Out-of-Domain (Finance)",
+    "status": "PASS (OOD Refused)",
+    "is_refusal": true,
+    "explanation": "Cross-encoder relevance score (0.000) fell below minimum required clinical confidence."
+  },
+  {
+    "id": "Q64",
+    "category": "Out-of-Domain (Programming)",
+    "status": "PASS (OOD Refused)",
+    "is_refusal": true,
+    "explanation": "Cross-encoder relevance score (0.000) fell below minimum required clinical confidence."
+  },
+  {
+    "id": "Q65",
+    "category": "Out-of-Domain (Programming)",
+    "status": "PASS (OOD Refused)",
+    "is_refusal": true,
+    "explanation": "Query matches an explicitly unsupported out-of-domain topic (e.g. sports, cooking, automotive, geography, entertainment, finance)."
+  },
+  {
+    "id": "Q66",
+    "category": "Out-of-Domain (Programming)",
+    "status": "PASS (OOD Refused)",
+    "is_refusal": true,
+    "explanation": "Cross-encoder relevance score (0.000) fell below minimum required clinical confidence."
+  },
+  {
+    "id": "Q67",
+    "category": "Out-of-Domain (General Science)",
+    "status": "PASS (OOD Refused)",
+    "is_refusal": true,
+    "explanation": "Cross-encoder relevance score (0.000) fell below minimum required clinical confidence."
+  },
+  {
+    "id": "Q68",
+    "category": "Insufficient Evidence",
+    "status": "PASS (Insufficient Evidence Refused)",
+    "is_refusal": true,
+    "explanation": "Cross-encoder relevance score (0.000) fell below minimum required clinical confidence."
+  },
+  {
+    "id": "Q69",
+    "category": "Insufficient Evidence",
+    "status": "PASS (Insufficient Evidence Refused)",
+    "is_refusal": true,
+    "explanation": "Cross-encoder relevance score (0.006) fell below minimum required clinical confidence."
+  },
+  {
+    "id": "Q70",
+    "category": "Insufficient Evidence",
+    "status": "PASS (Insufficient Evidence Refused)",
+    "is_refusal": true,
+    "explanation": "Cross-encoder relevance score (0.004) fell below minimum required clinical confidence."
+  },
+  {
+    "id": "Q71",
+    "category": "Insufficient Evidence",
+    "status": "PASS (Insufficient Evidence Refused)",
+    "is_refusal": true,
+    "explanation": "Cross-encoder relevance score (0.001) fell below minimum required clinical confidence."
+  },
+  {
+    "id": "Q72",
+    "category": "Insufficient Evidence",
+    "status": "PASS (Insufficient Evidence Refused)",
+    "is_refusal": true,
+    "explanation": "Cross-encoder relevance score (0.001) fell below minimum required clinical confidence."
+  },
+  {
+    "id": "Q73",
+    "category": "Insufficient Evidence",
+    "status": "PASS (Insufficient Evidence Refused)",
+    "is_refusal": true,
+    "explanation": "Cross-encoder relevance score (0.007) fell below minimum required clinical confidence."
+  },
+  {
+    "id": "Q74",
+    "category": "Insufficient Evidence",
+    "status": "PASS (Insufficient Evidence Refused)",
+    "is_refusal": true,
+    "explanation": "Cross-encoder relevance score (0.001) fell below minimum required clinical confidence."
+  },
+  {
+    "id": "Q75",
+    "category": "Insufficient Evidence",
+    "status": "PASS (Insufficient Evidence Refused)",
+    "is_refusal": true,
+    "explanation": "Cross-encoder relevance score (0.000) fell below minimum required clinical confidence."
+  }
+]

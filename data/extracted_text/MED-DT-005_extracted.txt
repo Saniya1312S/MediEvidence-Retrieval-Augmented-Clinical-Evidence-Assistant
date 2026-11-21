@@ -1,0 +1,1219 @@
+--- PAGE 1 [pdf_text] ---
+Digital Twins in Coronary Artery Disease:
+A Mathematical Roadmap
+Alessandro Veneziani∗1, Annalisa Quaini†2, Marco Tezzele‡1, Omer San§3, and
+Traian Iliescu¶4
+1Emory University, 400 Dowman Drive NE, Atlanta, GA 30322, United States
+2University of Houston, 3551 Cullen Blvd, Houston, TX 77204, United States
+3University of Tennessee, 1512 Middle Drive, Knoxville, TN 37996, United States
+4Virginia Tech, 225 Stanger Street, Blacksburg, VA 24061, United States
+April 29, 2026
+Abstract
+The combination of data and models, enhanced by AI methodologies, leads to the paradigm
+called Digital Twins. This concept is expected to bring unprecedented support to personalized medicine. The combination of mathematical and numerical models with diagnostic devices that provide patient-specific knowledge in a bidirectional framework can be a formidable
+decision support for clinicians. In this paper, we consider some mathematical aspects of constructing a Digital Twin to prevent and treat Coronary Artery Disease. The keywords for the
+bidirectional communication between twins in our system are (i) Data Assimilation and (ii)
+Probabilistic Graphic Models. In particular, a quantity of paramount interest in the evaluation and prognosis of Coronary Artery Disease is the Wall Shear Stress, i.e., the tangential
+component of normal stress on the arterial wall. By considering steps for the personalization
+and the synthesis of Wall Shear Stress estimation, we propose a mathematical roadmap for
+constructing a Digital Twin system that could help prevent infarcts, one of the most lethal
+diseases in the world.
+Contents
+1
+Digital-Twins for Cardiovascular Health: Landscape Scenario
+2
+2
+Basics on Coronary Artery Disease
+3
+2.1
+The Mathematical Framework . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+3
+2.2
+The Clinical Framework . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+4
+3
+A DT Framework to Enhance the Treatment of CAD
+5
+4
+P2D: Data Assimilation
+7
+4.1
+Variational Reduced-Order Modeling DA
+. . . . . . . . . . . . . . . . . . . . . . .
+7
+4.2
+Continuous Reduced-Order Modeling DA
+. . . . . . . . . . . . . . . . . . . . . . .
+9
+4.3
+Physics-Informed Neural Networks in DA
+. . . . . . . . . . . . . . . . . . . . . . .
+11
+5
+D2P: From Data to Decision-Making
+12
+5.1
+PGM with Memory . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+12
+5.2
+Multifidelity PGM and UQ
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+13
+6
+Conclusions: an Applied Math Challenge
+14
+∗avenez2@emory.edu
+†aquaini@central.uh.edu
+‡marco.tezzele@emory.edu
+§osan@utk.edu
+¶iliescu@vt.edu
+1
+arXiv:2604.24910v1 [math.NA] 27 Apr 2026
+
+--- PAGE 2 [pdf_text] ---
+1
+Digital-Twins for Cardiovascular Health: Landscape Scenario
+With the advent of data-driven models and AI methodologies, the construction of virtual models
+of physical and engineering systems, previously based on computational mechanics, has ascended
+to unprecedented levels of complexity. Not only data-driven modeling enables the use of virtual
+descriptions of complex systems in a wider range of fields (biology, sociology, urban development,
+etc.), but the interaction between the physical and the virtual systems is brought to a much more
+sophisticated paradigm that takes the name of “digital twins” (DTs). The following definition is
+provided in [88]:
+A digital twin is a set of virtual information constructs that mimics the structure,
+context, and behavior of a natural, engineered, or social system (or system of systems),
+is dynamically updated with data from its physical twin, has a predictive capability,
+and informs decisions that realize value.
+The bidirectional interaction between the
+virtual and the physical is central to the digital twin.
+Beyond the predictive nature of virtual models, the (bidirectional) integration of data and
+conceptualizations opens up a wealth of perspectives.
+The virtual twin is not only a tool for
+understanding the physical system and designing a better one, but also a “continuous-in-time”
+decision-making support. One of the most promising and impactful fields where DTs are expected
+to make a difference is medicine, as demonstrated by the abundant literature in the field [35, 110,
+109]. In particular, cardiovascular diseases are of interest for at least two different reasons: (i)
+they are still the most lethal diseases in the Western world [20]; (ii) mathematical modeling of the
+cardiovascular system has an exceptional level of maturity and depth (see, e.g., [39, 114, 101, 99]).
+Although the perspectives of DTs for understanding and curing cardiovascular diseases are
+enormous [14, 24, 23, 110, 35], many aspects remain challenging for several reasons. In particular,
+as noted in [110], mathematical models are well developed and advanced, yet they lack a rigorous
+personalization. To be more precise, the cardiovascular apparatus features a hierarchy of components, which correspond to different physical scales. This hierarchy goes from the molecular level
+(critical for understanding the electrophysiology of the heart), to the cellular level, the tissue level,
+and the organ level, up to the systemic level. The interplay of these different scales has been a
+challenge for applied mathematicians for decades, and led to the introduction of specific numerical methods, see, e.g., [38, 121, 102, 91]. On the other hand, the data collection and usage pose
+significant challenges, both from the technological and the methodological point of view. In cardiovascular medicine, there are different types of data collected at different frequencies and, thus,
+the “dynamical update” advocated by the definition of DT has different implementations. We may
+have data from (i) wearable technologies, e.g., smart rings or smart watches, with measurements
+almost continuous in time, (ii)
+portable technologies, e.g., pressure measurement devices, with
+daily (or more frequent) measurements, like home sphygmomanometers; (iii) noninvasive devices,
+e.g., ultrasound (US), that can be collected rather frequently in principle, and finally, (iv) invasive
+systems, e.g., computed tomography (CT) and magnetic resonance imaging (MRI), which can be
+collected only sporadically. In general, the quality of the data is inversely proportional to their
+frequency. The heterogeneity of the data and their frequency of collection are critical aspects to
+address, as well as the intrinsic “multiscale-in-time” nature of many cardiovascular diseases, where
+the time scale of a heart beat (order of seconds) impacts the development of the pathology over
+weeks or months.
+All these aspects challenge applied mathematicians and urge us to extend the concept of “mathematics for clinics” to unexplored territories. Currently, some of the most important keywords of
+this process are: (i) personalization and (ii) synthesis. They concern the bidirectionality of the DT
+system, being central both at the input (how do the data make a general model patient-specific?)
+and at the output (how do the results of the model propagate to the patient?) of the virtual twin.
+The concept of “personalization” may sound more in the realm of engineering than of mathematics,
+as it is antithetical to the abstraction of a mathematical model, and of providing proofs of concept
+at a general level. However, in our opinion, these steps (personalization and synthesis) present a
+formidable number of challenges for the combination of deterministic and stochastic components,
+and deductive and inductive reasoning. Only the best mathematical tools can provide trustworthy
+answers to such challenges.
+2
+
+--- PAGE 3 [pdf_text] ---
+In this paper, we focus on the development of a DT for Coronary Artery Disease (CAD),
+depicted in Fig. 1.
+The reason for this specific interest is twofold.
+First, CADs are the most
+common heart disease. Heart diseases are responsible of more than 700,000 exitus per year in the
+USA [20]. Second, the medical community agrees on the role of a specific hemodynamic quantity,
+the so-called Wall Shear Stress (WSS), as a major actor in the development of CAD. Although the
+WSS is critical, it cannot be directly measured. To address this challenge, in this paper we focus on
+the mathematical personalization of WSS estimation as a combination of data and models, and on
+the consequent synthesis to inform the decision-maker. We aim at identifying a realistic roadmap
+for designing a first DT that could have a clinical impact on the prediction and prevention of severe
+adverse events related to CAD, e.g., infarction. This paper focuses on the robust mathematical
+foundation needed for such a DT to become a reality in clinical practice.
+Figure 1: Comparison between a healthy coronary and a coronary affected by CAD. Image created
+in bioRender.com.
+The paper is organized as follows. We start by giving a short introduction to CAD at the
+mathematical and clinical levels. Sec. 3 describes the general organization of a DT system. Sec. 4
+considers possible techniques for the personalization of the WSS estimation, based on velocity
+measures that can be retrieved from noninvasive devices like US. The keyword in this stage is Data
+Assimilation (DA), and we consider different ways to enable it. Then, Sec. 5 discusses methods of
+synthesis to organize the data into decision-making support focusing, in particular, on Probabilistic
+Graphic Models (PGMs). Finally, we give some assessments of the perspectives of DTs for CAD
+and beyond in Sec. 6.
+2
+Basics on Coronary Artery Disease
+In CAD, abnormal calcifications and lipid deposits create occlusions in the coronary arteries (see
+Fig. 1) that can eventually lead to myocardial infarction. This section provides a brief presentation
+of CAD from a mathematical perspective in Sec. 2.1 and from a clinical point of view in Sec. 2.2.
+2.1
+The Mathematical Framework
+CAD stems from a complex interplay between blood and the vascular tissues. A comprehensive
+mathematical model for this pathology should include the different physical components (the fluid
+dynamics, the structural dynamics, and the biological processes) and cover the different relevant
+time scales. In this design of a first decision-making support system, we focus specifically on the
+hemodynamics. Consequently, we cover here only the aspects related to the fluid.
+The blood flow in the coronary arteries is modeled by the incompressible Navier-Stokes equations (NSE) for a Newtonian fluid in laminar regime1. Even though this includes simplifications
+(for instance, the viscosity is generally non constant), this is a commonly accepted model. We
+denote by Ωthe domain occupied by the blood, which is a bounded open set in R3 with Lipschitz
+boundary Γ = ∂Ω. We denote by u the velocity of the blood, by p its pressure, by f the body
+force per unit mass, by µ > 0 the dynamic viscosity of the blood, and by ρ > 0 its density. The
+stress tensor τ is defined as
+τ = −pI + µ
+ ∇u + (∇u)T 
+,
+(1)
+1In the presence of strong occlusions, the flow regime can be highly disturbed. In general, however, in coronary
+hemodynamics an appropriate mesh and, possibly, classical stabilization techniques are enough for the numerical
+simulations.
+3
+
+--- PAGE 4 [pdf_text] ---
+where I is the identity tensor. Then, the NSE read as follows: find u and p such that
+ρ
+∂u
+∂t + (u · ∇)u
+
+−∇· τ
+= f
+in Ω× (0, T),
+(2)
+∇· u
+= 0
+in Ω× (0, T).
+(3)
+These equations should be complemented with suitable initial and boundary conditions, depending on the specific problem setting. For the initial conditions, generally a number of heart
+beats are run to reach a periodic regime, and to lose dependence on an arbitrary initial condition
+(which can be computed as the solution of a steady Stokes problem in Ω). Regarding the boundary conditions, it is reasonable to assume that blood flow is driven by a pressure drop across the
+coronary artery. So, we prescribe no-slip boundary conditions on the arterial wall, i.e.,
+u = 0
+on Γwall × (0, T),
+(4)
+where Γwall denotes the portion of the boundary corresponding to the vessel wall. At the inlet and
+outlet sections, we prescribe stress boundary conditions including the pressure,
+τin · n
+= −pinn
+on Γin × (0, T),
+(5)
+τout · n
+= −poutn
+on Γout × (0, T),
+(6)
+where pin and pout are the prescribed (possibly time-dependent) pressures at the inlet and outlet,
+respectively, n is the outward normal vector to the boundary, and Γin and Γout are the inflow and
+outflow portions of the boundary, respectively. However, we note that in practice the pressure
+can be measured only invasively and these data are generally not available. For this reason, these
+conditions can be replaced by conditions on the velocity. When not available, the velocity can be
+inferred by data on the flow rate, or other geometrical considerations, with reasonable assumptions
+on the profile of the velocity itself. We will, however, refer to boundary conditions (5), as they are
+functional in our DA procedure, as we illustrate later on.
+As mentioned in the introduction, a quantity of great interest in the assessment of CAD is the
+WSS, defined as the tangential component of the stress tensor τ on the arterial wall:
+WSS ≡τ · n −(n · τ · n)n
+on Γwall × (0, T) .
+(7)
+Many quantities derived from the WSS are used for predictions value. Among the others, we
+mention the Oscillatory Shear Index [66], the Relative Residence Time [85], and the Time-Averaged
+WSS (TAWSS) [66]. The latter is simply the time-averaged value of the WSS over a cardiac cycle:
+TAWSS = 1
+T
+Z T
+0
+|WSS(t)| dt ,
+(8)
+where T is the period of the cardiac cycle.
+The WSS (its magnitude or the TAWSS) can be estimated by post-processing measured velocities. In [81], a pseudo-spectral approach that filters high-frequency noise in ultrasound velocity
+measures and provides more accurate estimates than traditional Finite Difference formulas is proposed.
+This is a purely data-driven approach.
+Another, model-driven, approach is based on
+computational fluid dynamics (CFD), where the velocity field is computed by solving numerically
+the NSE. This requires knowledge of data on the boundaries. Unfortunately, most of the data
+that can be measured, in practice, are not on the boundary, so cannot be trivially used to inform
+the boundary conditions. For the TAWSS, a commonly accepted approach is to solve the steady
+Navier-Stokes equations and then to compute directly the TAWSS from the steady velocity field
+u. Recent quantitative studies have shown that this is an acceptable surrogate for the TAWSS
+[111, 86].
+This second CFD-based approach suffers from the lack of boundary data and their uncertainty.
+In our DT framework, we propose a more complex (and hopefully more accurate) approach, obtained by merging the previous two strategies (Sec. 4).
+2.2
+The Clinical Framework
+Chest pain is the symptom of CAD that usually leads a patient to the Emergency Room, where
+the severity of the disease can be assessed by measuring hemodynamic indices [36, 108, 1]. The
+4
+
+--- PAGE 5 [pdf_text] ---
+most popular index is called (myocardial) Fractional Flow Reserve (FFR) [94, 29, 95]. The FFR
+estimates the functional significance of a stenosis as the quotient between the maximum achievable
+blood flow in the presence of a stenosis over the one in physiological conditions; referring to the
+Bernoulli “vis-viva” equation [39], this quantity is expressed in terms of pressures as:
+FFR = pdistal −pvenous
+parterial −pvenous
+= 1 −
+δP
+parterial −pvenous
+,
+(9)
+where pdistal is the pressure downstream of the stenosis, pvenous is the pressure in the right ventricle, parterial is the pressure upstream of the stenosis, and δP is the trans-stenotic pressure (see
+Fig. 1). These pressure values are measured with a catheter that is inserted in the coronary arteries;
+however, to guarantee a sufficiently high accuracy, the patient needs to be put in pharmacologicallyinduced stress conditions. This makes the procedure quite invasive and expensive. Other indices
+that can be measured under stress-free conditions have been proposed, like, for instance the instantaneous wave-free ratio (iFR) [47]. For simplicity, we refer here to the FFR, but the same
+considerations apply to other indices.
+Interventional cardiologists identify from images the location of a potential occlusion in the
+coronaries and measure with special catheters the pressure drop across it to quantify the FFR
+according to equation (9).
+If the FFR is < 0.8, the patient is evaluated for a percutaneous
+intervention (PCI) or more invasive surgery, like a bypass graft. PCI consists in the deployment
+of a wireframe structure called stent along the occlusion to restore the artery’s physiological cross
+section. To avoid the burden of measuring the FFR, HeartFlow [55] launched a product to estimate
+the FFR with CFD. Whether measured or computed, the FFR must be accurate for the well-being
+of the patient and for an optimal use of the resources, since false positives lead to unnecessary
+procedures and, more importantly, false negatives may lead to adverse events.
+This assessment of CAD by FFR is designed for an effective short-term horizon, to decide
+treatment in the presence of pain. However, CAD is intrinsically multiphysics, combining fluid
+dynamics and tissue biology, and multiscale in time, as the effects of the blood flow occurring on
+the scale of seconds develop CAD over months or years. Biomedical engineers and clinicians have
+searched for quantities with a long-term predictive value. The general consensus is that the WSS
+is a strong indicator of potential CAD. For instance, in [67] it is demonstrated that low WSS in
+patients with non-obstructive CAD (high FFR) is associated with severe Endothelial Dysfunction.
+In other words, low WSS (< 1 Pa) is associated with a marker of CAD, often anticipating plaque
+formation. On the other hand, [68] shows that in patients with low FFR, so with a significant
+stenosis, high WSS (> 4.71 Pa) upstream the occlusion is associated with myocardial infarction.
+The analysis of the proximal WSS enhances the predictive value of the FFR. In [118], the authors
+show that for patient having FFR around 0.8 (when the uncertainty can easily lead to a wrong
+assessment of the patient), adding a fast computation of the WSS can significantly improve the
+mid- to long-term risk stratification.
+At this point, the following critical question arises: how to estimate reliably and rapidly the
+WSS? When using CFD on patient-specific geometries, the WSS can be computed from the velocity
+field u.
+Optimized CFD methods on specific workstations, starting from Digital Subtraction
+Angiography can provide a solution in around 10 minutes, like in [118]. On the other hand, CFD
+can be used to inform neural networks for a rapid assessment of the WSS, like in [75]. In the spirit
+of a sustainable DT with a possible frequent collection from (non)invasive devices, here we propose
+a different approach, based on DA.
+3
+A DT Framework to Enhance the Treatment of CAD
+In general, a DT framework in healthcare includes the following components:
+1. the patient, who is the source of data and the target of decisions;
+2. the devices to collect data, with different frequencies, accuracy, and invasivity;
+3. the P2D (Physical-to-Digital) step to convert measures into clinically relevant, but not measurable, data;
+4. the D2P (Digital-to-Physical) step to project a patient’s data in time to make predictions;
+5. the clinician (or human-in-the-loop), who receives the predictions and a set of possible actions,
+and makes informed decisions on the patient’s care (e.g., scheduling visits, acquiring further
+measures, and/or performing surgery).
+5
+
+--- PAGE 6 [pdf_text] ---
+The bidirectional feedback loop [88] between the physical space (patient’s diseased coronary
+arteries), and its digital representation, operating under uncertainty is at the core of the DT system.
+Fig. 2 depicts the continuous flow of information between the patient and the digital space. The
+reciprocal exchange of information occurs in the P2D and D2P steps:
+- P2D: In this direction, data collected during clinical visits are channeled into the DT. To
+achieve this, DA becomes pivotal. DA enhances the computational model’s synchronization
+and accuracy.
+- D2P: In this direction, the predictions, or optimized control strategies, from the DT’s simulations inform the treatment of a patient’s CAD. By treatment, we mean a therapeutic plan
+and the scheduling of recurrent visits to monitor the evolution of the pathology in time. The
+DT functions as a platform to predict outcomes and optimize interventions or clinical visits,
+during which further data are collected. We envision a DT based on physics-based modeling,
+DA, Machine Learning (ML), numerical analysis, and Uncertainty Quantification (UQ).
+Figure 2: Information flow of a DT with bidirectional feedback loop.
+To model the bidirectional coupling P2D-D2P, one could adopt a PGM formulation successfully
+used for structural DTs of unmanned aerial vehicles [61, 115] and civil engineering structures [116].
+Several key sources of uncertainty are modeled in the PGM as time-dependent random variables:
+the underlying unknown physical state S, the observational data coming from regular clinical visits
+O, and the inferred digital state D. Additionally, a reward function R helps to compute the optimal
+course of action U for the duration of the treatment. The model determines the therapy according
+to the optimal policy that maximizes R. The edges within the PGM represent relationships between
+the connected variables via conditional probability distributions, which allows the uncertainty to
+be propagated throughout the entire graph, as displayed in Fig. 3.
+P2D
+D2P
+P2D
+P2D
+Figure 3: Example of a PGM with highlighted P2D and D2P couplings in the first time step.
+Squares denote actions, diamonds denote rewards, bold borders are for observed (deterministic)
+quantities, and thin borders are for estimated (random) variables.
+6
+
+--- PAGE 7 [pdf_text] ---
+For CAD, the goal is to estimate the hemodynamics indices (S - the WSS in our case, see
+Sec. 2) from indirect observations O (velocity) coming from US data. From these observations, we
+infer the hemodynamics indices through DA and physics-based numerical models (see Sec. 4), and
+we identify the digital state D. The ultimate goal is to minimize the risk of failure of the coronary,
+but also to optimize the number of future clinical visits, the prescriptions needed, or the overall
+cost of treatment. The clinicians represent the human-in-the-loop: they will select the optimal
+treatment among a list of possible actions, provided by the DTs framework and ranked based on
+the reward function.
+In this general framework, we will focus herafter on the P2D and the D2P steps, which are the
+most critical for their mathematical aspects.
+4
+P2D: Data Assimilation
+The main target of our P2D step, at this preliminary stage of the construction of a DT system for
+CAD, is the accurate and rapid estimation of the WSS from possibly noninvasive velocity data.
+The velocity data collected by the US probes are generally sparse in a region of interest Ω, and not
+necessarily on its boundary. As mentioned earlier, numerical differentiation procedures for the data
+close to the boundary can achieve a WSS evaluation. Particular care must be taken with classical
+finite difference approaches, since the data are noisy and the differentiation can end up amplifying
+this noise. Pseudospectral techniques are capable of better noise management [81]. Notice that the
+US probes do not necessarily retrieve all the velocity components, which introduces an additional
+error in the process. This data-driven approach is conceptually suboptimal, because it does not
+leverage our background knowledge of the physics, provided by the NSE (2)-(3). On the other
+hand, the purely CFD-based approach can be used generally for retrospective clinical trials rather
+than in a DT framework.
+We therefore propose to resort to DA for a reliable and sustainable personalization of the WSS
+evaluation. The basic idea, illustrated in Fig. 4, is to combine through DA the velocity data and
+the primitive variables of the NSE (velocity and pressure); then, the WSS can be retrieved by
+standard postprocessing procedures.
+Figure 4: Block-diagram for the estimation of WSS through DA.
+DA of the US data and the NSE can be clearly performed in different ways. One important
+criterion is the speed of execution: the DA has to be compatible with the clinical timelines and
+the DT framework, without reducing the accuracy of the estimation.
+In the following, we consider three possible approaches.
+4.1
+Variational Reduced-Order Modeling DA
+For the sake of simplicity, let us assume that the region of interest in the coronary at hand has
+only one inflow section and one outflow section, like in Fig. 5. This assumption is realistic in many
+circumstances, but can be removed. We also assume that the values pin and pout in (5) and (6),
+respectively, are constant in space (commonly accepted in cardiovascular mathematics).
+One of the main challenges of cardiovascular simulations in a patient-specific setting is the
+(partial or entire) lack of information about the boundary conditions [54, 120, 37, 41, 102, 106].
+7
+
+--- PAGE 8 [pdf_text] ---
+Figure 5: A coronary artery reconstructed from intravascular imaging. The plaque is evident at
+the end of the grey area. The region features one inlet (up, left) and one outlet (bottom, right).
+Consequently, the data pin and pout in (5) and (6) are seldom available in practice. This is mainly
+due to the fact that measurement devices are invasive (and expensive if used routinely). On the
+other hand, available (velocity) data may be sparse in the region of interest Ω. A classical approach
+to perform DA in hemodynamics is therefore to consider the missing boundary conditions as the
+control variables to minimize the mismatch between the available data and the computed solution.
+This variational data assimilation (VDA) approach was advocated years ago in a number of papers
+[32, 33, 12, 31, 93]. For instance, let [d(xl, tm)], for l ∈[1, Nx], m ∈[1, Nt] be a set of velocity data
+over the time interval [0, T] in Ω. We consider the following functional:
+J (pin, pout) ≡1
+2
+X
+l,m
+∥u(xl, tm; pin, pout) −d(xl, tm)∥2,
+(10)
+where u(xl, tm; pin, pout) is the solution of (2), (3), (5), and (6). Then, a possible formulation of
+the DA problem reads:
+find argmin J (pin, pout),
+which basically means that we minimize J (u(pin, pout), d) under the constraints of (2), (3), (5),
+and (6). This problem was considered in [40] using a Lagrange multiplier approach. This means
+that the functional J is augmented by incorporating the constraints, weighted by the Lagrange
+multipliers. Eventually, we form the so-called Karush-Kuhn-Tucker (KKT) system by differentiating the augmented functional with respect to the state variables, the control variables, and
+the Lagrange multipliers (see, e.g., [50]). The finite element discretization of this approach was
+analyzed in [32], while in [33] the Bayesian formulation of the solution was introduced to quantify the uncertainty in the results. We note that, while accurate, the methods in [40, 32, 33] are
+computationally too expensive to be used in clinical practice.
+Other derivative-free approaches proceed by evaluating the functional J for different values of
+the control variables. This enables us to approximate J by fitting and consequently to identify a
+guess of the optimal solution by minimizing the approximate functional (possibly after restricting
+the values that the control variables can take, by physical considerations). The procedure is iterated
+until a convergence criterion is fulfilled - see, e.g., [18, 17, 19].
+In these approaches, each evaluation of J (pin, pout) requires the computation of the solution to
+(2), (3), (5), and (6) for different values of pin, pout. This is easily be a computational bottleneck,
+since this may be needed for hundreds (or more) iterations. However, considering (2), (3), (5),
+and (6) as a problem parametrized by the boundary data pin, pout, the computational cost can be
+drastically reduced by Reduced Order Models (ROMs).
+ROMs (see, e.g., [10, 8, 9, 53, 107, 100, 98] for reviews) have emerged as the methodology of
+choice to reduce the computational cost when Full Order Models (FOMs) have to be carried out for
+several parameter values. ROMs replace the FOM with a lower-dimensional approximation that
+captures the essential flow behavior. The reduction in computational time is achieved through a
+two-step procedure. In the first step, called the offline stage, one constructs a database of several
+FOM solutions, also called snapshots, associated to given times and/or physical parameter values:
+{u1
+h, . . . , uM
+h }, where M is the total number of time instances or parameter values (or both). The
+FOM database is used to generate a ROM basis, {φ1, . . . , φr}, where r is the ROM dimension. This
+8
+
+--- PAGE 9 [pdf_text] ---
+ROM basis is (hopefully much) smaller than the high-dimensional FOM basis but still preserves
+the essential flow features. A possible way to construct the reduced basis is Proper Orthogonal
+Decomposition (POD) [50, 56, 122], which stores the FOM solutions as columns of a matrix to
+which Singular Value Decomposition is applied. Then, the eigenvectors associated with the largest
+singular values (viewed as the most relevant information in the data) are extracted to generate a
+ROM basis. The effectiveness of the procedure is strongly related to how fast the singular values
+decay: the fastest the decay is, the fewer singular values are needed for the construction of the
+ROM, and more effective is the model reduction.
+Next, the ROM basis is used in a Galerkin framework to construct the Galerkin ROM (G-ROM).
+Specifically, we use the ROM velocity approximation ur(x, t) = Pr
+j=1 aj(t)φj(x) to model the fluid
+velocity, u(x, t), and project the resulting equations onto the ROM space, Xr = span{φ1, . . . , φr}.
+The resulting G-ROM can be written as follows: Given un
+r , find un+1
+r
+∈Xr such that ∀vr ∈Xr
+un+1
+r
+−un
+r
+∆t
+, vr
+
++ b∗(un+1
+r
+, un+1
+r
+, vr) + ν(∇un+1
+r
+, ∇vr) = (f n+1, vr).
+(11)
+We note that the G-ROM (11) in this form does not include a ROM pressure approximation. The
+reason is that we assume that the FOM snapshots are discretely divergence-free and, thus, so are
+the ROM basis functions. As a result, the ROM approximation ur (which is a linear combination
+of basis functions) will also be discretely divergence-free, and the ROM pressure term in the weak
+form disappears. Alternative ROM formulations that include a pressure approximation can be
+found in, e.g., [53, 100, 6, 30].
+The model reduction is effective if the dimension of the G-ROM (11), r, generally is orders of
+magnitude lower than the FOM dimension.
+In the second step of the ROM strategy, called online stage, one uses the G-ROM (11) to quickly
+compute the solution for times and/or parameter values that are different from those used in the
+ROM construction. The G-ROM (11) is an appealing alternative to the standard FOMs because
+its computational cost can be orders of magnitude lower than the FOM computational cost, while
+retaining a good level of accuracy.
+ROMs have been used to reduce the computational cost in data assimilation [16, 60, 79, 112,
+96, 34], and, specifically, in problems related to cardiovascular sciences, see, e.g., [11, 124, 7].
+It should be noted that, from a different perspective, DA holds great promise in increasing ROM
+accuracy by incorporating available data into the ROM to account for both numerical and modeling
+errors [125, 84].
+In particular, adding ROM for the rapid solution of (2), (3), (5), and (6) for different values
+of the boundary data significantly accelerates the solution of the VDA assimilation problem by
+optimization. Thanks to the splitting between the offline and the online stage, preliminary (unpublished) results [80] suggest that the optimization can be done in 15 minutes. These results
+demonstrate that the WSS based on DA in nontrivial geometries and with real US data affected
+by noise is more accurate than the WSS based only on data.
+4.2
+Continuous Reduced-Order Modeling DA
+An alternative approach to VDA is continuous DA (CDA), which is the insertion of coarse grain
+observational measurements directly into a mathematical model.
+CDA, which has connections
+with feedback control [50] and nudging [70], has provided more accurate forecasts in applications
+ranging from the environmental to the medical sciences [52, 13, 4]. To present this approach in
+a clear, simplified setting, consider the following general dynamical system, which can represent
+generically a system of PDEs modeling cardiovascular flows:
+du
+dt = F(u),
+u(0) = u0,
+(12)
+where u0 is the initial condition. We assume that data for the true solution u are available on a
+coarse mesh, of size H, which is significantly larger than the fine mesh, of size h, on which the
+spatial discretization of eq. (12) is effected. Let IH(u) be an available interpolation operator on
+the coarse mesh, or the orthogonal projection onto Fourier modes of wavenumbers smaller than
+1/H. The CDA strategy proposed in [5] is as follows:
+dv
+dt = F(v) + µ(IH(u) −IH(v)),
+v(0) = v0,
+(13)
+9
+
+--- PAGE 10 [pdf_text] ---
+where µ is a nudging parameter. When the dynamical system in Eq. (12) is represented by Eqs. (2)–
+(3) in 2D, it was proven in [5] that, for any initial data v0, ∥v(t) −u(t)∥L2 −→0 exponentially
+in time. Thus, even without knowing the initial data, u0, the solution u can be approximately
+reconstructed for large times. This is one of the main advantages of CDA. Unfortunately, also in
+the case of CDA, the computational cost limits its use in real clinical cases.
+Again, a possible workaround is represented by ROM. To date, the only CDA application at
+the ROM level was proposed in [125], where the CDA-ROM was applied to 2D flow past a circular
+cylinder at Reynolds numbers Re = 500 and Re = 1000 (a range that is significant for CAD
+in the presence of occlusions).
+We note that the computational setting used in the numerical
+investigation in [125] poses several challenges to the standard G-ROM (11): First, the G-ROM is
+used in the under-resolved regime, i.e., the number of ROM basis functions utilized to construct
+the G-ROM (e.g., r = 8) is not enough to accurately represent the underlying complex dynamics.
+Second, the G-ROM is used in the convection-dominated regime, which poses significant challenges
+to reduced-order modeling. The third challenge is that, in our numerical investigation, we built
+the G-ROM by using inaccurate snapshots. Specifically, in [125, Section 4.3], only 64% of one
+period of FOM data to construct the ROM basis was used. We emphasize that the under-resolved,
+convection-dominated, and data-scarce regimes are characteristic to the numerical simulation of
+complex flows in engineering, scientific, and medical applications. All of these above challenges can
+be tackled with a CDA-ROM. In [125], the FOM snapshots are generated by using a finite element
+(FE) discretization with (P2, P disc
+1
+) Scott–Vogelius elements on a barycenter refined Delaunay
+mesh with 103,000 velocity degrees of freedom, and a BDF2 time discretization with a time step
+of ∆t = 0.002. We generate a (coarse) mesh with size H ≫h using the points {xl}Nx
+l=0 where the
+velocity data [d(xl, tm)], with l ∈[1, Nx], m ∈[1, Nt], are collected. To construct the CDA-ROM,
+we add a nudging term to the G-ROM (11): Given un
+r , find un+1
+r
+∈Xr such that, ∀vr ∈Xr, we
+have:
+un+1
+r
+−un
+r
+∆t
+, vr
+
++ b∗(un+1
+r
+, un+1
+r
+, vr) + ν(∇un+1
+r
+, ∇vr) +
+(14)
+µ
+ IH(un+1
+r
+) −d(·, tn+1), IH(vr)
+
+= (f n+1, vr),
+(15)
+where IH is an interpolation operator on the coarse mesh, and b∗is the explicitly skew-symmetrized
+trilinear form. In (15), with a slight abuse of notation, d(·, tn+1) denotes a function that interpolates the data over the mesh of size H at time tn+1. The role of the nudging term is to steer the
+ROM velocity, ur, towards the true solution, which corresponds to the velocity data, [d(xl, tm)].
+The CDA-ROM (15) yields more accurate results than the G-ROM (11) in the numerical
+simulation of a 2D flow past a cylinder at Reynolds numbers Re = 500 and Re = 1000 [125]. This
+range of Reynolds numbers is relevant to coronaries. Specifically, the cases r = 8 and r = 16
+were considered, and compared the two ROMs with respect to several criteria: error, lift and
+drag coefficients, and kinetic energy. The CDA-ROM (15) is significantly more accurate than the
+standard G-ROM (11) with respect to all the criteria considered and for both Reynolds numbers.
+For Re = 500, the case of snapshots generated over less than one period (i.e., 64% and 84% of
+one period) showed that DA can significantly improve the ROM accuracy when insufficient data
+is available to build the ROM (see, e.g., [125, Fig.7]). Furthermore, the improvement in the DAROM accuracy over the standard G-ROM accuracy was larger when inaccurate snapshots were
+used instead of accurate snapshots. In [125, Section 4.4], an adaptive CDA-ROM, in which the
+nudging parameter is adjusted so that the CDA-ROM energy matches the true solution energy,
+was proposed too. The numerical results showed that the adaptive nudging slowly reduced the
+error and yielded a very accurate adaptive DA-ROM energy.
+The error analysis of this CDA-ROM (15) led to the following stability result [125, Lemma 3.3]:
+∥un
+r ∥≤Cdata,
+(16)
+where Cdata is a constant that depends on the input data. Furthermore [125, Theorem 3.5], for
+an appropriately chosen interpolation operator IH, it is possible to prove an a priori bound of the
+form
+∥un+1 −un+1
+r
+∥2 ≤Cn+1 ∥u0 −u0
+r∥2 + FOM + ROM,
+(17)
+where FOM (ROM) stands for the discretization error of the full (reduced) model, u0 and u0
+r are
+the initial velocities, and C is a constant. Since |C| < 1, the first term in the error bound (17)
+goes to zero exponentially fast in time.
+10
+
+--- PAGE 11 [pdf_text] ---
+L2 errors PINN
+L2 errors DA-PINN
+u1
+0.074
+0.0023
+u2
+0.13
+0.0026
+p
+0.47
+0.0022
+Table 1: Comparison of the errors for PINN and DA-PINN for the Kim and Moin 2D problem.
+All these results sugges that CDA-ROM can be an effective tool in the design of our DT
+system. However, extending the CDA-ROM (15) from the simplified setting considered in [125]
+to the complex CAD setting poses several challenges. These include complex 3D geometries that
+need to be parametrized, accuracy enhancement, scarce available data, and convection-dominated
+flows. Strategies for tackling these challenges are outlined in Section 6.
+4.3
+Physics-Informed Neural Networks in DA
+Physics-Informed Neural Networks (PINNs) are a declination of scientific ML based on the construction of a Neural Network (NN) that minimizes the residual of a PDE of interest. See, e.g.,
+[15] and references therein. If we generically denote problem (2)–(3) written in a residual form by
+R(u, p) = 0 and, similarly, the boundary conditions by B(u, p) = 0, the PINN solution of the flow
+problem of interest can be written as: find the parameters ϑ of a NN with input (x, t) and output
+(u(x, t), p(x, t)) to minimize the functional
+JPINN(ϑ) = w1
+P
+j,k |R(u(xj, tk; ϑ), p(xj, tk; ϑ))|2+
+w2|B(u(xj, tk; ϑ), p(xj, tk; ϑ)))|2,
+(18)
+where w1 and w2 are positive weights, and the sum is extended to an appropriate number of
+points in space and time. This approach may lead to fast solutions, but the accuracy depends
+on the design of the NN in a way that is not yet completely understood. Approximation results
+are available [27, 57, 49], but their practical impact has yet to be fully exploited. Therefore, the
+competitiveness of PINN over traditional CFD methods, e.g., finite element methods, is under
+scrutiny (see, e.g., [48, 105]). However, PINNs provide a natural framework for DA as one can
+incorporate the data mismatch in the solution of the problem by replacing the functional in (18)
+with:
+J DA
+PINN(ϑ) = JPINN(ϑ) + w3
+X
+l,m
+∥u(xl, tm; ϑ) −d(xl, tm)∥2.
+(19)
+Note that the points where we minimize the residual and the points where we have measures are
+generally unrelated.
+Preliminary (unpublished) results [80] indicate that the DA-PINN significantly improves the
+accuracy of a standard PINN approach. For instance, for the classical 2D Kim and Moin analytical
+solution [64], the errors (in the L2 norm) without and with DA are displayed in Tab. 1. The results
+(obtained with the python library DeepXDE [78], using the same neural network design in the two
+cases) clearly indicate that the addition of data to the residual functional greatly improves the
+results. It is also interesting to note that the pressure estimation greatly benefits from the data,
+which however refer to the velocity only. Again, the WSS computation after the NSE is solved is
+just a standard postprocessing step based on numerical differentiation. These results show that
+DA-PINN may be a viable option for the rapid and accurate estimation of the WSS, but deeper
+investigations on more complex and patient-specific geometries are in order.
+Remark. Aligning with the development of a DT system, we also aim to incorporate patients who
+have undergone PCI and the deployment of a stent. This is a nontrivial task [73] - see Fig. 6.
+Importantly, the struts of a stent can notably affect the WSS on endothelial tissue still in contact
+with blood flow [69].
+Specifically, a recent CFD study comparing 30 patient-specific geometries
+[111] revealed that WSS patterns result from a combination of macroscale aspects, such as vessel
+curvature and torsion, and microscale factors like the stent’s shape and size. When curvature or
+torsion are minimal, the stent’s influence on WSS is heightened.
+This underscores the necessity for precise and semi-automated methods in reconstructing patientspecific stented geometries, applicable to CFD (using advanced polytopal methods, for example [3])
+11
+
+--- PAGE 12 [pdf_text] ---
+Figure 6: Lumen of a patient-specific coronary artery with the footprint of the stent (left) and
+blood flow streamlines (right).
+and, consequently, DA. Addressing these factors will present a formidable challenge in computational mathematics in the forthcoming years.
+5
+D2P: From Data to Decision-Making
+Scalable predictive DTs were recently introduced in [61] representing a DT with a graph. Graphical
+models [59] combine probability theory with graph structures to help address two key challenges
+common in engineering and applied sciences: uncertainty and complexity.
+They tackle these
+challenges by breaking down complex systems into smaller, manageable components that are then
+mathematically connected in a consistent way. This modular setup makes it easier to integrate
+data, ensure internal consistency, and design scalable algorithms.
+Fig. 3 illustrates such a graphical structure for a DT. Each time step can include new observational data and updated decisions, such as changes in control inputs. These updates are informed
+by models, which in our case vary in resolution and accuracy. A major challenge is that effective decision-making in DTs requires not just knowing the current system state, but predicting
+how the system will behave in the future — ideally with quantified confidence. Embedding full
+physical models (e.g., PDEs) into the graph structure can support this, but at the cost of high
+computational expense, especially for complex systems like those in our simulations. Hence, the
+importance of techniques aimed at reducing the computational cost is clear, as illustrated earlier.
+The proposed PGM allows us to monitor the patient, assimilate new observations, estimate the
+risk indices based on the personalized hemodynamics, and prescribe optimal treatments by comprising both physics-based models and data with quantified uncertainty. Moreover, the part of the
+graph modeling the digital space can incorporate future state predictions of the patient state, thus
+providing critical insights to clinicians, who make the actual decisions for the CAD treatment.
+5.1
+PGM with Memory
+The main assumption of existing works using PGMs for DTs [61, 116, 115, 51, 25] is the Markovianity of the random variables, which means that the variables at time t + 1 depend only on
+the variables at the previous time t. For example, following the arrows in Fig. 3, the probability
+associated with Dt+1 depends only on Dt, on the realization of Ut, denoted by ut, and on the
+observations Ot = ot as follows: p(Dt+1 | Dt, Ut = ut, Ot+1 = ot+1). This strong assumption can
+significantly decrease the accuracy of predictive digital models used for decision-making. If we
+consider a narrowed coronary with a growing plaque, it is reasonable to expect that the rate of
+change in the plaque size is as important as the plaque size itself. An abrupt change in a relatively
+low-risk patient would result in immediate treatment, while steady conditions in a compromised
+coronary artery could be treated with less aggressive solutions. Therefore, to enable the use of
+PGM in clinical settings, it is important to weaken the Markovianity assumption and allow multiple variables from several past time instants to influence the predictions for the future digital state
+(Multi-Step Markov Chains) and, hence, the corresponding treatment. By changing the topology
+of the graph with respect to the one in Fig. 3, we expect improved DT’s predictive accuracy which
+leads to better decision-making. In this new framework, the probability associated with Dt+1 will
+depend on the previous k digital states and treatments, and on the last observation as follows:
+p(Dt+1 | Dt, Dt−1, . . . , Dt−k+1, Ut = ut, Ut−1 = ut−1, . . . , Ut−k+1 = ut−k+1, Ot+1 = ot+1).
+12
+
+--- PAGE 13 [pdf_text] ---
+At the clinical level, involving more steps to evaluate the rates of change in the process is very
+innovative. A possible drawback could be a degradation in computational efficiency and scaling
+due to the need to store more data and the resulting factorization. Any potential scaling issue
+could be overcome by leveraging different information sources, such as data being assimilated with
+different fidelity levels or at different time scales, as it is the case in our application. As we noted,
+data will eventually be collected from wearable and portable devices (with high frequency and,
+generally, low fidelity) as well as from noninvasive and invasive measurements (lower frequency
+and higher fidelity). This represents a critical direction for future research.
+Another aspect to consider is that we often have limited clinically relevant data, especially
+compared to the number of variables we need to estimate. This imbalance makes inference and
+control particularly difficult using conventional methods. These obstacles suggest that we need
+new, scalable DT frameworks that embed physical models in a way that is both accurate and
+computationally efficient. We need methods that feature a rigorous treatment of uncertainty and
+can treat complex geometries or interacting physical phenomena [43, 119]. A robust DT system
+must jointly address: (i) Data assimilation updating system models using available measurements,
+and (ii) Optimal control making informed decisions to steer the system toward a desired goal.
+These tasks are deeply coupled and must be addressed together in any practical DT application.
+5.2
+Multifidelity PGM and UQ
+The new DT framework outlined above can be viewed as a hierarchical graphical modeling framework that integrates information from multiple sources of varying fidelity, accuracy, and computational cost. This framework is structured as a directed graph in which nodes represent submodels
+of different fidelities, and the outputs of some nodes serve as inputs to others. We embed both existing solvers and data sources, enabling a principled combination of models and data. Rather than
+discarding established models, we combine them at levels where they are most effective. We note
+that the traditional multifidelity approach, which uses lower-fidelity models to correct approximations in higher-fidelity ones, assumes that information sources can be hierarchically ordered based
+on predictive accuracy. However, in the presence of noisy data and model-form uncertainties, this
+assumption may not hold. We therefore envision a more flexible approach that learns nonlinear
+manifolds, which can be viewed as curved coordinate systems that encapsulate each fidelity separately. These nonlinear manifolds enable fast and accurate predictions even with limited simulation
+or sparse experimental data.
+In the context of single-fidelity modeling, the goal is typically to represent a physical system
+using available data or imperfect models. Computational models approximate the desired solution
+by parameterizing an ansatz, which may take the form of classical mesh-based finite volume or finite
+element functions, or modern data-driven approaches such as deep neural networks [119]. Given
+limited data and computational resources, these approximations are inherently imperfect.
+To
+quantify their accuracy, appropriate error or risk metrics, such as mean squared error or statistical
+risk functions, must be minimized, typically through optimization over uncertain parameters and
+sample averages. However, challenges remain: optimal architecture selection, determination of
+collocation point density, and high computational costs associated with training.
+A critical gap in the literature involves handling operator uncertainty arising from parameterization. Most current approaches conduct operator learning for fixed parameterizations and treat
+the resulting operator as static, neglecting uncertainty in parameterization itself. This highlights
+the need for new methods that explicitly incorporate parameterization uncertainty from the outset.
+Existing single-fidelity methods often operate under deterministic settings where parameters are
+fixed; see, for instance, deep neural networks trained to minimize error at specific data points, as
+in PINNs [103, 62, 26]. Operator learning techniques such as Fourier neural operators [74, 123]
+and DeepONets [77, 65] aim to predict domain-wide solutions given initial or boundary conditions.
+Other approaches include neural ordinary differential equations [22, 72] and probabilistic methods
+for forward-inverse PDE mapping [119]. While effective, these methods typically do not address
+the complexities introduced by multifidelity systems.
+To broaden these capabilities, we adopt a comprehensive definition of multifidelity that spans
+a wide range of model types, e.g., from high-fidelity PDEs to projection-based ordinary differential
+equations, implemented using deep neural architectures, Gaussian processes, and other statistical
+surrogates.
+Our framework encompasses varying levels of spatial and temporal resolution and
+accuracy, extending to multiscale and multiphysics systems. Here a modular multifidelity strategy
+13
+
+--- PAGE 14 [pdf_text] ---
+can be formulated to overcome the computational burdens of high-fidelity-only models. By fusing
+data and model outputs from a heterogeneous ensemble of sources, we aim to construct a unified
+representation that improves prediction accuracy, especially in scenarios with sparse simulation
+or experimental data. The value of this multifidelity perspective, particularly in the absence of
+standardized validation datasets was recently emphasized in [104].
+Such a multifidelity framework can be built on advances in uncertainty quantification, particularly the use of high-fidelity data to correct local low-fidelity approximations — an idea that has
+reduced computational expense in trust-region-based optimization [2]. Discrepancy modeling has
+evolved to support more sophisticated corrections [90], grounded in the premise that models can
+be hierarchically ranked by predictive utility [63]. Several studies have developed surrogate models that exploit such hierarchies to integrate increasing levels of physics and numerical refinement
+[42, 87, 71, 92, 127, 21]. However, this assumption often fails when a clear cost-benefit ranking
+among models is unavailable. Alternative approaches [126, 76, 28, 46, 83, 82, 89] have tried to relax these assumptions, but suffer from limitations such as fidelity inter-dependencies, constrained
+parameterizations, and the need for common variables across fidelities.
+To overcome these limitations, we envision to utilize a multifidelity graph network architecture
+consisting of multiple elementary sets, each containing submodels derived from either physics or
+data. These are organized as directed graphs where nodes correspond to fidelity-specific models, and child nodes (higher fidelities) depend on parent nodes (lower fidelities). This structure
+mitigates the bottlenecks common in traditional multifidelity models. Such framework also incorporates empirical and reduced-order models as legitimate sources of information, thus preserving
+domain knowledge that might otherwise be lost in purely data-driven methods. Furthermore, one
+can perform transitioning from simple to complex geometries using nonlinear embeddings, such
+as variational autoencoders, to facilitate the learning of geometric representations across fidelities.
+Rather than using the low-fidelity solution directly as input for a high-fidelity model, we learn a
+common latent space that unifies inputs and outputs across fidelity levels. Once projected into this
+space, information from one fidelity can be passed to another in a decoupled and flexible manner.
+6
+Conclusions: an Applied Math Challenge
+The construction of DTs in clinics will be an exciting and challenging prospect in the years to
+come. The potential impact of this integration of data, mathematical models, and experience in
+the definition of personalized precision medicine programs cannot be underestimated. As noted in
+[110, 109], there are critical steps to be taken, ranging from personalization of the mathematical
+models to accurate validation and verification steps, accompanied by uncertainty quantification
+and numerical analysis that could certify the quality of the quantitative elaboration. Although
+the use of digital replicas of patient-specific apparatuses, thanks to the combination of data and
+models, already demonstrated great potential to understand the physiopathology of some diseases,
+the transition to “twins” has the potential to be a revolution in clinics, similar to the one brought
+about by the advent of imaging devices at the beginning of the 20th century. From “replicas” to
+twins, from “combination” to “integration” of data and models: these steps challenge applied and
+computational mathematicians in the development of fast and reliable methods of personalization
+and synthesis. The decision-making support demands for a reliable integration of data from different sources, collecting data with varying levels of reliability and frequency, and multi-physics,
+multi-scale (in time and space) models.2
+DA is certainly a key step in this process, being central in the certified personalization of
+available models. The advent of ROM methodologies enables the use of accurate techniques within
+clinical timelines. However, there are still challenges that need to be overcome, like the construction
+of geometrical atlases to leverage, for instance, the offline stage performed for multiple patients.
+Another challenge is the development of accurate ROMs in convection-dominated regimes, which
+are relevant to CAD. To tackle this challenge, a promising research avenue is the use of ROM
+spatial filtering stabilization (inspired by Large Eddy Simulation [44, 45, 113, 117, 58, 97]) in DA.
+Yet another challenge is the setup of Scientific Machine Learning techniques like PINN for
+the identification and personalization of models, such that we gain understanding and confidence
+2It is worth noting that improving the quality of data is also a challenge, involving more biomedical engineers
+and clinicians than mathematicians. Beyond the technological advancements of devices, we stress the need to create
+standard protocols for multi-center studies that could provide significant amounts of data with uniform collection
+procedures.
+14
+
+--- PAGE 15 [pdf_text] ---
+comparable to the ones we have now for traditional computational tools like Finite Elements.
+Furthermore, the combination of different methods (for instance ROM and PINN to provide
+methodologies that leverage the best of the different approaches) should also be developed to make
+the personalization rapid and accurate.
+Several challenges concern also the D2P step, particularly for the heterogeneity of data that will
+be eventually collected (in terms of frequency and fidelity). Using PGM with memory (multistep
+chains) in the data elaboration seems to be a promising framework to be carefully validated and
+certified, with an accurate UQ analysis.
+Ideally, as noted in [110], the construction of a DT system should go beyond a single-disease
+object, and should consider each patient as a physiological system with an effective monitoring for
+the prevention of different types of pathologies. Strangely enough, in medical papers on this topic
+the role of mathematics is overlooked, in favor of a computer science/engineering focus. We believe
+that, on the contrary, the role of mathematics in this long-term (but hopefully not so long-term)
+objective is critical, and as much as the combination of general deductive reasoning and inferential
+knowledge required by DT is challenging, it is also exciting. The ultimate goal is the improvement
+of daily healthcare, where, we strongly believe, mathematicians can and must play a primary role
+at the frontline.
+Acknowledgements
+AV, OS, and TI acknowledge the support of the US NSF under Award Numbers DMS-2012286,
+DMS-2345048, and DMS-2012253, respectively. AV also acknowledges (i) the support of US NSF
+Award Number DMS2038118 (PI: J. Nagy), (ii) the US NIH under Grant No. R01EB031101 (PI:
+B. Lindsey), (iii) the help of Jimena Martin-Tempestti (Emory University, USA) and Micol Bracco
+(Politecnico di Torino, IT), and (iv) the inspiration provided by Brooks Lindsey (Georgia Institute
+of Technology, USA) and Habib Samady (Emory University, USA).
+References
+[1] Fractional Flow Reserve (FFR): Definition and Calculation — my.clevelandclinic.org. https:
+//my.clevelandclinic.org/health/diagnostics/23556-fractional-flow-reserve.
+[Accessed 10-03-2025].
+[2] N. M. Alexandrov, J. E. Dennis Jr, R. M. Lewis, and V. Torczon. A trust-region framework
+for managing the use of approximation models in optimization.
+Structural optimization,
+15(1):16–23, 1998.
+[3] P. F. Antonietti, L. B. da Veiga, G. Manzini, et al. The virtual element method and its
+applications, volume 31. Springer, 2022.
+[4] M. Asch, M. Bocquet, and M. Nodet. Data Assimilation. Society for Industrial and Applied
+Mathematics, Philadelphia, PA, 2016. doi:10.1137/1.9781611974546.
+[5] A. Azouani, E. Olson, and E. S. Titi. Continuous data assimilation using general interpolant
+observables. Journal of Nonlinear Science, 24(2):277–304, 2014.
+[6] F. Ballarin, A. Manzoni, A. Quarteroni, and G. Rozza. Supremizer stabilization of POD–
+Galerkin approximation of parametrized steady incompressible Navier–Stokes equations. International Journal for Numerical Methods in Engineering, 102:1136–1161, 2015.
+[7] A. Barone, M. G. Carlino, A. Gizzi, S. Perotto, and A. Veneziani. Efficient estimation of cardiac conductivities: A proper generalized decomposition approach. Journal of Computational
+Physics, 423:109810, 2020.
+[8] P. Benner, W. Schilders, S. Grivet-Talocia, A. Quarteroni, G. Rozza, and L. Miguel Silveira.
+Model Order Reduction. Volume 2: Snapshot-Based Methods and Algorithms. De Gruyter,
+2020.
+[9] P. Benner, W. Schilders, S. Grivet-Talocia, A. Quarteroni, G. Rozza, and L. Miguel Silveira.
+Model order reduction. Volume 3: Applications. De Gruyter, 2020.
+15
+
+--- PAGE 16 [pdf_text] ---
+[10] P. Benner, W. Schilders, S. Grivet-Talocia, A. Quarteroni, G. Rozza, and L. Miguel Silveira.
+Model Order Reduction. Volume 1: System-and Data-Driven Methods and Algorithms. De
+Gruyter, Berlin, Boston, 2021. doi:doi:10.1515/9783110498967.
+[11] L. Bertagna and A. Veneziani. A model reduction approach for the variational estimation
+of vascular compliance by solving an inverse fluid–structure interaction problem. Inverse
+Problems, 30(5):055006, 2014.
+[12] C. Bertoglio, P. Moireau, and J.-F. Gerbeau. Sequential parameter estimation for fluid–
+structure problems: application to hemodynamics.
+International Journal for Numerical
+Methods in Biomedical Engineering, 28(4):434–455, 2012. doi:10.1002/cnm.1476.
+[13] D. Bl¨omker, K. Law, A. M. Stuart, and K. C. Zygalakis.
+Accuracy and stability of the
+continuous-time 3DVAR filter for the Navier–Stokes equation.
+Nonlinearity, 26(8):2193,
+2013.
+[14] K. Bruynseels, F. Santoni de Sio, and J. Van den Hoven. Digital twins in health care: ethical
+implications of an emerging engineering paradigm. Frontiers in genetics, 9:31, 2018.
+[15] S. Cai, Z. Mao, Z. Wang, M. Yin, and G. E. Karniadakis. Physics-informed neural networks
+(PINNs) for fluid mechanics: A review. Acta Mechanica Sinica, 37(12):1727–1738, 2021.
+[16] Y. Cao, J. Zhu, I. M. Navon, and Z. Luo. A reduced-order approach to four-dimensional
+variational data assimilation using proper orthogonal decomposition. International Journal
+for Numerical Methods in Fluids, 53(10):1571–1583, 2007.
+[17] C. Cartis, J. Fiala, B. Marteau, and L. Roberts. Improving the Flexibility and Robustness
+of Model-based Derivative-free Optimization Solvers. ACM Transactions on Mathematical
+Software (TOMS), 45(3):1–41, 2019. doi:10.1145/3338517.
+[18] C. Cartis and L. Roberts. A derivative-free Gauss–Newton method. Mathematical Programming Computation, 11:631–674, 2019. doi:10.1007/s12532-019-00161-7.
+[19] C. Cartis, L. Roberts, and O. Sheridan-Methven. Escaping local minima with local derivativefree methods: a numerical investigation. Optimization, 71(8):2343–2373, 2022.
+[20] CDC/National Center for Health Statistics. Leading causes of death. https://www.cdc.
+gov/nchs/fastats/leading-causes-of-death.htm. [Accessed 10-03-2025].
+[21] J. Chen, C. Meng, Y. Gao, and Y. Liu. Multi-fidelity neural optimization machine for Digital
+Twins. Structural and Multidisciplinary Optimization, 65(12):340, 2022.
+[22] R. T. Chen, Y. Rubanova, J. Bettencourt, and D. K. Duvenaud. Neural ordinary differential
+equations. Advances in neural information processing systems, 31, 2018.
+[23] G. Coorey, G. A. Figtree, D. F. Fletcher, V. J. Snelson, S. T. Vernon, D. Winlaw, S. M.
+Grieve, A. McEwan, J. Y. H. Yang, P. Qian, et al. The health digital twin to tackle cardiovascular disease—a review of an emerging interdisciplinary field. npj Digital Medicine,
+5(1):126, 2022.
+[24] J. Corral-Acero, F. Margara, M. Marciniak, C. Rodero, F. Loncaric, Y. Feng, A. Gilbert,
+J. F. Fernandes, H. A. Bukhari, A. Wajdan, et al. The ‘digital twin’ to enable the vision of
+precision cardiology. European Heart Journal, 41(48):4556–4564, 2020.
+[25] D. Cotoarb˘a, D. Straub, and I. F. Smith. Probabilistic digital twins for geotechnical design and construction. arXiv preprint arXiv:2412.09432, 2024. doi:10.48550/arXiv.2412.
+09432.
+[26] S. Cuomo, V. S. Di Cola, F. Giampaolo, G. Rozza, M. Raissi, and F. Piccialli. Scientific
+machine learning through physics–informed neural networks: Where we are and what’s next.
+Journal of Scientific Computing, 92(3):88, 2022.
+[27] G. Cybenko.
+Approximation by superpositions of a sigmoidal function.
+Mathematics of
+control, signals and systems, 2(4):303–314, 1989.
+16
+
+--- PAGE 17 [pdf_text] ---
+[28] S. De, J. Britton, M. Reynolds, R. Skinner, K. Jansen, and A. Doostan. On transfer learning
+of neural networks using bi-fidelity data for uncertainty propagation. International Journal
+for Uncertainty Quantification, 10(6), 2020.
+[29] B. De Bruyne, T. Baudhuin, J. A. Melin, N. Pijls, S. U. Sys, A. Bol, W. J. Paulus, G. R.
+Heyndrickx, and W. Wijns. Coronary flow reserve calculated from pressure measurements in
+humans. validation with positron emission tomography. Circulation, 89(3):1013–1022, 1994.
+[30] V. DeCaria, T. Iliescu, W. Layton, M. McLaughlin, and M. Schneier. An artificial compression reduced order model. SIAM Journal on Numerical Analysis, 58(1):565–589, 2020.
+[31] M. D’Elia, L. Mirabella, T. Passerini, M. Perego, M. Piccinelli, C. Vergara, and A. Veneziani.
+Applications of variational data assimilation in computational hemodynamics, pages 363–394.
+Springer, 2012.
+[32] M. D’Elia, M. Perego, and A. Veneziani. A variational data assimilation procedure for the
+incompressible Navier-Stokes equations in hemodynamics. Journal of Scientific Computing,
+52:340–359, 2012.
+[33] M. D’Elia and A. Veneziani. Uncertainty quantification for data assimilation in a steadyincompressible Navier-Stokes problem. ESAIM: Mathematical Modelling and Numerical Analysis, 47(4):1037–1057, 2013.
+[34] G. Donoghue and M. Yano.
+A multi-fidelity ensemble Kalman filter with hyperreduced reduced-order models.
+Computer Methods in Applied Mechanics and Engineering,
+398:115282, 2022.
+[35] K. Dziopa, K. Lekadir, P. van der Harst, and F. W. Asselbergs. Digital twins: Reimagining the future of cardiovascular risk prediction and personalized care. Hellenic Journal of
+Cardiology, 81:4–8, 2024. doi:10.1016/j.hjc.2024.06.001.
+[36] W. F. Fearon, B. De Bruyne, and N. H. Pijls. Fractional Flow Reserve in Acute Coronary
+Syndromes. Journal of the American College of Cardiology, 68(11):1192–1194, 2016. doi:
+10.1016/j.jacc.2016.07.713.
+[37] L. Formaggia, J.-F. Gerbeau, F. Nobile, and A. Quarteroni. Numerical Treatment of Defective Boundary Conditions for the Navier–Stokes Equations. SIAM Journal on Numerical
+Analysis, 40(1):376–401, 2002. doi:10.1137/S003614290038296X.
+[38] L. Formaggia, F. Nobile, A. Quarteroni, and A. Veneziani.
+Multiscale modelling of the
+circulatory system: a preliminary analysis. Computing and visualization in science, 2:75–83,
+1999.
+[39] L. Formaggia, A. Quarteroni, and A. Veneziani. Cardiovascular Mathematics: Modeling and
+simulation of the circulatory system, volume 1. Springer Science & Business Media, 2010.
+[40] L. Formaggia, A. Veneziani, and C. Vergara. A New Approach to Numerical Solution of
+Defective Boundary Value Problems in Incompressible Fluid Dynamics. SIAM Journal on
+Numerical Analysis, 46(6):2769–2794, 2008. doi:10.1137/060672005.
+[41] L. Formaggia, A. Veneziani, and C. Vergara. Flow rate boundary problems for an incompressible fluid in deformable domains: Formulations and solution methods. Computer Methods in
+Applied Mechanics and Engineering, 199(9-12):677–688, 2010. doi:10.1016/j.cma.2009.
+10.017.
+[42] A. I. Forrester, A. S´obester, and A. J. Keane.
+Multi-fidelity optimization via surrogate
+modelling.
+Proceedings of the Royal Society A: Mathematical, Physical and Engineering
+Sciences, 463(2088):3251–3269, 2007. doi:10.1098/rspa.2007.1900.
+[43] H. Gao, M. J. Zahr, and J.-X. Wang. Physics-informed graph neural Galerkin networks:
+A unified framework for solving PDE-governed forward and inverse problems. Computer
+Methods in Applied Mechanics and Engineering, 390:114502, 2022.
+[44] M. Girfoglio, A. Quaini, and G. Rozza. A POD-Galerkin reduced order model for a LES
+filtering approach. Journal of Computational Physics, 436:110260, 2021.
+17
+
+--- PAGE 18 [pdf_text] ---
+[45] M. Girfoglio, A. Quaini, and G. Rozza. A hybrid projection/data-driven reduced order model
+for the Navier-Stokes equations with nonlinear filtering stabilization. Journal of Computational Physics, 486:112127, 2023.
+[46] A. A. Gorodetsky, J. D. Jakeman, G. Geraci, and M. S. Eldred. MFNets: Multi-fidelity datadriven networks for Bayesian learning and prediction. International Journal for Uncertainty
+Quantification, 10(6), 2020.
+[47] M. G¨otberg, E. H. Christiansen, I. J. Gudmundsdottir, L. Sandhall, M. Danielewicz,
+L. Jakobsen, S.-E. Olsson, P. ¨Ohagen, H. Olsson, E. Omerovic, et al. Instantaneous wavefree ratio versus fractional flow reserve to guide pci.
+New England Journal of Medicine,
+376(19):1813–1823, 2017.
+[48] T. G. Grossmann, U. J. Komorowska, J. Latz, and C.-B. Sch¨onlieb. Can physics-informed
+neural networks beat the finite element method?
+IMA Journal of Applied Mathematics,
+89(1):143–174, 2024.
+[49] I. G¨uhring, M. Raslan, and G. Kutyniok.
+Expressivity of deep neural networks.
+arXiv
+preprint arXiv:2007.04759, 34, 2020.
+[50] M. D. Gunzburger.
+Perspectives in Flow Control and Optimization.
+Advances in Design and Control. Society for Industrial and Applied Mathematics, 2003.
+doi:10.1137/
+1.9780898718720.
+[51] S. Henao-Garcia, M. Kapteyn, K. E. Willcox, M. Tezzele, M. Castroviejo-Fernandez, T. Kim,
+M. Ambrosino, I. Kolmanovsky, H. Basu, P. Jirwankar, and R. Sanfelice.
+Digital-TwinEnabled Multi-Spacecraft On-Orbit Operations. In AIAA SCITECH 2025 Forum. American
+Institute of Aeronautics and Astronautics, Inc., 2025. doi:10.2514/6.2025-1432.
+[52] W. D. Henshaw, H.-O. Kreiss, and J. Ystr¨om. Numerical Experiments on the Interaction
+Between the Large- and Small-Scale Motions of the Navier-Stokes Equations.
+Multiscale
+Modeling & Simulation, 1(1):119–149, 2003. doi:10.1137/S1540345902406240.
+[53] J. S. Hesthaven, G. Rozza, and B. Stamm. Certified Reduced Basis Methods for Parametrized
+Partial Differential Equations, volume 590. Springer, 2016.
+[54] J. G. Heywood, R. Rannacher, and S. Turek. Artificial boundaries and flux and pressure conditions for the incompressible Navier–Stokes equations. International Journal for Numerical
+Methods in Fluids, 22(5):325–352, 1996.
+[55] Heartflow - Decisive Coronary Care. https://www.heartflow.com/. [Accessed 10-03-2025].
+[56] P. Holmes, J. L. Lumley, G. Berkooz, and C. W. Rowley. Turbulence, Coherent Structures,
+Dynamical Systems and Symmetry. Cambridge, second edition, 2012.
+[57] K. Hornik. Approximation capabilities of multilayer feedforward networks. Neural networks,
+4(2):251–257, 1991.
+[58] A. Ivagnes, M. Strazzullo, M. Girfoglio, T. Iliescu, and G. Rozza. Data-driven optimization
+for the evolve-filter-relax regularization of convection-dominated flows. International Journal
+for Numerical Methods in Engineering, 126(9):e70042, 2025.
+[59] M. I. Jordan. Learning in graphical models. MIT press, 1999.
+[60] M. Kaercher, S. Boyaval, M. A. Grepl, and K. Veroy. Reduced basis approximation and a
+posteriori error bounds for 4D-Var data assimilation. Optimization and Engineering, pages
+1–33, 2018.
+[61] M. G. Kapteyn, J. V. Pretorius, and K. E. Willcox. A probabilistic graphical model foundation for enabling predictive digital twins at scale. Nature Computational Science, 1(5):337–
+347, 2021. doi:10.1038/s43588-021-00069-0.
+[62] G. E. Karniadakis, I. G. Kevrekidis, L. Lu, P. Perdikaris, S. Wang, and L. Yang. Physicsinformed machine learning. Nature Reviews Physics, 3(6):422–440, 2021.
+18
+
+--- PAGE 19 [pdf_text] ---
+[63] M. C. Kennedy and A. O’Hagan. Predicting the Output from a Complex Computer Code
+When Fast Approximations Are Available. Biometrika, 87(1):1–13, 2000.
+[64] J. Kim and P. Moin. Application of a fractional-step method to incompressible Navier-Stokes
+equations. Journal of Computational Physics, 59(2):308–323, 1985.
+[65] N. Kovachki, Z. Li, B. Liu, K. Azizzadenesheli, K. Bhattacharya, A. Stuart, and A. Anandkumar. Neural operator: Learning maps between function spaces with applications to PDEs.
+Journal of Machine Learning Research, 24(89):1–97, 2023.
+[66] D. N. Ku, D. P. Giddens, C. K. Zarins, and S. Glagov. Pulsatile flow and atherosclerosis in the
+human carotid bifurcation. positive correlation between plaque location and low oscillating
+shear stress. Arteriosclerosis: An Official Journal of the American Heart Association, Inc.,
+5(3):293–302, 1985.
+[67] A. Kumar, O. Y. Hung, M. Piccinelli, P. Eshtehardi, M. T. Corban, D. Sternheim, B. Yang,
+A. Lefieux, D. S. Molony, E. W. Thompson, et al.
+Low Coronary Wall Shear Stress Is
+Associated With Severe Endothelial Dysfunction in Patients With Nonobstructive Coronary
+Artery Disease. JACC: Cardiovascular Interventions, 11(20):2072–2080, 2018.
+[68] A. Kumar, E. W. Thompson, A. Lefieux, D. S. Molony, E. L. Davis, N. Chand, S. Fournier,
+H. S. Lee, J. Suh, K. Sato, et al. High Coronary Shear Stress in Patients With Coronary
+Artery Disease Predicts Myocardial Infarction. Journal of the American College of Cardiology, 72(16):1926–1935, 2018.
+[69] J. LaDisa Jr, A. Ghorbannia, D. Marks, P. Mason, and H. Otake.
+Advancements and
+opportunities in characterizing patient-specific wall shear stress imposed by coronary artery
+stenting. Fluids, 7(10), 2022.
+[70] S. Lakshmivarahan and J. M. Lewis. Nudging methods: A critical overview. Data Assimilation for Atmospheric, Oceanic and Hydrologic Applications (Vol. II), pages 27–57, 2013.
+[71] L. Le Gratiet and J. Garnier. Recursive co-kriging model for design of computer experiments
+with multiple levels of fidelity. International Journal for Uncertainty Quantification, 4(5),
+2014.
+[72] K. Lee and E. J. Parish. Parameterized neural ordinary differential equations: Applications
+to computational physics problems. Proceedings of the Royal Society A, 477(2253):20210162,
+2021.
+[73] A. Lefieux, S. Bridio, D. Molony, M. Piccinelli, C. Chiastra, H. Samady, F. Migliavacca,
+and A. Veneziani. Semi-Automatic Reconstruction of Patient-Specific Stented Coronaries
+based on Data Assimilation and Computer Aided Design. Cardiovascular Engineering and
+Technology, pages 1–18, 2022.
+[74] Z. Li, N. B. Kovachki, K. Azizzadenesheli, K. Bhattacharya, A. Stuart, A. Anandkumar,
+et al. Fourier neural operator for parametric partial differential equations. In International
+Conference on Learning Representations, 2020.
+[75] D. Lin and S. Kenjereˇs. Towards fast and reliable estimations of 3d pressure, velocity and
+wall shear stress in aortic blood flow: Cfd-based machine learning approach. Computers in
+Biology and Medicine, 191:110137, 2025.
+[76] D. Liu and Y. Wang. Multi-Fidelity Physics-Constrained Neural Network and Its Application
+in Materials Modeling. Journal of Mechanical Design, 141(12):121403, 2019.
+[77] L. Lu, P. Jin, G. Pang, Z. Zhang, and G. E. Karniadakis. Learning nonlinear operators
+via deeponet based on the universal approximation theorem of operators. Nature Machine
+Intelligence, 3(3):218–229, 2021.
+[78] L. Lu, X. Meng, Z. Mao, and G. E. Karniadakis. DeepXDE: A Deep Learning Library for
+Solving Differential Equations. SIAM Review, 63(1):208–228, 2021.
+19
+
+--- PAGE 20 [pdf_text] ---
+[79] Y. Maday, A. T. Patera, J. D. Penn, and M. Yano. A parameterized-background data-weak
+approach to variational data assimilation: formulation, analysis, and application to acoustics.
+International Journal for Numerical Methods in Engineering, 102(5):933–965, 2015.
+[80] J. Martin-Tempestti, M. Bracco, U. Morbiducci, B. Lindsey, and A. Veneziani. Data assimilation methods for the quantification of the wall sher stress in coronary arteries.
+in
+preparation, 2025.
+[81] J. Mart´ın Tempestti, S. Kim, B. D. Lindsey, and A. Veneziani. A Pseudo-Spectral Method
+for Wall Shear Stress Estimation from Doppler Ultrasound Imaging in Coronary Arteries.
+Cardiovascular Engineering and Technology, pages 1–20, 2024.
+[82] X. Meng, H. Babaee, and G. E. Karniadakis. Multi-fidelity Bayesian neural networks: Algorithms and applications. Journal of Computational Physics, 438:110361, 2021.
+[83] X. Meng and G. E. Karniadakis. A composite neural network that learns from multi-fidelity
+data: Application to function approximation and inverse PDE problems. Journal of Computational Physics, 401:109020, 2020.
+[84] C. Mou, N. Chen, and T. Iliescu. An efficient data-driven multiscale stochastic reduced order
+modeling framework for complex systems. Journal of Computational Physics, 493:112450,
+2023.
+[85] C. D. Murray. The physiological principle of minimum work: I. the vascular system and the
+cost of blood volume. Proceedings of the National Academy of Sciences, 12(3):207–214, 1926.
+[86] G. Nannini, S. Saitta, L. Mariani, R. Maragna, A. Baggiano, S. Mushtaq, G. Pontone, and
+A. Redaelli. An automated and time-efficient framework for simulation of coronary blood
+flow under steady and pulsatile conditions. Computer Methods and Programs in Biomedicine,
+257:108415, 2024.
+[87] A. Narayan, C. Gittelson, and D. Xiu. A Stochastic Collocation Algorithm with Multifidelity
+Models. SIAM Journal on Scientific Computing, 36(2):A495–A521, 2014.
+[88] N. A. of Engineering, N. A. of Sciences Engineering, and Medicine. Foundational Research
+Gaps and Future Directions for Digital Twins. The National Academies Press, Washington,
+DC, 2024. doi:10.17226/26894.
+[89] S. Pawar, A. Sharma, G. Vijayakumar, C. J. Bay, S. Yellapantula, and O. San. Towards
+multi-fidelity deep learning of wind turbine wakes. Renewable Energy, 200:867–879, 2022.
+[90] B. Peherstorfer, K. Willcox, and M. Gunzburger. Survey of Multifidelity Methods in Uncertainty Propagation, Inference, and Optimization.
+SIAM Review, 60(3):550–591, 2018.
+doi:10.1137/16M1082469.
+[91] P. Perdikaris, L. Grinberg, and G. E. Karniadakis. Multiscale modeling and simulation of
+brain blood flow. Physics of Fluids, 28(2), 2016.
+[92] P. Perdikaris, D. Venturi, J. O. Royset, and G. E. Karniadakis. Multi-fidelity modelling via
+recursive co-kriging and Gaussian–Markov random fields. Proceedings of the Royal Society
+A: Mathematical, Physical and Engineering Sciences, 471(2179):20150018, 2015.
+[93] M. Perego, A. Veneziani, and C. Vergara. A Variational Approach for Estimating the Compliance of the Cardiovascular Tissue: An Inverse Fluid-Structure Interaction Problem. SIAM
+Journal on Scientific Computing, 33(3):1181–1211, 2011.
+[94] N. Pijls, J. Van Son, R. L. Kirkeeide, B. De Bruyne, and K. L. Gould. Experimental basis of
+determining maximum coronary, myocardial, and collateral blood flow by pressure measurements for assessing functional stenosis severity before and after percutaneous transluminal
+coronary angioplasty. Circulation, 87(4):1354–1367, 1993.
+[95] N. H. Pijls, B. Van Gelder, P. Van der Voort, K. Peels, F. A. Bracke, H. J. Bonnier, and M. I.
+El Gamal. Fractional flow reserve: a useful index to evaluate the influence of an epicardial
+coronary stenosis on myocardial blood flow. Circulation, 92(11):3183–3193, 1995.
+20
+
+--- PAGE 21 [pdf_text] ---
+[96] A. A. Popov, C. Mou, T. Iliescu, and A. Sandu. A Multifidelity Ensemble Kalman Filter
+with Reduced Order Control Variates. SIAM Journal on Scientific Computing, 43(2):A1134–
+A1162, 2021.
+[97] A. Quaini, O. San, A. Veneziani, and T. Iliescu. Bridging large eddy simulation and reducedorder modeling of convection-dominated flows through spatial filtering: Review and perspectives. Fluids, 9(8):178, 2024.
+[98] A. Quarteroni, A. Manzoni, and F. Negri.
+Reduced basis methods for partial differential
+equations: an introduction, volume 92. Springer, 2015.
+[99] A. Quarteroni, A. Manzoni, and C. Vergara.
+The cardiovascular system: mathematical
+modelling, numerical algorithms and clinical applications. Acta Numerica, 26:365–590, 2017.
+[100] A. Quarteroni, G. Rozza, and A. Manzoni.
+Certified reduced basis approximation for
+parametrized partial differential equations and applications. Journal of Mathematics in Industry, 1(1):1–49, 2011.
+[101] A. Quarteroni, M. Tuveri, and A. Veneziani. Computational vascular fluid dynamics: problems, models and methods. Computing and Visualization in Science, 2:163–197, 2000.
+[102] A. Quarteroni, A. Veneziani, and C. Vergara. Geometric multiscale modeling of the cardiovascular system, between theory and practice. Computer Methods in Applied Mechanics and
+Engineering, 302:193–252, 2016.
+[103] M. Raissi, P. Perdikaris, and G. E. Karniadakis. Physics-informed neural networks: A deep
+learning framework for solving forward and inverse problems involving nonlinear partial differential equations. Journal of Computational physics, 378:686–707, 2019.
+[104] P. Ren, N. B. Erichson, S. Subramanian, O. San, Z. Lukic, and M. W. Mahoney. SuperBench:
+A Super-Resolution Benchmark Dataset for Scientific Machine Learning. Journal of Datacentric Machine Learning Research, 2025.
+[105] S. Rezaei, A. Harandi, A. Moeineddin, B.-X. Xu, and S. Reese. A mixed formulation for
+physics-informed neural networks as a potential solver for engineering problems in heterogeneous domains: Comparison with finite element method. Computer Methods in Applied
+Mechanics and Engineering, 401:115616, 2022.
+[106] R. M. Romarowski, A. Lefieux, S. Morganti, A. Veneziani, and F. Auricchio. Patient-specific
+CFD modelling in the thoracic aorta with PC-MRI–based boundary conditions: A leastsquare three-element Windkessel approach. International Journal for Numerical Methods in
+Biomedical Engineering, 34(11):e3134, 2018.
+[107] G. Rozza, D. B. P. Huynh, and A. T. Patera. Reduced basis approximation and a posteriori error estimation for affinely parametrized elliptic coercive partial differential equations:
+application to transport and continuum mechanics. Archives of Computational Methods in
+Engineering, 15(3):229–275, 2008.
+[108] H. Samady, W. Fearon, A. C. Yeung, and S. B. King. Interventional Cardiology. McGraw
+Hill Professional, 2018.
+[109] K. Sel, A. Hawkins-Daarud, A. Chaudhuri, D. Osman, A. Bahai, D. Paydarfar, K. Willcox,
+C. Chung, and R. Jafari. Survey and perspective on verification, validation, and uncertainty
+quantification of digital twins for precision medicine. npj Digital Medicine, 8(1):40, 2025.
+doi:10.1038/s41746-025-01447-y.
+[110] K. Sel, D. Osman, F. Zare, L. Brattain, J. Hahn, O. Inan, R. Mukkamala, J. Palmer, D. Paydarfar, R. Pettigrew, et al. Building digital twins for cardiovascular health: From principles
+to clinical impact.
+Journal of the American Heart Association, 13(19):e031981–e031981,
+2024.
+[111] I. Shah, D. Molony, A. Lefieux, K. Crawfard, M. Piccinelli, H. Sun, D. Giddens, H. Samady,
+and A. Veneziani. Impact of the stent footprint on endothelial wall shear stress in 2 patientspecific coronary arteries: 3 a computational analysis from the shear-stent trial. to appear
+in Computer Methods and Programs in Biomedicine, 2025.
+21
+
+--- PAGE 22 [pdf_text] ---
+[112] R. S¸tef˘anescu, A. Sandu, and I. M. Navon. POD/DEIM reduced-order strategies for efficient
+four dimensional variational data assimilation. Journal of Computational Physics, 295:569–
+595, 2015.
+[113] M. Strazzullo, M. Girfoglio, F. Ballarin, T. Iliescu, and G. Rozza.
+Consistency of the
+full and reduced order models for evolve-filter-relax regularization of convection-dominated,
+marginally-resolved flows.
+International Journal for Numerical Methods in Engineering,
+123(14):3148–3178, 2022.
+[114] C. A. Taylor, T. J. Hughes, and C. K. Zarins. Finite element modeling of blood flow in
+arteries. Computer methods in applied mechanics and engineering, 158(1-2):155–196, 1998.
+[115] M. Tezzele, S. Carr, U. Topcu, and K. E. Willcox. Adaptive planning for risk-aware predictive
+digital twins. In K. Cherifi and I. Gosea, editors, Physics-based and Data-driven Modeling
+for Digital Twins, SEMA-SIMAI Series. Springer International Publishing, 2025. doi:10.
+48550/arXiv.2407.20490.
+[116] M. Torzoni, M. Tezzele, S. Mariani, A. Manzoni, and K. E. Willcox. A digital twin framework
+for civil engineering structures. Computer Methods in Applied Mechanics and Engineering,
+418:116584, January 2024. doi:10.1016/j.cma.2023.116584.
+[117] P. H. Tsai, P. Fischer, and T. Iliescu. A time-relaxation reduced order model for the turbulent
+channel flow. Journal of Computational Physics, 521:113563, 2025.
+[118] V. Tufaro, R. Torii, J.-P. Aben, R. Parasa, B.-K. Koo, R. Rakhit, G. V. Karamasis, I. H.
+Tanboga, A. Hamid A Khan, M. McKenna, M. Cap, M. A. Gamrah, P. W. Serruys, Y. Onuma, G. G. Stefanini, D. A. Jones, K. Rathod, A. Mathur, A. Baumbach, and C. V.
+Bourantas. Can fast wall shear stress computation predict adverse cardiac events in patients with intermediate non-flow limiting stenoses?
+Atherosclerosis, 401:119099, 2025.
+doi:10.1016/j.atherosclerosis.2024.119099.
+[119] A. Vadeboncoeur, ¨O. D. Akyildiz, I. Kazlauskaite, M. Girolami, and F. Cirak. Fully probabilistic deep models for forward and inverse problems in parametric PDEs.
+Journal of
+Computational Physics, 491:112369, 2023.
+[120] A. Veneziani. Boundary Condition for Blood Flow Problems. In ENUMATH97, pages 596–
+605, River Edge, NJ, 1998. World Scientific Publishing Co., Inc.
+[121] I. E. Vignon-Clementel, C. Figueroa, K. Jansen, and C. Taylor. Outflow boundary conditions
+for 3d simulations of non-periodic blood flow and pressure fields in deformable arteries.
+Computer methods in biomechanics and biomedical engineering, 13(5):625–640, 2010.
+[122] S. Volkwein. Proper orthogonal decomposition: Theory and reduced-order modelling. Lecture Notes, University of Konstanz, 2013. http://www.math.uni-konstanz.de/numerik/
+personen/volkwein/teaching/POD-Book.pdf.
+[123] G. Wen, Z. Li, K. Azizzadenesheli, A. Anandkumar, and S. M. Benson. U-FNO—An enhanced Fourier neural operator-based deep-learning model for multiphase flow. Advances in
+Water Resources, 163:104180, 2022.
+[124] H. Yang and A. Veneziani. Efficient estimation of cardiac conductivities via pod-deim model
+order reduction. Applied Numerical Mathematics, 115:180–199, 2017.
+[125] C. Zerfas, L. G. Rebholz, M. Schneier, and T. Iliescu.
+Continuous data assimilation reduced order models of fluid flow. Computer Methods in Applied Mechanics and Engineering,
+357:112596, 2019.
+[126] X. Zhang, F. Xie, T. Ji, Z. Zhu, and Y. Zheng. Multi-fidelity deep neural network surrogate
+model for aerodynamic shape optimization. Computer Methods in Applied Mechanics and
+Engineering, 373:113485, 2021.
+[127] Q. Zhou, Y. Wu, Z. Guo, J. Hu, and P. Jin. A generalized hierarchical co-Kriging model
+for multi-fidelity data fusion. Structural and Multidisciplinary Optimization, 62:1885–1904,
+2020.
+22
