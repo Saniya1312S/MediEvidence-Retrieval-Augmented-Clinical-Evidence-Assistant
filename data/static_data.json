@@ -10995,5 +10995,6 @@
         "root_cause": "Expected page annotated introduction while retriever surfaced detailed methodology section"
       }
     ]
-  }
+  },
+  "categories_count": 5
 }

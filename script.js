@@ -171,7 +171,9 @@ function updateHeroStats() {
     const setEl = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
     setEl('stat-papers', s.total_documents?.value || allPapers.length || '30');
     setEl('stat-chunks', s.total_indexed_chunks?.value || allChunks.length || '570');
-    setEl('stat-pages', s.total_pdf_pages?.value || '570');
+    setEl('stat-pages', s.total_pdf_pages?.value || s.normal_extracted_pages?.value || '570');
+    const categoriesCount = staticData.categories_count || (new Set(allPapers.map(p => p.research_category || p.category))).size || '5';
+    setEl('stat-categories', categoriesCount);
 }
 
 // =====================================================================

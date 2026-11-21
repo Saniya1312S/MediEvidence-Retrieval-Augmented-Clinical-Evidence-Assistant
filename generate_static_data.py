@@ -96,6 +96,7 @@ static_payload = {
         "paper_id": "MED-DT-001"
     },
     "stats": stats,
+    "categories_count": len(set(p.get("research_category") for p in papers if p.get("research_category"))),
     "papers": papers,
     "evaluation": {
         "summary": eval_summary,

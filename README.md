@@ -1,198 +1,139 @@
-# MediEvidence: Clinical Literature Research Assistant
+# MediEvidence
+**AI-Powered Research Assistant for Digital Healthcare Literature**
 
-> An AI-powered research assistant for digital healthcare literature, providing evidence-grounded answers with verifiable paper- and page-level citations.
+> *"Find the research evidence you remember, even when you forget which paper contains it."*
 
-- **Live Demo (Static Portfolio Demo):** [https://saniya1312s.github.io/MediEvidence-Retrieval-Augmented-Clinical-Evidence-Assistant/](https://saniya1312s.github.io/MediEvidence-Retrieval-Augmented-Clinical-Evidence-Assistant/)
+MediEvidence is an intelligent literature retrieval assistant designed for biomedical researchers, clinicians, and digital healthcare engineers. Instead of manually searching through dozens of dense PDF files, users can ask natural language questions and receive grounded evidence directly extracted from peer-reviewed literature. Every generated answer includes verifiable paper-level and page-level citations linked directly to the original PDF documents.
+
+---
+
+## 🚀 Technologies Used
+
+![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.109-009688?logo=fastapi&logoColor=white)
+![Frontend](https://img.shields.io/badge/Frontend-HTML5%20%7C%20CSS3%20%7C%20JS-E34F26?logo=html5&logoColor=white)
+![Sentence Transformers](https://img.shields.io/badge/Embeddings-Sentence--Transformers-FFA116)
+![Qdrant](https://img.shields.io/badge/Vector%20DB-Qdrant-DC2626?logo=qdrant&logoColor=white)
+![BM25](https://img.shields.io/badge/Sparse%20Search-BM25Okapi-6B7280)
+![Cross-Encoder](https://img.shields.io/badge/Reranker-Cross--Encoder%20ms--marco-7C3AED)
+![PyMuPDF](https://img.shields.io/badge/PDF%20Engine-PyMuPDF%20(fitz)-059669)
+![Architecture](https://img.shields.io/badge/Architecture-Hybrid%20RAG-2563EB)
+
+---
+
+## 🌐 Live Demo & Repository
+
+- **Live Demonstration:** [https://saniya1312s.github.io/MediEvidence-Retrieval-Augmented-Clinical-Evidence-Assistant/](https://saniya1312s.github.io/MediEvidence-Retrieval-Augmented-Clinical-Evidence-Assistant/)
 - **GitHub Repository:** [https://github.com/Saniya1312S/MediEvidence-Retrieval-Augmented-Clinical-Evidence-Assistant](https://github.com/Saniya1312S/MediEvidence-Retrieval-Augmented-Clinical-Evidence-Assistant)
-- **Core Technologies:** Python 3.10+, FastAPI, Qdrant Vector Search, SentenceTransformers (`all-MiniLM-L6-v2`), BM25Okapi, Cross-Encoder Neural Reranking (`ms-marco-MiniLM-L-6-v2`), PyMuPDF
 
-[![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue?logo=python)](https://www.python.org/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.109+-009688?logo=fastapi)](https://fastapi.tiangolo.com/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+> **Important Note on the Live Demo:**  
+> The GitHub Pages link hosts a **static interactive portfolio demonstration** using pre-indexed research evidence (`data/static_data.json`). It allows visitors to explore the 30-paper catalogue, search paper metadata, browse original PDFs with page navigation, inspect semantic chunks, and review benchmark evaluations. The **full live RAG backend** with real-time neural retrieval and dynamic question answering runs locally via FastAPI.
 
 ---
 
-## 🌐 Public Live Demo vs. Full Local Application
+## 📖 Project Overview
 
-MediEvidence operates in two documented modes:
+MediEvidence is an AI-powered research assistant that helps users find relevant information from digital healthcare research papers.
 
-1. **Static Portfolio Demo (GitHub Pages):**  
-   The [public live demonstration](https://saniya1312s.github.io/MediEvidence-Retrieval-Augmented-Clinical-Evidence-Assistant/) is a client-side portfolio demo hosted via GitHub Pages. It enables visitors, researchers, and recruiters to explore the curated 30-paper research catalogue, search paper metadata, view original PDFs with page navigation, inspect semantic chunk excerpts, review RAG architecture diagrams, and examine empirical evaluation metrics with pre-indexed verified evidence.
-   
-2. **Full AI Research Application (Locally Hosted):**  
-   To perform arbitrary real-time neural RAG inference—including live SentenceTransformers dense encoding, local Qdrant HNSW vector search, dynamic BM25 sparse matching, and Cross-Encoder neural reranking—run the FastAPI backend locally as described below.
+Users can ask questions in natural language instead of manually searching through multiple PDFs.
+
+The system retrieves relevant research passages and presents answers with their paper sources and page references.
 
 ---
 
-## ⚡ Quick Start: Running the Full AI Application Locally
+## ❗ Problem Statement
 
-```bash
-# 1. Clone the repository
-git clone https://github.com/Saniya1312S/MediEvidence-Retrieval-Augmented-Clinical-Evidence-Assistant.git
-cd MediEvidence-Retrieval-Augmented-Clinical-Evidence-Assistant
+Researchers often remember a finding, concept, or sentence from a research paper but forget:
+- The exact paper title
+- The author names
+- The publication year
+- The specific page containing the information
 
-# 2. Set up virtual environment and install dependencies
-python -m venv venv
-# Linux / macOS: source venv/bin/activate
-# Windows PowerShell: .\venv\Scripts\Activate.ps1
-pip install -r requirements.txt
+Searching through multiple research PDFs manually takes time, while generic generative AI tools often hallucinate non-existent citations or misattribute clinical evidence.
 
-# 3. Build local Qdrant vector database & BM25 inverted index (processes 30 PDFs, 570 pages in ~2 mins)
-python ingest_pipeline.py
-
-# 4. Launch FastAPI server with interactive web dashboard
-python main.py
-```
-
-Open **[http://127.0.0.1:8000](http://127.0.0.1:8000)** for the interactive research dashboard or **[http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)** for the interactive Swagger API docs.
+MediEvidence solves this problem by combining dense semantic search with keyword matching, grounding every answer in verified research passages with verifiable paper and page citations.
 
 ---
 
-## ⚠️ Educational Research Notice & Clinical Disclaimer
+## ✨ Key Features
 
-> [!IMPORTANT]
-> **MediEvidence is an academic research literature assistant, NOT a medical diagnosis device or clinical decision authority.**
-> It is designed exclusively for information retrieval, literature synthesis, and evidence cross-referencing across published peer-reviewed research papers. It does not provide medical diagnoses, treatment prescriptions, or clinical medical advice. Any clinical decisions must always be made by licensed medical practitioners.
-
----
-
-## 🌟 Primary Author Publication Spotlight
-
-MediEvidence integrates the primary author's peer-reviewed publication within its core dataset and evaluation benchmark:
-
-<table>
-  <tr>
-    <td width="18%" align="center">
-      <img src="https://img.icons8.com/fluency/96/dna-helix.png" alt="Digital Twin Research" width="80"/>
-      <br>
-      <strong>Frontiers in Digital Health</strong>
-    </td>
-    <td>
-      <h3>Digital Twin for Personalized Medicine Development</h3>
-      <p><strong>Authors:</strong> <em>Saniya Y. Saratkar, M. Langote, P. Kumar, P. Gote, et al.</em></p>
-      <p><strong>Published:</strong> August 7, 2025 • <strong>Pages:</strong> 23 Pages • <strong>Chunks:</strong> 23 Evidence Chunks</p>
-      <p><strong>DOI:</strong> <a href="https://doi.org/10.3389/fdgth.2025.1583466" target="_blank">10.3389/fdgth.2025.1583466</a> | <strong>Article URL:</strong> <a href="https://www.frontiersin.org/journals/digital-health/articles/10.3389/fdgth.2025.1583466/full" target="_blank">Frontiers in Digital Health Article</a></p>
-      <p><strong>Research Scope:</strong> Comprehensive framework exploring in-silico organ digital twin simulation, continuous real-time biosensor synchronization, and computational predictive therapy optimization across cardiovascular disease and personalized oncology.</p>
-    </td>
-  </tr>
-</table>
+- **Explore Research Papers:** Browse a curated collection of 30 open-access digital healthcare papers published between 2022 and 2026.
+- **Search Papers by Keyword:** Search research papers using titles, authors, categories, or DOIs.
+- **Natural Language Questions:** Ask questions in plain English without requiring complex query syntax.
+- **Relevant Passage Retrieval:** Retrieve grounded research passages matching the clinical intent of the query.
+- **Single-Paper Focused Search:** Search within a selected research paper to isolate specific findings.
+- **Verifiable Citations:** View supporting paper titles and exact PDF page references for every retrieved finding.
+- **Built-in PDF Viewer:** Open and explore original research PDFs with page navigation controls directly in the browser.
+- **Architecture Visualization:** Explore the multi-stage hybrid RAG pipeline and retrieval score inspector.
+- **Evaluation Dashboard:** View empirical benchmark metrics and transparent failure logs.
 
 ---
 
-## 🎯 The Problem: Why General RAG Fails in Medicine
+## 🏗️ How MediEvidence Works — Architecture Pipeline
 
-Standard RAG architectures frequently fail in clinical and biomedical literature because:
-
-1. **Hallucination of Page Numbers:** Generic LLM-based RAG engines invent non-existent page numbers or attribute findings to the wrong paper because generation is loosely conditioned on chunk text.
-2. **Dense-Only Retrieval Blindspots:** Pure vector search misses exact technical acronyms (e.g., `IoMT`, `CDSS`, `BAN`, `LeViT-UNet++`, `FGCARL`, `PocketTSLM`), returning superficially similar prose instead of the specific benchmark.
-3. **Lack of Out-of-Domain Guardrails:** Open-ended LLMs attempt to answer arbitrary off-topic queries (e.g., cake recipes, car repairs) with fabricated medical analogies rather than cleanly refusing.
-4. **Disconnection from Original Documents:** Traditional chat assistants display isolated text snippets without enabling researchers to immediately inspect and verify the surrounding context in the original PDF.
-
-### How MediEvidence Solves This
-- **Deterministic Bracketed Citations:** Every claim is paired with `[Paper Title (Year), Page X]` tied directly to PyMuPDF-extracted page boundaries.
-- **Dual-Path Hybrid Retrieval:** Dense semantic embeddings (`all-MiniLM-L6-v2`) and BM25 lexical token matching merged via Reciprocal Rank Fusion ($k=60$).
-- **Cross-Encoder Neural Reranking:** Deep cross-attention reranking (`ms-marco-MiniLM-L-6-v2`) over fused candidates to eliminate false positives.
-- **Strict Out-of-Domain Guardrail:** Dual-layer word-boundary regex and calibrated similarity filters enforcing 100% refusal on out-of-domain queries.
-- **Embedded PDF Deep Viewer:** Clickable citations instantly open the original PDF at the exact cited page (`/api/papers/{paper_id}/pdf#page=X`).
-
----
-
-## 🏛️ System Architecture
+MediEvidence uses a two-phase Hybrid Retrieval-Augmented Generation (RAG) architecture:
 
 ```mermaid
 flowchart TD
-    subgraph Ingestion["Offline Ingestion Pipeline"]
-        A["30 Peer-Reviewed PDFs (570 Pages)"] --> B["PyMuPDF Digital Text Extraction"]
-        B --> C{"Page Density Check (<80 chars?)"}
-        C -- "Yes (Scanned)" --> D["Tesseract OCR Fallback"]
-        C -- "No (Digital)" --> E["Structured Text Stream"]
-        D --> E
-        E --> F["Semantic Research Chunking (550 chars, 100 overlap)"]
-        F --> G["SentenceTransformers (all-MiniLM-L6-v2)"]
-        G --> H[("Qdrant Embedded Vector Store (384d HNSW)")]
-        F --> I[("BM25 Inverted Lexical Index")]
+    subgraph Offline ["1. Document Processing Pipeline"]
+        direction TB
+        A["Research PDFs (30 Papers)"] --> B["Text Extraction (PyMuPDF)"]
+        B --> C["Text Cleaning & Normalization"]
+        C --> D["Text Chunking (Page-Preserving)"]
+        D --> E["Embedding Generation (all-MiniLM-L6-v2)"]
+        E --> F["Qdrant Vector Database & BM25 Index"]
     end
 
-    subgraph Online["Online Query & Retrieval Pipeline"]
-        Q["User Research Query"] --> GR{"Domain Guardrail Check"}
-        GR -- "Out of Domain" --> REF["Immediate Refusal: Domain Scope Policy"]
-        GR -- "In Domain" --> PARALLEL["Parallel Hybrid Retrieval"]
-        
-        PARALLEL --> DENSE["Dense Semantic Search (Top-15 Hits)"]
-        PARALLEL --> SPARSE["Sparse BM25 Search (Top-15 Hits)"]
-        
-        DENSE --> RRF["Reciprocal Rank Fusion (RRF k=60)"]
-        SPARSE --> RRF
-        
-        RRF --> RERANK["Cross-Encoder Reranker (ms-marco-MiniLM-L-6-v2)"]
-        RERANK --> TOP["Top-K Grounded Passages"]
-        
-        TOP --> SYNTH["Grounded Evidence Formatter"]
-        SYNTH --> OUT["Verified Answer + [Paper, Page] Citations + PICO Parameters"]
-        OUT --> PDF["Interactive PDF Deep-Link Viewer (#page=X)"]
+    subgraph Online ["2. Question Answering Pipeline"]
+        direction TB
+        G["User Question"] --> H["Question Processing"]
+        H --> I["Dense & Keyword Retrieval"]
+        I --> J["Hybrid Result Ranking (RRF k=60)"]
+        J --> K["Cross-Encoder Reranking (ms-marco)"]
+        K --> L["Relevant Research Passages"]
+        L --> M["Grounded Answer with Paper and Page References"]
     end
 ```
 
-### Technical Specifications
+### Pipeline Steps Explained
 
-| Component | Technology | Specification / Configuration |
-|---|---|---|
-| **Backend Framework** | FastAPI (ASGI) | Asynchronous REST API with Starlette file streaming |
-| **Dense Embeddings** | `all-MiniLM-L6-v2` | 384-dimensional dense vectors, normalized L2 cosine metric |
-| **Vector Database** | Qdrant Local Client | Embedded local disk storage (`qdrant-client`), zero cloud dependency |
-| **Sparse Retrieval** | `rank-bm25` (BM25Okapi) | Inverted index ($k_1=1.5, b=0.75$) matching acronyms and keywords |
-| **Rank Fusion** | Reciprocal Rank Fusion (RRF) | Constant $k=60$, combining top 15 dense hits with top 15 sparse hits |
-| **Neural Reranker** | `cross-encoder/ms-marco-MiniLM-L-6-v2` | Joint cross-attention score over top 12 fused candidates |
-| **PDF Extraction** | PyMuPDF (`fitz`) + Tesseract | 570 pages; selective OCR fallback for low-density/scanned pages |
-| **Domain Guardrail** | Regex Boundary + Cosine Filter | 100% strict refusal on irrelevant queries (e.g. recipes, finance) |
-| **Frontend UI** | HTML5 / CSS3 / Vanilla JS | Dark-mode glassmorphism design, mobile responsive, zero npm build step |
+**1. Document Processing Pipeline**
+1. **Research PDFs:** 30 peer-reviewed digital healthcare papers are stored in the local dataset.
+2. **Text Extraction:** PyMuPDF (`fitz`) extracts clean text page-by-page from each PDF.
+3. **Text Cleaning:** Ligatures, line breaks, and formatting noise are normalized.
+4. **Text Chunking:** Text is divided into 570 page-preserving chunks to maintain exact page references.
+5. **Embedding Generation:** Sentence Transformers (`all-MiniLM-L6-v2`) creates 384-dimensional vector embeddings.
+6. **Qdrant & BM25 Index:** Embeddings are stored in a local Qdrant collection, and tokenized text is indexed in BM25.
 
----
-
-## 📈 Evaluation and Benchmark Results
-
-MediEvidence was evaluated using a comprehensive 75-question ground-truth benchmark suite comprising:
-- **45 Clinical In-Domain Questions** spanning all 5 research categories.
-- **22 Out-of-Domain Queries** spanning 8 distraction categories (cooking, automotive, sports, coding, finance, travel, gaming, history).
-- **8 Insufficient Evidence Queries** designed to test refusal when queried topics are healthcare-related but absent from the 30 papers.
-
-### Verified Benchmark Metrics
-
-#### Primary Retrieval & Citation Performance (45 Clinical In-Domain Questions)
-
-| Metric | Measured Result | Benchmark Description |
-|---|:---:|---|
-| **Recall @ 5** | **93.3%** | Target ground-truth paper retrieved within top-5 candidate set |
-| **Mean Reciprocal Rank (MRR)** | **0.888** | Harmonic mean of retrieval ranks across evaluated queries |
-| **nDCG @ 5** | **0.899** | Normalized Discounted Cumulative Gain in top-5 results |
-| **Paper Citation Accuracy** | **86.7%** | Exactly identified target clinical research paper |
-| **Page-Level Citation Accuracy** | **71.1%** | Exact target PDF page cited (multi-page continuity analyzed below) |
-| **Evidence Support Rate** | **82.2%** | Retrieved passage directly contains evidence for claim |
-
-#### Guardrail & Domain Boundary Benchmarks (Limited Test Samples)
-
-| Benchmark | Measured Result | Sample Scope & Notes |
-|---|:---:|---|
-| **Out-of-Domain Refusal** | **22 / 22 (100.0%)** | Rejection of non-medical queries across 8 distractor topics *(limited benchmark sample)* |
-| **Insufficient Evidence Detection** | **8 / 8 (100.0%)** | Correctly identifies queries unanswerable from corpus *(limited benchmark sample)* |
-| **Numerical Claim Accuracy** | **100.0%** | Zero numerical hallucination on extracted metrics and AUROC statistics |
-| **Fabricated Citations** | **0** | Zero non-existent papers or invented page references |
-
-### Transparent Analysis: The Page-Level Citation Challenge (71.1%)
-
-While paper-level citation reached **86.7%**, exact page-level citation registered at **71.1%**. In academic honesty, this 15.6% delta is transparently documented in `data/evaluation/evaluation_failures.json`:
-- **Multi-Page Topic Continuity:** In extensive review papers (e.g. *Kutlusan & Li*, 42 pages; *Vadhavkar et al.*, 44 pages), core concepts are discussed across multiple consecutive pages (e.g., conceptual introduction on page 4, architecture table on page 5, ablation discussion on page 6). When the system retrieves page 4 instead of page 5, the paper is correct and the answer is grounded, but strict single-page string match evaluates as a miss.
-- **Cross-Section Synthesis:** Questions requiring cross-referencing between methodology and clinical results occasionally pull the methodology chunk rather than the results chunk.
-
-All 13 failure cases are preserved in the repository for auditability.
+**2. Question Answering Pipeline**
+1. **User Question:** The user submits a research question through the web interface.
+2. **Question Processing:** The query is validated and checked against out-of-domain boundaries.
+3. **Dense & Keyword Retrieval:** The query is searched simultaneously using Qdrant vector similarity and BM25 lexical matching.
+4. **Hybrid Result Ranking:** Reciprocal Rank Fusion (RRF, \(k=60\)) merges the dense and sparse candidate lists.
+5. **Cross-Encoder Reranking:** A neural Cross-Encoder (`ms-marco-MiniLM-L-6-v2`) re-scores candidate passages.
+6. **Relevant Research Passages:** Top-ranked passages containing direct evidence are selected.
+7. **Grounded Answer:** The system presents the evidence with transparent paper titles and exact page citations.
 
 ---
 
-## 📊 Curated 30-Paper Research Dataset
+## 🛠️ Technologies Explained
 
-The dataset comprises 30 peer-reviewed, open-access research papers published between **2022 and 2026** across 5 clinical AI subdomains (6 papers per category). Every single page (570 pages total) has been ingested, cataloged, and indexed with direct DOI links.
+| Technology | Purpose |
+| :--- | :--- |
+| **Python** | Main programming language used for backend services and data processing |
+| **FastAPI** | High-performance backend API serving search and metadata endpoints |
+| **Sentence Transformers** | Converts text passages and queries into 384-dimensional dense vector embeddings |
+| **Qdrant** | Local disk-backed vector database storing and searching semantic embeddings |
+| **BM25** | Lexical search algorithm finding relevant passages using exact keyword matches |
+| **Cross-Encoder** | Neural reranker scoring query-passage pairs to improve final result order |
+| **PyMuPDF** | High-speed PDF processing library extracting text from research papers |
+| **HTML, CSS, JavaScript** | Frontend interface providing responsive search, filters, and PDF viewing |
 
-### Category Breakdown
+---
+
+## 📚 Research Dataset
+
+The dataset contains **30 open-access research papers** published between 2022 and 2026 across **5 digital healthcare categories** (6 papers per category):
 
 1. **AI in Medical Diagnosis and Medical Imaging** (6 papers, 130 pages)
 2. **Digital Health and Remote Patient Monitoring** (6 papers, 150 pages)
@@ -200,275 +141,146 @@ The dataset comprises 30 peer-reviewed, open-access research papers published be
 4. **Healthcare Wearables, IoT and Predictive Analytics** (6 papers, 75 pages)
 5. **AI-Based Clinical Decision Support Systems** (6 papers, 98 pages)
 
-### Full Paper Catalog
+Across the 30 papers, all **570 original PDF pages** have been extracted and mapped to **570 page-preserving chunks** in the search index.
 
-| Paper ID | Title | Primary Authors | Year | Category | Pages | DOI |
-|---|---|---|---|---|---|---|
-| `MED-IMG-001` | Retrieval-Augmented Correction for Generalist Medical Image Segmentation | Vincenzo Marciano et al. | 2026 | Medical Imaging & AI | 25 | [10.48550/arXiv.2611.23189](https://doi.org/10.48550/arXiv.2611.23189) |
-| `MED-IMG-002` | LeViT-UNet++: Balanced Fine-Grained Details and Context for Segmentation | Guoping Xu et al. | 2026 | Medical Imaging & AI | 24 | [10.48550/arXiv.2611.22482](https://doi.org/10.48550/arXiv.2611.22482) |
-| `MED-IMG-003` | Scribble Once, Segment Sequence: Bidirectional Temporal Consistency | Vincent Li Weixin et al. | 2026 | Medical Imaging & AI | 10 | [10.48550/arXiv.2611.21137](https://doi.org/10.48550/arXiv.2611.21137) |
-| `MED-IMG-004` | FGCARL: Fisher-Guided Continuously Adaptive Representation Learning | Xiaobing Yu et al. | 2026 | Medical Imaging & AI | 19 | [10.48550/arXiv.2611.16210](https://doi.org/10.48550/arXiv.2611.16210) |
-| `MED-IMG-005` | Medical Image Segmentation: Foundation Model Adaptation vs Task-Specific | Emre Kutlusan, Yongmin Li | 2026 | Medical Imaging & AI | 42 | [10.48550/arXiv.2611.14519](https://doi.org/10.48550/arXiv.2611.14519) |
-| `MED-IMG-006` | DeVAR: Low-Dose CT Denoising via Visual Autoregressive Modeling | Xizhuo Zhang et al. | 2026 | Medical Imaging & AI | 10 | [10.48550/arXiv.2606.28453](https://doi.org/10.48550/arXiv.2606.28453) |
-| `MED-DHM-001` | From AI-Enabled RPM Toward Agentic Robotics: Embodiment & Governance | Ivana Ragusa et al. | 2026 | Digital Health & RPM | 34 | [10.48550/arXiv.2611.18484](https://doi.org/10.48550/arXiv.2611.18484) |
-| `MED-DHM-002` | Digitally Supported Transitional Care Pathways for Older Adults | Camilla Gabrielsen et al. | 2026 | Digital Health & RPM | 17 | [10.48550/arXiv.2611.16463](https://doi.org/10.48550/arXiv.2611.16463) |
-| `MED-DHM-003` | Scoping Review of AI-Driven Digital Interventions in Mental Health Care | Yang Ni, Fanli Jia | 2026 | Digital Health & RPM | 19 | [10.48550/arXiv.2603.16204](https://doi.org/10.48550/arXiv.2603.16204) |
-| `MED-DHM-004` | Novel Approach for Smart IoMT-Based BAN for Old Home Healthcare | Shermin Sultana Setu et al. | 2025 | Digital Health & RPM | 5 | [10.48550/arXiv.2512.22553](https://doi.org/10.48550/arXiv.2512.22553) |
-| `MED-DHM-005` | CODE-II: Large-Scale Dataset for AI in ECG Analysis and Telemedicine | Petrus E. O. G. B. Abreu et al. | 2025 | Digital Health & RPM | 59 | [10.48550/arXiv.2511.15632](https://doi.org/10.48550/arXiv.2511.15632) |
-| `MED-DHM-006` | Instant Preliminary Cardiac Analysis from Smartphone Auscultation | Aswin Jose et al. | 2026 | Digital Health & RPM | 6 | [10.48550/arXiv.2601.13593](https://doi.org/10.48550/arXiv.2601.13593) |
-| `MED-DT-001` | **Digital Twin for Personalized Medicine Development** | **Saniya Y. Saratkar et al.** | **2025** | **Digital Twins & Medicine** | **23** | [**10.3389/fdgth.2025.1583466**](https://doi.org/10.3389/fdgth.2025.1583466) |
-| `MED-DT-002` | Building Digital Twins of Different Human Organs for Healthcare | Yilin Lyu, Zhen Li et al. | 2026 | Digital Twins & Medicine | 23 | [10.48550/arXiv.2601.11318](https://doi.org/10.48550/arXiv.2601.11318) |
-| `MED-DT-003` | Treatment Response Optimized CDSS AI System via Digital Twin | Xinyu Qin, Anil K. Sood et al. | 2026 | Digital Twins & Medicine | 7 | [10.48550/arXiv.2606.17405](https://doi.org/10.48550/arXiv.2606.17405) |
-| `MED-DT-004` | HAPI-EP: Hybrid, Adaptive & Predictive Digital Twins in Cardiac EP | Sumeet Vadhavkar et al. | 2026 | Digital Twins & Medicine | 44 | [10.48550/arXiv.2606.15637](https://doi.org/10.48550/arXiv.2606.15637) |
-| `MED-DT-005` | Digital Twins in Coronary Artery Disease: A Mathematical Roadmap | Alessandro Veneziani et al. | 2026 | Digital Twins & Medicine | 22 | [10.48550/arXiv.2604.24910](https://doi.org/10.48550/arXiv.2604.24910) |
-| `MED-DT-006` | TwinGuard-Lite: Rule-Based State-Admission Gateway for Digital Twins | Wenhui Chu, S. R. Islam | 2026 | Digital Twins & Medicine | 7 | [10.48550/arXiv.2610.09012](https://doi.org/10.48550/arXiv.2610.09012) |
-| `MED-IOT-001` | PocketTSLM: On-Device Soft-Prompt Time-Series Model for Wearables | Max Rosenblattl et al. | 2026 | Wearables & IoT | 15 | [10.48550/arXiv.2610.21308](https://doi.org/10.48550/arXiv.2610.21308) |
-| `MED-IOT-002` | Wearable Data Profiling for NDN-Based Smart Healthcare Networks | Mohammad R. Shakournia et al. | 2026 | Wearables & IoT | 16 | [10.48550/arXiv.2610.20215](https://doi.org/10.48550/arXiv.2610.20215) |
-| `MED-IOT-003` | Hybrid Predictive Ensemble of ML & Deep Networks for Early Prognosis | Balaji Venkateswaran | 2026 | Wearables & IoT | 14 | [10.48550/arXiv.2609.05146](https://doi.org/10.48550/arXiv.2609.05146) |
-| `MED-IOT-004` | Memory-Efficient EDA Denoising via Knowledge Distillation for Wearables | Yongbin Lee et al. | 2026 | Wearables & IoT | 13 | [10.48550/arXiv.2605.05246](https://doi.org/10.48550/arXiv.2605.05246) |
-| `MED-IOT-005` | SmartEdge: End-to-End Integrated Edge & Cloud Computing for IoMT | Alain Hennebelle et al. | 2025 | Wearables & IoT | 8 | [10.48550/arXiv.2502.15762](https://doi.org/10.48550/arXiv.2502.15762) |
-| `MED-IOT-006` | Voice-based Triage for Type 2 Diabetes using Virtual Assistant & Sensors | Kelvin Summoogum et al. | 2024 | Wearables & IoT | 9 | [10.48550/arXiv.2411.19204](https://doi.org/10.48550/arXiv.2411.19204) |
-| `MED-CDS-001` | RAG-Enhanced LLMs for Interactive Explainability in CDSS | Lorenzo Mannocci et al. | 2026 | Decision Support Systems | 15 | [10.48550/arXiv.2611.09232](https://doi.org/10.48550/arXiv.2611.09232) |
-| `MED-CDS-002` | Operation-aware Multimodal Clinical Decision Support for ICU Discharge | Guoqing Zhang et al. | 2026 | Decision Support Systems | 14 | [10.48550/arXiv.2611.11960](https://doi.org/10.48550/arXiv.2611.11960) |
-| `MED-CDS-003` | Radiology Guideline-derived Decision Graph for Efficient CDSS | Xuewen Zhou, Zhen Chen | 2026 | Decision Support Systems | 5 | [10.48550/arXiv.2610.40327](https://doi.org/10.48550/arXiv.2610.40327) |
-| `MED-CDS-004` | DocTalk: Enhancing Medical Knowledge Retrieval via Fine-tuned LLMs | Asad Gohar et al. | 2026 | Decision Support Systems | 19 | [10.48550/arXiv.2610.34871](https://doi.org/10.48550/arXiv.2610.34871) |
-| `MED-CDS-005` | MedJev: Evaluating Zero-Shot System-One Decision Making in Medicine | Simon A. Lee et al. | 2026 | Decision Support Systems | 31 | [10.48550/arXiv.2610.36006](https://doi.org/10.48550/arXiv.2610.36006) |
-| `MED-CDS-006` | Decisions by Discrimination: Differential Evidence for Medical Reasoning | Yunpeng Xiao et al. | 2026 | Decision Support Systems | 15 | [10.48550/arXiv.2611.13233](https://doi.org/10.48550/arXiv.2611.13233) |
+👉 [Browse the complete 30-paper catalogue with DOI links on the live website](https://saniya1312s.github.io/MediEvidence-Retrieval-Augmented-Clinical-Evidence-Assistant/#papers)
 
 ---
 
-## 🖼️ Screenshots Gallery
+## 📊 Evaluation Results
 
-The MediEvidence interface is designed with a modern glassmorphic theme, responsive typography, and intuitive research controls.
+The retrieval system was evaluated using an independently verified **75-question clinical benchmark**:
 
-### Desktop Experience (1280x800)
+| Metric | Score | What It Means |
+| :--- | :---: | :--- |
+| **Recall@5** | **93.3%** | The expected paper appears in the top 5 retrieved results |
+| **MRR (Mean Reciprocal Rank)** | **0.888** | Measures how close to rank 1 the first relevant passage appears |
+| **nDCG@5** | **0.899** | Measures overall retrieval quality with higher weight on top positions |
+| **Paper Citation Accuracy** | **86.7%** | The cited paper matches the verified ground-truth paper |
+| **Page-Level Citation Accuracy** | **71.1%** | The cited PDF page number matches the exact source passage |
 
-| Homepage & System Metrics | Research Papers Catalogue (30 Papers) |
-|:---:|:---:|
-| ![Homepage](screenshots/desktop_homepage.png) | ![Research Papers](screenshots/desktop_research_papers.png) |
-
-| Deep-Linked PDF Viewer with Page Navigation | Hybrid RAG Query & Bracketed Citations |
-|:---:|:---:|
-| ![PDF Viewer](screenshots/desktop_pdf_viewer.png) | ![RAG Query](screenshots/desktop_rag_query.png) |
-
-| Interactive RAG Architecture Pipeline | 75-Question Evaluation & Benchmark Dashboard |
-|:---:|:---:|
-| ![RAG Architecture](screenshots/desktop_rag_architecture.png) | ![Evaluation Dashboard](screenshots/desktop_evaluation_dashboard.png) |
-
-### Mobile Responsive Experience (375x812)
-
-| Mobile Navigation & Hero | Mobile Paper Catalogue & Search |
-|:---:|:---:|
-| ![Mobile Homepage](screenshots/mobile_homepage.png) | ![Mobile Papers](screenshots/mobile_research_papers.png) |
+**Evaluation Notes:**  
+- 13 failure cases were transparently recorded during benchmark evaluation.
+- Most page-level misses occurred in multi-page review papers where related clinical concepts span consecutive pages (for example, introduction on page 4, architecture table on page 5, and ablation discussion on page 6).
+- Page-level citation precision remains an active area for continued engineering.
 
 ---
 
-## 💻 Local Setup & Running Instructions
+## 📸 Screenshots
 
-### 1. System Prerequisites
+### 1. Homepage & Literature Overview
+![Homepage](screenshots/desktop_homepage.png)
 
-- **Python:** Version 3.10, 3.11, or 3.12 installed.
-- **Git:** For cloning the repository.
-- **Tesseract OCR (Optional):** Only required if you intend to re-ingest low-density scanned PDFs.
-  - Windows: [Tesseract-OCR 64-bit installer](https://github.com/UB-Mannheim/tesseract/wiki)
-  - Ubuntu/Debian: `sudo apt-get install tesseract-ocr`
-  - macOS: `brew install tesseract`
+### 2. Research Papers Catalogue & Filters
+![Research Papers](screenshots/desktop_research_papers.png)
 
-### 2. Clone the Repository
+### 3. Ask MediEvidence & Evidence Retrieval
+![Ask MediEvidence](screenshots/desktop_rag_query.png)
 
+### 4. Built-in Multi-Page PDF Viewer
+![PDF Viewer](screenshots/desktop_pdf_viewer.png)
+
+### 5. Multi-Stage RAG Architecture
+![RAG Architecture](screenshots/desktop_rag_architecture.png)
+
+### 6. Empirical Evaluation Dashboard & Failure Analysis
+![Evaluation Dashboard](screenshots/desktop_evaluation_dashboard.png)
+
+---
+
+## 💻 Installation and Local Setup
+
+Follow these steps to run the complete MediEvidence application locally on Windows:
+
+### 1. Clone the Repository
 ```bash
 git clone https://github.com/Saniya1312S/MediEvidence-Retrieval-Augmented-Clinical-Evidence-Assistant.git
 cd MediEvidence-Retrieval-Augmented-Clinical-Evidence-Assistant
 ```
 
-### 3. Set Up a Virtual Environment
-
+### 2. Create and Activate a Virtual Environment
 ```bash
-# On Linux / macOS:
-python3 -m venv venv
-source venv/bin/activate
-
-# On Windows (PowerShell):
 python -m venv venv
-.\venv\Scripts\Activate.ps1
+venv\Scripts\activate
 ```
 
-### 4. Install Dependencies
-
+### 3. Install Dependencies
 ```bash
 pip install -r requirements.txt
 ```
 
-### 5. Initialize the Vector Database & Ingestion
-
-The repository includes all 30 open-access research PDFs in `data/papers/`. To build the local Qdrant vector database and BM25 index on your machine (as `data/qdrant_storage/` is kept out of git tracking to preserve repo size):
-
+### 4. Run the Ingestion Pipeline
+Extracts text from the 30 PDFs, generates embeddings with Sentence Transformers, and builds the local Qdrant vector database and BM25 index:
 ```bash
 python ingest_pipeline.py
 ```
+*(This step takes approximately 2–3 minutes on initial run while models are downloaded and cached).*
 
-*This step runs in ~2-3 minutes, processing 570 pages into 570 semantic chunks, encoding them with `all-MiniLM-L6-v2`, and building the embedded Qdrant collection.*
-
-### 6. Launch the FastAPI Application
-
+### 5. Start the Application Server
 ```bash
-python main.py
+python -m uvicorn main:app --host 127.0.0.1 --port 8000
 ```
 
-Or using Uvicorn directly:
-
-```bash
-uvicorn main:app --host 127.0.0.1 --port 8000 --reload
-```
-
-Open your browser to:
-- **Interactive Web App:** [http://127.0.0.1:8000](http://127.0.0.1:8000)
-- **Interactive Swagger API Docs:** [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
-- **API Health Check:** [http://127.0.0.1:8000/api/health](http://127.0.0.1:8000/api/health)
-
-### 7. Run Automated Tests & Benchmark Evaluation
-
-```bash
-# Run backend route and RAG pipeline integration tests:
-python test_app.py
-
-# Run the 75-question benchmark evaluation suite:
-python build_and_evaluate_expanded.py
-```
+Open your browser and navigate to:  
+👉 **http://127.0.0.1:8000**
 
 ---
 
-## 🌐 Live Demo & Deployment Status
-
-### Deployment Environments Overview
-
-| Deployment Environment | Status | Access / Instructions | Technical Rationale |
-|---|---|---|---|
-| **Static Demo (GitHub Pages)** | **🟢 Live & Active** | [Launch Demo](https://saniya1312s.github.io/MediEvidence-Retrieval-Augmented-Clinical-Evidence-Assistant/) | Client-side static demonstration powered by pre-indexed verified evidence bundle (`data/static_data.json`), allowing instant browser exploration of 30 papers, PDF viewer, architecture, and benchmark dashboard with zero backend dependencies. |
-| **Local Environment (`127.0.0.1:8000`)** | **🟢 Fully Functional** | `python main.py` | Full access to real-time PyMuPDF extraction, SentenceTransformers dense embeddings, Qdrant embedded vector database, BM25 lexical search, and Cross-Encoder neural reranker. |
-| **Cloud Hosting (Render / Railway / Hugging Face Spaces)** | **⏳ Cloud Deployment Roadmap** | [Docker Blueprint](#cloud-deployment-blueprint-docker--containerized) | MediEvidence's full neural stack (`sentence-transformers` 384d embedder + Cross-Encoder reranker + PyMuPDF) requires approximately **1.2 GB RAM** during initialization. Free-tier cloud instances (512 MB cap) experience Out-Of-Memory (OOM) killing or severe cold-start latency. Full deployment to a dedicated cloud tier or containerized Hugging Face Space is planned. |
-
-### Cloud Deployment Blueprint (Docker / Containerized)
-
-To deploy MediEvidence to any cloud container service (Render, Railway, Fly.io, or Hugging Face Spaces):
-
-```dockerfile
-FROM python:3.11-slim
-
-WORKDIR /app
-
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    tesseract-ocr \
-    && rm -rf /var/lib/apt/lists/*
-
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
-COPY . .
-
-# Run initial ingestion if collection not present
-RUN python ingest_pipeline.py
-
-EXPOSE 8000
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
-```
-
----
-
-## 📁 Repository Structure
+## 📁 Project Folder Structure
 
 ```text
 MediEvidence-Retrieval-Augmented-Clinical-Evidence-Assistant/
+├── main.py                     # FastAPI application entrypoint and route mounting
+├── rag_engine.py               # Hybrid retrieval (Dense + BM25 + Cross-Encoder) logic
+├── ingest_pipeline.py          # PDF text extraction, chunking, and Qdrant indexing
 ├── api/
-│   ├── __init__.py                  # API package marker
-│   └── routes.py                    # REST endpoints (/query, /papers, /papers/{id}/pdf, /chunks, /stats, /evaluate)
+│   └── routes.py               # REST API endpoints (/query, /papers, /stats, /health)
 ├── data/
-│   ├── papers/                      # 30 Peer-Reviewed Open-Access Research PDFs across 5 categories
-│   │   ├── clinical_decision_support/
-│   │   ├── digital_health_monitoring/
-│   │   ├── digital_twins_personalized_medicine/  # Contains Saniya Y. Saratkar et al. (2025)
-│   │   ├── healthcare_iot_predictive_analytics/
-│   │   └── medical_imaging_ai/
-│   ├── extracted_text/              # 30 Extracted JSON files with page-level text and metadata
-│   ├── metadata/
-│   │   ├── paper_catalog.csv        # Comprehensive 30-paper metadata catalog
-│   │   ├── page_metadata.csv        # 570 Page-level extraction records
-│   │   ├── chunk_metadata.csv       # 570 Semantic chunk records with citations
-│   │   ├── ingestion_report.csv     # Processing statistics and extraction quality metrics
-│   │   └── bm25_index.pkl           # Pre-computed BM25Okapi lexical inverted index
-│   ├── evaluation/
-│   │   ├── evaluation_questions.json# 75 Benchmark questions (45 in-domain, 22 OOD, 8 insufficient)
-│   │   ├── evaluation_summary.json  # Verified metric summary (Recall, MRR, nDCG, Citations)
-│   │   ├── evaluation_results_75.json# Per-query execution log
-│   │   └── evaluation_failures.json # Detailed log of the 13 failure cases
-│   └── static_data.json             # Static pre-indexed bundle for GitHub Pages mode
-├── screenshots/                     # Verified desktop & mobile browser screenshots
-│   ├── desktop_homepage.png
-│   ├── desktop_research_papers.png
-│   ├── desktop_pdf_viewer.png
-│   ├── desktop_rag_query.png
-│   ├── desktop_rag_architecture.png
-│   ├── desktop_evaluation_dashboard.png
-│   ├── mobile_homepage.png
-│   └── mobile_research_papers.png
-├── index.html                       # Responsive glassmorphic research web interface
-├── style.css                        # UTF-8 CSS3 stylesheet (Dark mode, CSS grid, variables)
-├── script.js                        # Dual-mode API client, PDF modal controls, interactive dashboard
-├── main.py                          # FastAPI application entrypoint & static asset mounting
-├── rag_engine.py                    # Production RAG Engine (Dense + BM25 + RRF + Cross-Encoder + Guardrail)
-├── ingest_pipeline.py               # Ingestion pipeline: PyMuPDF extraction, semantic chunking & Qdrant storage
-├── test_app.py                      # 12-Test regression & integration verification suite
-├── build_and_evaluate_expanded.py   # Benchmark runner for 75-question evaluation suite
-├── BROWSER_TEST_REPORT.md           # End-to-end browser test report across desktop & mobile
-├── DEMO_GUIDE.md                    # 3-5 minute demonstration walkthrough with 5 verified queries
-├── requirements.txt                 # Pinned Python package dependencies
-├── .env.example                     # Environment configuration template
-├── .gitignore                       # Clean repository exclusions (vector store, cache, temp)
-├── .nojekyll                        # GitHub Pages Jekyll bypass flag
-├── LICENSE                          # MIT License
-└── README.md                        # Comprehensive project documentation
+│   ├── papers/                 # 30 peer-reviewed research PDFs across 5 categories
+│   ├── metadata/               # Catalog, chunk, and page metadata CSV files
+│   ├── qdrant_storage/         # Local disk storage for Qdrant vector database
+│   ├── evaluation/             # 75-question benchmark questions and failure logs
+│   └── static_data.json        # Pre-indexed evidence bundle for GitHub Pages demo
+├── screenshots/                # Application preview screenshots for documentation
+├── index.html                  # Main web dashboard interface
+├── style.css                   # Academic dark-navy design styles
+├── script.js                   # Client-side UI interactions and search handler
+├── requirements.txt            # Python production dependencies
+└── test_app.py                 # Automated API test suite
 ```
 
 ---
 
-## 🔮 Limitations & Future Roadmap
+## 🔮 Future Scope
 
-1. **Multi-Page Synthesis via LLM Generation:** Currently, MediEvidence extracts and synthesizes grounded chunks directly. Future iterations will integrate a locally quantised LLM (e.g. Llama-3-8B-Instruct or Meditron-7B) to synthesize multi-paragraph narrative reviews with bracketed inline citation footnotes.
-2. **Vision-Language Model (VLM) for Complex Tables & Figures:** Low-dose CT visualisations and multi-panel ablation tables require vision-language parsing (e.g., ColPali or Nougat) to index image tokens alongside textual tokens.
-3. **Automated Multi-PDF Ingestion Microservice:** Developing a drag-and-drop web upload pipeline with Celery task queues and incremental vector database updates.
+Planned future enhancements include:
+
+1. **Cloud Backend Deployment:** Host the live FastAPI backend on a cloud container service for real-time online inference.
+2. **User PDF Uploads:** Allow researchers to upload their own research papers and index them on the fly.
+3. **Corpus Expansion:** Expand the literature repository to hundreds of clinical AI publications.
+4. **Higher Page-Level Accuracy:** Implement hierarchical sentence-window chunking to boost page citation precision beyond 85%.
+5. **Comparative Paper Summaries:** Add multi-paper synthesis to compare findings across authors automatically.
+6. **Multilingual Research Support:** Support biomedical papers published in languages other than English.
 
 ---
 
-## 👩‍💻 Author & Research Attribution
+## ⚠️ Limitations
+
+- **Static Live Demo:** The public GitHub Pages demonstration uses pre-indexed evidence; real-time inference on arbitrary new questions requires the local backend.
+- **Corpus Boundary:** Answers are strictly limited to evidence contained within the 30 indexed research papers.
+- **Local Compute Requirements:** Running the full local pipeline requires sufficient RAM (~4 GB) to load embedding and reranker models.
+- **Page Citation Discrepancies:** On broad review questions, the model may retrieve adjacent context pages that discuss the same topic.
+
+---
+
+## 👩‍💻 Author
 
 **Saniya Saratkar**  
-*B.Tech in Artificial Intelligence & Data Science*  
-- **Primary Research:** Author of *"Digital Twin for Personalized Medicine Development"*, *Frontiers in Digital Health* (2025). DOI: [10.3389/fdgth.2025.1583466](https://doi.org/10.3389/fdgth.2025.1583466)
-- **GitHub:** [@Saniya1312S](https://github.com/Saniya1312S)
-- **Project Repository:** [MediEvidence-Retrieval-Augmented-Clinical-Evidence-Assistant](https://github.com/Saniya1312S/MediEvidence-Retrieval-Augmented-Clinical-Evidence-Assistant)
+B.Tech — Artificial Intelligence and Data Science  
+Interested in Artificial Intelligence, Machine Learning, Generative AI, RAG Systems, and Digital Healthcare Research.
 
 ---
 
-## 📖 Citation Format
+## 📜 License
 
-If you find MediEvidence or the integrated research papers helpful in your work, please cite:
-
-```bibtex
-@article{saratkar2025digitaltwin,
-  title={Digital Twin for Personalized Medicine Development},
-  author={Saratkar, Saniya Y. and Langote, M. and Kumar, P. and Gote, P. and others},
-  journal={Frontiers in Digital Health},
-  volume={7},
-  pages={1583466},
-  year={2025},
-  publisher={Frontiers Media SA},
-  doi={10.3389/fdgth.2025.1583466}
-}
-```
-
----
-
-## ⚖️ License
-
-Distributed under the **MIT License**. See `LICENSE` for more information. All included research PDFs are open-access publications under Creative Commons licenses (CC BY 4.0, CC BY-SA 4.0, or CC BY-NC-ND 4.0).
+This project is licensed under the [MIT License](LICENSE) — feel free to use and adapt it for academic, research, and educational purposes.
