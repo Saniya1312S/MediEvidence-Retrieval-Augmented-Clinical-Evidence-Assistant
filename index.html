@@ -20,9 +20,9 @@
             <button class="nav-hamburger" id="navHamburger" aria-label="Toggle menu">☰</button>
             <div class="nav-links" id="navLinks">
                 <a href="#home" class="nav-link active" data-section="home">Home</a>
-                <a href="#about" class="nav-link" data-section="about">About</a>
-                <a href="#papers" class="nav-link" data-section="papers">Research Papers</a>
                 <a href="#ask" class="nav-link" data-section="ask">Ask MediEvidence</a>
+                <a href="#papers" class="nav-link" data-section="papers">Research Papers</a>
+                <a href="#about" class="nav-link" data-section="about">How It Works</a>
                 <a href="#rag" class="nav-link" data-section="rag">RAG Architecture</a>
                 <a href="#evaluation" class="nav-link" data-section="evaluation">Evaluation</a>
             </div>
@@ -40,7 +40,7 @@
             <div class="hero-badge-row">
                 <span class="hero-badge">
                     <span class="live-dot" id="liveDot"></span>
-                    <span id="demoModeBadge">AI in Digital Healthcare Research · 30-Paper Corpus · 2022–2026</span>
+                    <span id="demoModeBadge">Clinical AI Literature Assistant · 30 Peer-Reviewed Papers</span>
                 </span>
             </div>
             <h1 class="hero-title">
@@ -49,127 +49,278 @@
             </h1>
             <p class="hero-tagline">"Find the research evidence you remember, even when you forget which paper contains it."</p>
             <p class="hero-desc">
-                MediEvidence is an AI-powered research assistant that uses Retrieval-Augmented Generation (RAG) to search digital healthcare research papers, retrieve relevant evidence, and generate answers with <strong>paper-level and page-level citations</strong>.
+                An academic research assistant utilizing Retrieval-Augmented Generation (RAG) to search peer-reviewed digital healthcare papers, retrieve grounded clinical evidence, and generate answers with <strong>paper-level and page-level citations</strong>.
             </p>
             <div class="hero-cta-row">
-                <a href="#papers" class="btn-primary" onclick="scrollToSection('papers')">📚 Explore 30 Research Papers</a>
-                <a href="#ask" class="btn-outline" onclick="scrollToSection('ask')">🔍 Ask MediEvidence</a>
+                <a href="#ask" class="btn-primary" onclick="scrollToSection('ask')">🔍 Ask MediEvidence</a>
+                <a href="#papers" class="btn-outline" onclick="scrollToSection('papers')">📚 Browse 30 Research Papers</a>
             </div>
 
-            <!-- Live Stats Row -->
+            <!-- Project Facts (4 Clean Cards) -->
             <div class="stats-row" id="statsRow">
                 <div class="stat-box" onclick="scrollToSection('papers')" title="Click to view papers">
                     <div class="stat-num" id="stat-papers">30</div>
                     <div class="stat-lbl">Research Papers</div>
+                    <div class="stat-sub">2022–2026 Open Access</div>
                 </div>
                 <div class="stat-box" onclick="scrollToSection('papers')" title="Click to explore chunks">
                     <div class="stat-num" id="stat-chunks">570</div>
                     <div class="stat-lbl">Indexed Chunks</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-num" id="stat-pages">570</div>
-                    <div class="stat-lbl">PDF Pages Extracted</div>
+                    <div class="stat-sub">Page-boundary preserved</div>
                 </div>
                 <div class="stat-box" onclick="scrollToSection('papers')" title="Click to filter by category">
                     <div class="stat-num">5</div>
                     <div class="stat-lbl">Research Categories</div>
+                    <div class="stat-sub">Imaging, RPM, Twins, IoT, CDSS</div>
                 </div>
                 <div class="stat-box" onclick="scrollToSection('evaluation')" title="Click to view evaluation">
-                    <div class="stat-num">100%</div>
-                    <div class="stat-lbl">Extraction Success</div>
+                    <div class="stat-num">75</div>
+                    <div class="stat-lbl">Evaluation Questions</div>
+                    <div class="stat-sub">Clinical, refusal &amp; boundary</div>
                 </div>
             </div>
         </div>
+    </section>
 
-        <!-- Sample Questions -->
+    <!-- ==================== ASK MEDIEVIDENCE ==================== -->
+    <section id="ask" class="section-ask section-block">
         <div class="container">
-            <div class="sample-qs-section">
-                <div class="sample-qs-label">💡 Click a research question to get an evidence-grounded answer:</div>
-                <div class="sample-qs-grid">
-                    <button class="sample-q-pill" onclick="askQuestion('How are digital twins used in personalized medicine?')">🧬 Digital twins in personalized medicine</button>
-                    <button class="sample-q-pill" onclick="askQuestion('What are the applications of AI in medical image diagnosis?')">🩻 AI in medical image diagnosis</button>
-                    <button class="sample-q-pill" onclick="askQuestion('How can wearable devices support remote patient monitoring?')">⌚ Wearable devices for patient monitoring</button>
-                    <button class="sample-q-pill" onclick="askQuestion('What role does predictive analytics play in healthcare?')">📊 Predictive analytics in healthcare</button>
-                    <button class="sample-q-pill" onclick="askQuestion('How is AI used in clinical decision support systems?')">🏥 AI in clinical decision support</button>
-                    <button class="sample-q-pill" onclick="askQuestion('What are the limitations of AI in digital healthcare?')">⚠️ Limitations of AI in healthcare</button>
-                    <button class="sample-q-pill" onclick="askQuestion('How does IoT contribute to patient monitoring?')">📡 IoT in patient monitoring</button>
-                    <button class="sample-q-pill" onclick="askQuestion('What privacy challenges exist in AI-driven healthcare?')">🔒 Privacy in AI healthcare</button>
-                    <button class="sample-q-pill sample-q-ood" onclick="askQuestion('What is the best recipe for chocolate cake?')">🛑 Cake recipe (out-of-domain test)</button>
+            <div class="section-header">
+                <span class="section-tag">Interactive Research Assistant</span>
+                <h2>Ask MediEvidence</h2>
+                <p>Query the indexed 30-paper corpus with hybrid RAG retrieval and get grounded answers with exact page citations.</p>
+            </div>
+
+            <div class="ask-layout">
+                <div class="ask-panel">
+                    <!-- Static Demo Notice (Displayed on GitHub Pages) -->
+                    <div class="demo-info-notice" id="staticAskNotice">
+                        ℹ️ <strong>Static Portfolio Demo</strong> — Explore pre-indexed research evidence and benchmark examples. Live RAG inference is available in the locally hosted application.
+                    </div>
+
+                    <!-- Mode Tabs -->
+                    <div class="mode-tabs">
+                        <button class="mode-tab active" id="modeAllBtn" onclick="setQueryMode('all')">🌐 Search All Papers</button>
+                        <button class="mode-tab" id="modeSingleBtn" onclick="setQueryMode('single')">📄 Specific Paper</button>
+                    </div>
+
+                    <!-- Paper selector (shown in single mode) -->
+                    <div id="paperSelectorRow" style="display:none;margin-bottom:16px;">
+                        <label class="input-label">Select a research paper:</label>
+                        <select id="paperSelectorDropdown" class="filter-select" style="width:100%;">
+                            <option value="">— Choose a paper —</option>
+                        </select>
+                    </div>
+
+                    <!-- Query Input -->
+                    <div class="query-input-group">
+                        <textarea id="queryInput" class="query-textarea" rows="3" placeholder="Enter a clinical or research question... e.g. 'How are digital twins used in cardiac care?'"></textarea>
+                        <button class="btn-primary query-submit-btn" id="querySubmitBtn" onclick="executeQuery()">
+                            🔍 Retrieve Evidence
+                        </button>
+                    </div>
+
+                    <!-- Loading State -->
+                    <div id="queryLoading" class="query-loading" style="display:none;">
+                        <div class="loading-steps-list" id="loadingStepsList"></div>
+                    </div>
+
+                    <!-- Result -->
+                    <div id="queryResult" class="query-result"></div>
+                </div>
+
+                <!-- Sample Questions Sidebar -->
+                <div class="ask-sidebar">
+                    <div class="sidebar-title">💡 Sample Questions</div>
+                    <div class="sidebar-qs">
+                        <button class="sidebar-q" onclick="setAndRun('How are digital twins used in personalized medicine?')">How are digital twins used in personalized medicine?</button>
+                        <button class="sidebar-q" onclick="setAndRun('What are the applications of AI in medical image diagnosis?')">AI applications in medical image diagnosis</button>
+                        <button class="sidebar-q" onclick="setAndRun('How can wearable devices support remote patient monitoring?')">Wearable devices for remote patient monitoring</button>
+                        <button class="sidebar-q" onclick="setAndRun('What role does predictive analytics play in healthcare?')">Predictive analytics in healthcare</button>
+                        <button class="sidebar-q" onclick="setAndRun('How is AI used in clinical decision support systems?')">AI in clinical decision support systems</button>
+                        <button class="sidebar-q" onclick="setAndRun('What are the limitations of AI in digital healthcare?')">Limitations of AI in digital healthcare</button>
+                        <button class="sidebar-q" onclick="setAndRun('How does IoT contribute to patient monitoring?')">IoT contribution to patient monitoring</button>
+                        <button class="sidebar-q" onclick="setAndRun('How does the HAPI-EP framework model cardiac electrophysiology?')">HAPI-EP cardiac electrophysiology</button>
+                        <button class="sidebar-q sidebar-q-ood" onclick="setAndRun('What is the best recipe for chocolate cake?')">🛑 Cake recipe (out-of-domain)</button>
+                        <button class="sidebar-q sidebar-q-ood" onclick="setAndRun('How do I fix a car engine gasket?')">🛑 Car repair (out-of-domain)</button>
+                    </div>
+                    <div class="sidebar-info">
+                        <div class="sidebar-info-item">🧠 Dense: all-MiniLM-L6-v2</div>
+                        <div class="sidebar-info-item">📑 Sparse: BM25Okapi</div>
+                        <div class="sidebar-info-item">🔄 Fusion: RRF k=60</div>
+                        <div class="sidebar-info-item">🎯 Reranker: ms-marco-MiniLM-L-6-v2</div>
+                        <div class="sidebar-info-item">🛡️ Guardrail: Domain boundary</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Evidence Inspector (shows after query) -->
+            <div id="evidenceInspector" style="display:none;" class="evidence-inspector">
+                <div class="evidence-inspector-header">
+                    <h4>🔬 Multi-Stage Retrieval Score Inspector</h4>
+                    <span style="font-size:0.82rem;color:#9ca3af;">Dense Cosine · BM25 · Cross-Encoder — scores indicate retrieval relevance, not factual certainty</span>
+                </div>
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Paper</th>
+                                <th>Page</th>
+                                <th>Dense Score</th>
+                                <th>BM25 Score</th>
+                                <th>Rerank Score</th>
+                                <th>Section</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inspectorTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Chunk Explorer -->
+            <div class="chunk-explorer-section">
+                <div class="chunk-explorer-header">
+                    <h4>📑 Indexed Chunk Explorer (570 chunks across 30 papers)</h4>
+                    <div class="chunk-search-box">
+                        <input type="text" id="chunkSearch" class="search-input" placeholder="Search within all 570 chunks..." style="max-width:400px;">
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Chunk ID</th>
+                                <th>Paper ID</th>
+                                <th>Title</th>
+                                <th>Page</th>
+                                <th>Section</th>
+                                <th>Length</th>
+                                <th>Text Preview</th>
+                            </tr>
+                        </thead>
+                        <tbody id="chunksTableBody">
+                            <tr><td colspan="7" style="text-align:center;padding:30px;color:#9ca3af;">Loading chunks...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="chunk-pagination">
+                    <span id="chunkPageInfo" class="page-info">Page 1 of 38 (570 chunks)</span>
+                    <div>
+                        <button class="btn-inspect" id="prevChunkBtn" onclick="changeChunkPage(-1)">← Previous</button>
+                        <button class="btn-inspect" id="nextChunkBtn" onclick="changeChunkPage(1)">Next →</button>
+                    </div>
                 </div>
             </div>
         </div>
+    </section>
 
-        <!-- How It Works Preview -->
+    <!-- ==================== RESEARCH PAPERS SECTION ==================== -->
+    <section id="papers" class="section-papers section-block">
         <div class="container">
-            <div class="how-it-works">
-                <div class="hiw-header">
-                    <span class="section-tag">How MediEvidence Works</span>
-                    <h2>From Question to Verified Evidence</h2>
+            <div class="section-header">
+                <span class="section-tag">Research Dataset</span>
+                <h2>Curated 30-Paper Digital Health Corpus</h2>
+                <p>Peer-reviewed and open-access research papers published 2022–2026 across 5 specialized AI healthcare sub-domains.</p>
+            </div>
+
+            <!-- Featured Paper -->
+            <div class="featured-paper-card">
+                <div class="featured-paper-badge">⭐ Featured Publication — Primary Author Research</div>
+                <div class="featured-paper-id">MED-DT-001</div>
+                <h3>Digital Twin for Personalized Medicine Development</h3>
+                <div class="featured-paper-meta">
+                    <span><strong>Authors:</strong> Saniya Y. Saratkar et al.</span>
+                    <span><strong>Journal:</strong> Frontiers in Digital Health · August 7, 2025</span>
+                    <span><strong>Pages:</strong> 23 pages · 23 indexed chunks</span>
+                    <span><strong>Category:</strong> Digital Twins &amp; Personalized Medicine</span>
                 </div>
-                <div class="hiw-flow">
-                    <div class="hiw-step">
-                        <div class="hiw-icon">❓</div>
-                        <div class="hiw-step-label">Your Question</div>
-                    </div>
-                    <div class="hiw-arrow">→</div>
-                    <div class="hiw-step">
-                        <div class="hiw-icon">🧠</div>
-                        <div class="hiw-step-label">Dense + Sparse Retrieval</div>
-                    </div>
-                    <div class="hiw-arrow">→</div>
-                    <div class="hiw-step">
-                        <div class="hiw-icon">🎯</div>
-                        <div class="hiw-step-label">Neural Reranking</div>
-                    </div>
-                    <div class="hiw-arrow">→</div>
-                    <div class="hiw-step">
-                        <div class="hiw-icon">📋</div>
-                        <div class="hiw-step-label">Cited Answer</div>
-                    </div>
-                    <div class="hiw-arrow">→</div>
-                    <div class="hiw-step">
-                        <div class="hiw-icon">✅</div>
-                        <div class="hiw-step-label">PDF Verification</div>
-                    </div>
-                </div>
-                <div style="text-align:center;margin-top:28px;">
-                    <a href="#rag" class="btn-outline" onclick="scrollToSection('rag')">View Full Architecture →</a>
+                <div class="featured-paper-actions">
+                    <a href="https://doi.org/10.3389/fdgth.2025.1583466" target="_blank" rel="noopener" class="btn-primary">🔗 DOI: 10.3389/fdgth.2025.1583466 ↗</a>
+                    <a href="https://www.frontiersin.org/journals/digital-health/articles/10.3389/fdgth.2025.1583466/full" target="_blank" rel="noopener" class="btn-outline">📄 Full Article ↗</a>
+                    <button class="btn-inspect" onclick="openPaperDetail('MED-DT-001')">🔍 Inspect Paper &amp; Chunks</button>
                 </div>
             </div>
-        </div>
 
-        <!-- Category Overview -->
-        <div class="container">
-            <div class="cat-overview">
-                <div class="section-tag" style="text-align:center;">Research Categories</div>
-                <h2 style="text-align:center;margin-bottom:28px;">5 Specialized Digital Healthcare Domains</h2>
-                <div class="cat-cards-grid">
-                    <div class="cat-card cat-imaging" onclick="filterAndGoToPapers('AI in Medical Diagnosis and Medical Imaging')">
-                        <div class="cat-card-icon">🩻</div>
-                        <div class="cat-card-name">Medical Imaging &amp; AI</div>
-                        <div class="cat-card-count">6 Papers</div>
-                    </div>
-                    <div class="cat-card cat-monitoring" onclick="filterAndGoToPapers('Digital Health and Remote Patient Monitoring')">
-                        <div class="cat-card-icon">📡</div>
-                        <div class="cat-card-name">Digital Health &amp; RPM</div>
-                        <div class="cat-card-count">6 Papers</div>
-                    </div>
-                    <div class="cat-card cat-twins" onclick="filterAndGoToPapers('Digital Twins and Personalized Medicine')">
-                        <div class="cat-card-icon">🧬</div>
-                        <div class="cat-card-name">Digital Twins &amp; Personalized Medicine</div>
-                        <div class="cat-card-count">6 Papers</div>
-                    </div>
-                    <div class="cat-card cat-iot" onclick="filterAndGoToPapers('Healthcare Wearables, IoT and Predictive Analytics')">
-                        <div class="cat-card-icon">⌚</div>
-                        <div class="cat-card-name">Wearables, IoT &amp; Analytics</div>
-                        <div class="cat-card-count">6 Papers</div>
-                    </div>
-                    <div class="cat-card cat-cds" onclick="filterAndGoToPapers('AI-Based Clinical Decision Support Systems')">
-                        <div class="cat-card-icon">🏥</div>
-                        <div class="cat-card-name">Clinical Decision Support</div>
-                        <div class="cat-card-count">6 Papers</div>
-                    </div>
+            <!-- Research Categories (Click to Filter) -->
+            <div class="cat-cards-grid" style="margin: 28px 0 32px;">
+                <div class="cat-card cat-imaging" onclick="filterAndGoToPapers('AI in Medical Diagnosis and Medical Imaging')">
+                    <div class="cat-card-icon">🩻</div>
+                    <div class="cat-card-name">Medical Imaging &amp; AI</div>
+                    <div class="cat-card-count">6 Papers</div>
                 </div>
+                <div class="cat-card cat-monitoring" onclick="filterAndGoToPapers('Digital Health and Remote Patient Monitoring')">
+                    <div class="cat-card-icon">📡</div>
+                    <div class="cat-card-name">Digital Health &amp; RPM</div>
+                    <div class="cat-card-count">6 Papers</div>
+                </div>
+                <div class="cat-card cat-twins" onclick="filterAndGoToPapers('Digital Twins and Personalized Medicine')">
+                    <div class="cat-card-icon">🧬</div>
+                    <div class="cat-card-name">Digital Twins &amp; Personalized Medicine</div>
+                    <div class="cat-card-count">6 Papers</div>
+                </div>
+                <div class="cat-card cat-iot" onclick="filterAndGoToPapers('Healthcare Wearables, IoT and Predictive Analytics')">
+                    <div class="cat-card-icon">⌚</div>
+                    <div class="cat-card-name">Wearables, IoT &amp; Analytics</div>
+                    <div class="cat-card-count">6 Papers</div>
+                </div>
+                <div class="cat-card cat-cds" onclick="filterAndGoToPapers('AI-Based Clinical Decision Support Systems')">
+                    <div class="cat-card-icon">🏥</div>
+                    <div class="cat-card-name">Clinical Decision Support</div>
+                    <div class="cat-card-count">6 Papers</div>
+                </div>
+            </div>
+
+            <!-- Search & Filters -->
+            <div class="papers-controls">
+                <div class="search-box">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="paperSearch" class="search-input" placeholder="Search by title, author, paper ID, or DOI...">
+                </div>
+                <select id="catFilter" class="filter-select">
+                    <option value="">All Categories (30 papers)</option>
+                    <option value="AI in Medical Diagnosis and Medical Imaging">1. AI in Medical Imaging (6)</option>
+                    <option value="Digital Health and Remote Patient Monitoring">2. Digital Health &amp; RPM (6)</option>
+                    <option value="Digital Twins and Personalized Medicine">3. Digital Twins (6)</option>
+                    <option value="Healthcare Wearables, IoT and Predictive Analytics">4. Wearables &amp; IoT (6)</option>
+                    <option value="AI-Based Clinical Decision Support Systems">5. Clinical Decision Support (6)</option>
+                </select>
+                <select id="yearFilter" class="filter-select">
+                    <option value="">All Years</option>
+                    <option value="2026">2026</option>
+                    <option value="2025">2025</option>
+                    <option value="2024">2024</option>
+                    <option value="2023">2023</option>
+                </select>
+                <select id="sortBy" class="filter-select">
+                    <option value="default">Sort: Default</option>
+                    <option value="title">Sort: Title A–Z</option>
+                    <option value="year-desc">Sort: Year (Newest)</option>
+                    <option value="year-asc">Sort: Year (Oldest)</option>
+                    <option value="chunks-desc">Sort: Most Chunks</option>
+                </select>
+            </div>
+            <div id="papersCountInfo" class="papers-count-info">Showing 30 of 30 research papers</div>
+
+            <!-- Papers Table -->
+            <div class="table-responsive">
+                <table class="data-table" id="papersTable">
+                    <thead>
+                        <tr>
+                            <th>Paper ID</th>
+                            <th>Title &amp; Journal</th>
+                            <th>Authors</th>
+                            <th>Year</th>
+                            <th>Category</th>
+                            <th>Pages</th>
+                            <th>Chunks</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="papersTableBody">
+                        <tr><td colspan="8" style="text-align:center;padding:40px;color:#9ca3af;">Loading 30 research papers...</td></tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </section>
@@ -204,7 +355,7 @@
                         <li>Cross-encoder neural reranking</li>
                         <li>Page-level evidence citations</li>
                         <li>Zero-hallucination out-of-domain refusal</li>
-                        <li>100% source-traceable answers</li>
+                        <li>Paper- and page-grounded citations</li>
                     </ul>
                 </div>
             </div>
@@ -247,7 +398,7 @@
                         <div class="pstage-detail" id="stage2">
                             <strong>Input:</strong> 30 PDF files<br>
                             <strong>Output:</strong> 570 extracted page texts with page metadata<br>
-                            <strong>Details:</strong> PyMuPDF extracts digital text with 100% success rate (570/570 pages). Selective Tesseract OCR is configured as fallback for scanned pages (0 OCR pages in this corpus). Each extracted page preserves: paper_id, original_page index, section_heading (if detectable), char_count, word_count. Stored in <code>data/extracted_text/</code>.
+                            <strong>Details:</strong> PyMuPDF extracts digital text across all 570 pages without missing documents. Selective Tesseract OCR is configured as fallback for scanned pages (0 OCR pages in this corpus). Each extracted page preserves: paper_id, original_page index, section_heading (if detectable), char_count, word_count. Stored in <code>data/extracted_text/</code>.
                         </div>
                     </div>
                     <div class="pstage-connector"></div>
@@ -370,7 +521,7 @@
                             <strong>Guardrail 1:</strong> Whole-word regex domain keyword boundary check<br>
                             <strong>Guardrail 2:</strong> Calibrated cosine confidence threshold (default: 0.35)<br>
                             <strong>Citation format:</strong> [Paper Title (Year), Page X]<br>
-                            <strong>Out-of-domain:</strong> 100% refusal — no fabricated answers<br>
+                            <strong>Out-of-domain:</strong> Strict refusal policy — zero fabricated answers<br>
                             <strong>PICO evidence:</strong> Structured Population/Intervention/Comparison/Outcome breakdown
                         </div>
                     </div>
@@ -531,220 +682,6 @@
         </div>
     </section>
 
-    <!-- ==================== RESEARCH PAPERS SECTION ==================== -->
-    <section id="papers" class="section-papers section-block">
-        <div class="container">
-            <div class="section-header">
-                <span class="section-tag">Research Dataset</span>
-                <h2>Curated 30-Paper Digital Health Corpus</h2>
-                <p>Peer-reviewed and open-access research papers published 2022–2026 across 5 specialized AI healthcare sub-domains.</p>
-            </div>
-
-            <!-- Featured Paper -->
-            <div class="featured-paper-card">
-                <div class="featured-paper-badge">⭐ Featured Publication — Primary Author Research</div>
-                <div class="featured-paper-id">MED-DT-001</div>
-                <h3>Digital Twin for Personalized Medicine Development</h3>
-                <div class="featured-paper-meta">
-                    <span><strong>Authors:</strong> Saniya Y. Saratkar et al.</span>
-                    <span><strong>Journal:</strong> Frontiers in Digital Health · August 7, 2025</span>
-                    <span><strong>Pages:</strong> 23 pages · 23 indexed chunks</span>
-                    <span><strong>Category:</strong> Digital Twins &amp; Personalized Medicine</span>
-                </div>
-                <div class="featured-paper-actions">
-                    <a href="https://doi.org/10.3389/fdgth.2025.1583466" target="_blank" rel="noopener" class="btn-primary">🔗 DOI: 10.3389/fdgth.2025.1583466 ↗</a>
-                    <a href="https://www.frontiersin.org/journals/digital-health/articles/10.3389/fdgth.2025.1583466/full" target="_blank" rel="noopener" class="btn-outline">📄 Full Article ↗</a>
-                    <button class="btn-inspect" onclick="openPaperDetail('MED-DT-001')">🔍 Inspect Paper &amp; Chunks</button>
-                </div>
-            </div>
-
-            <!-- Search & Filters -->
-            <div class="papers-controls">
-                <div class="search-box">
-                    <span class="search-icon">🔍</span>
-                    <input type="text" id="paperSearch" class="search-input" placeholder="Search by title, author, paper ID, or DOI...">
-                </div>
-                <select id="catFilter" class="filter-select">
-                    <option value="">All Categories (30 papers)</option>
-                    <option value="AI in Medical Diagnosis and Medical Imaging">1. AI in Medical Imaging (6)</option>
-                    <option value="Digital Health and Remote Patient Monitoring">2. Digital Health &amp; RPM (6)</option>
-                    <option value="Digital Twins and Personalized Medicine">3. Digital Twins (6)</option>
-                    <option value="Healthcare Wearables, IoT and Predictive Analytics">4. Wearables &amp; IoT (6)</option>
-                    <option value="AI-Based Clinical Decision Support Systems">5. Clinical Decision Support (6)</option>
-                </select>
-                <select id="yearFilter" class="filter-select">
-                    <option value="">All Years</option>
-                    <option value="2026">2026</option>
-                    <option value="2025">2025</option>
-                    <option value="2024">2024</option>
-                    <option value="2023">2023</option>
-                </select>
-                <select id="sortBy" class="filter-select">
-                    <option value="default">Sort: Default</option>
-                    <option value="title">Sort: Title A–Z</option>
-                    <option value="year-desc">Sort: Year (Newest)</option>
-                    <option value="year-asc">Sort: Year (Oldest)</option>
-                    <option value="chunks-desc">Sort: Most Chunks</option>
-                </select>
-            </div>
-            <div id="papersCountInfo" class="papers-count-info">Showing 30 of 30 research papers</div>
-
-            <!-- Papers Table -->
-            <div class="table-responsive">
-                <table class="data-table" id="papersTable">
-                    <thead>
-                        <tr>
-                            <th>Paper ID</th>
-                            <th>Title &amp; Journal</th>
-                            <th>Authors</th>
-                            <th>Year</th>
-                            <th>Category</th>
-                            <th>Pages</th>
-                            <th>Chunks</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="papersTableBody">
-                        <tr><td colspan="8" style="text-align:center;padding:40px;color:#9ca3af;">Loading 30 research papers...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </section>
-
-    <!-- ==================== ASK MEDIEVIDENCE ==================== -->
-    <section id="ask" class="section-ask section-block">
-        <div class="container">
-            <div class="section-header">
-                <span class="section-tag">Interactive Research Assistant</span>
-                <h2>Ask MediEvidence</h2>
-                <p>Query the indexed 30-paper corpus with hybrid RAG retrieval and get grounded answers with exact page citations.</p>
-            </div>
-
-            <div class="ask-layout">
-                <div class="ask-panel">
-                    <!-- Static Demo Notice (Displayed on GitHub Pages) -->
-                    <div id="staticAskNotice" style="display:none;margin-bottom:16px;padding:12px 18px;background:rgba(56,189,248,0.1);border:1px solid rgba(56,189,248,0.3);border-radius:8px;font-size:0.88rem;color:#bae6fd;">
-                        ⚡ <strong>Static Portfolio Demo:</strong> Demonstrating pre-indexed research evidence &amp; verified benchmark answers. For full live RAG querying with real-time neural reranking and Qdrant vector search, run the FastAPI backend locally.
-                    </div>
-
-                    <!-- Mode Tabs -->
-                    <div class="mode-tabs">
-                        <button class="mode-tab active" id="modeAllBtn" onclick="setQueryMode('all')">🌐 Search All Papers</button>
-                        <button class="mode-tab" id="modeSingleBtn" onclick="setQueryMode('single')">📄 Specific Paper</button>
-                    </div>
-
-                    <!-- Paper selector (shown in single mode) -->
-                    <div id="paperSelectorRow" style="display:none;margin-bottom:16px;">
-                        <label class="input-label">Select a research paper:</label>
-                        <select id="paperSelectorDropdown" class="filter-select" style="width:100%;">
-                            <option value="">— Choose a paper —</option>
-                        </select>
-                    </div>
-
-                    <!-- Query Input -->
-                    <div class="query-input-group">
-                        <textarea id="queryInput" class="query-textarea" rows="3" placeholder="Enter a clinical or research question... e.g. 'How are digital twins used in cardiac care?'"></textarea>
-                        <button class="btn-primary query-submit-btn" id="querySubmitBtn" onclick="executeQuery()">
-                            🔍 Retrieve Evidence
-                        </button>
-                    </div>
-
-                    <!-- Loading State -->
-                    <div id="queryLoading" class="query-loading" style="display:none;">
-                        <div class="loading-steps-list" id="loadingStepsList"></div>
-                    </div>
-
-                    <!-- Result -->
-                    <div id="queryResult" class="query-result"></div>
-                </div>
-
-                <!-- Sample Questions Sidebar -->
-                <div class="ask-sidebar">
-                    <div class="sidebar-title">💡 Sample Questions</div>
-                    <div class="sidebar-qs">
-                        <button class="sidebar-q" onclick="setAndRun('How are digital twins used in personalized medicine?')">How are digital twins used in personalized medicine?</button>
-                        <button class="sidebar-q" onclick="setAndRun('What are the applications of AI in medical image diagnosis?')">AI applications in medical image diagnosis</button>
-                        <button class="sidebar-q" onclick="setAndRun('How can wearable devices support remote patient monitoring?')">Wearable devices for remote patient monitoring</button>
-                        <button class="sidebar-q" onclick="setAndRun('What role does predictive analytics play in healthcare?')">Predictive analytics in healthcare</button>
-                        <button class="sidebar-q" onclick="setAndRun('How is AI used in clinical decision support systems?')">AI in clinical decision support systems</button>
-                        <button class="sidebar-q" onclick="setAndRun('What are the limitations of AI in digital healthcare?')">Limitations of AI in digital healthcare</button>
-                        <button class="sidebar-q" onclick="setAndRun('How does IoT contribute to patient monitoring?')">IoT contribution to patient monitoring</button>
-                        <button class="sidebar-q" onclick="setAndRun('How does the HAPI-EP framework model cardiac electrophysiology?')">HAPI-EP cardiac electrophysiology</button>
-                        <button class="sidebar-q sidebar-q-ood" onclick="setAndRun('What is the best recipe for chocolate cake?')">🛑 Cake recipe (out-of-domain)</button>
-                        <button class="sidebar-q sidebar-q-ood" onclick="setAndRun('How do I fix a car engine gasket?')">🛑 Car repair (out-of-domain)</button>
-                    </div>
-                    <div class="sidebar-info">
-                        <div class="sidebar-info-item">🧠 Dense: all-MiniLM-L6-v2</div>
-                        <div class="sidebar-info-item">📑 Sparse: BM25Okapi</div>
-                        <div class="sidebar-info-item">🔄 Fusion: RRF k=60</div>
-                        <div class="sidebar-info-item">🎯 Reranker: ms-marco-MiniLM-L-6-v2</div>
-                        <div class="sidebar-info-item">🛡️ Guardrail: Domain boundary</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Evidence Inspector (shows after query) -->
-            <div id="evidenceInspector" style="display:none;" class="evidence-inspector">
-                <div class="evidence-inspector-header">
-                    <h4>🔬 Multi-Stage Retrieval Score Inspector</h4>
-                    <span style="font-size:0.82rem;color:#9ca3af;">Dense Cosine · BM25 · Cross-Encoder — scores indicate retrieval relevance, not factual certainty</span>
-                </div>
-                <div class="table-responsive">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Rank</th>
-                                <th>Paper</th>
-                                <th>Page</th>
-                                <th>Dense Score</th>
-                                <th>BM25 Score</th>
-                                <th>Rerank Score</th>
-                                <th>Section</th>
-                            </tr>
-                        </thead>
-                        <tbody id="inspectorTableBody"></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- Chunk Explorer -->
-            <div class="chunk-explorer-section">
-                <div class="chunk-explorer-header">
-                    <h4>📑 Indexed Chunk Explorer (570 chunks across 30 papers)</h4>
-                    <div class="chunk-search-box">
-                        <input type="text" id="chunkSearch" class="search-input" placeholder="Search within all 570 chunks..." style="max-width:400px;">
-                    </div>
-                </div>
-                <div class="table-responsive">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Chunk ID</th>
-                                <th>Paper ID</th>
-                                <th>Title</th>
-                                <th>Page</th>
-                                <th>Section</th>
-                                <th>Length</th>
-                                <th>Text Preview</th>
-                            </tr>
-                        </thead>
-                        <tbody id="chunksTableBody">
-                            <tr><td colspan="7" style="text-align:center;padding:30px;color:#9ca3af;">Loading chunks...</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-                <div class="chunk-pagination">
-                    <span id="chunkPageInfo" class="page-info">Page 1 of 38 (570 chunks)</span>
-                    <div>
-                        <button class="btn-inspect" id="prevChunkBtn" onclick="changeChunkPage(-1)">← Previous</button>
-                        <button class="btn-inspect" id="nextChunkBtn" onclick="changeChunkPage(1)">Next →</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <!-- ==================== RAG ARCHITECTURE SECTION ==================== -->
     <section id="rag" class="section-rag section-block">
         <div class="container">
@@ -768,7 +705,7 @@
                         <div class="rag-node rag-process">
                             <div class="rag-node-icon">🔍</div>
                             <div class="rag-node-text">PyMuPDF Extraction</div>
-                            <div class="rag-node-sub">570 pages · 100% success</div>
+                            <div class="rag-node-sub">570 pages · digital text</div>
                         </div>
                         <div class="rag-node-arrow">↓</div>
                         <div class="rag-node rag-process">
@@ -871,64 +808,62 @@
     <section id="evaluation" class="section-eval section-block">
         <div class="container">
             <div class="section-header">
-                <span class="section-tag">Rigorous Benchmarking</span>
+                <span class="section-tag">Empirical Evaluation</span>
                 <h2>Evaluation &amp; Groundedness Metrics</h2>
-                <p>Evaluated on 75 comprehensive benchmark questions across clinical in-domain, out-of-domain refusal, and insufficient-evidence boundary tests with verified measured results.</p>
+                <p>Prioritized academic retrieval and citation benchmarks measured across 75 ground-truth evaluation questions.</p>
             </div>
 
+            <!-- Prioritized Core Retrieval & Citation Metrics -->
             <div class="eval-grid" id="evalGrid">
-                <!-- Populated from actual evaluation_summary.json via JS -->
+                <!-- Populated with 5 core metrics via renderEvaluation() -->
             </div>
 
-            <div class="eval-methodology">
-                <h4>📋 Evaluation Methodology</h4>
-                <div class="eval-method-grid">
-                    <div class="eval-method-item">
-                        <strong>Recall@1</strong><br>
-                        Target ground-truth paper is the #1 retrieved candidate across domain questions.
-                    </div>
-                    <div class="eval-method-item">
-                        <strong>MRR (Mean Reciprocal Rank)</strong><br>
-                        Average reciprocal position of the first relevant paper across all queries.
-                    </div>
-                    <div class="eval-method-item">
-                        <strong>nDCG@5</strong><br>
-                        Normalized Discounted Cumulative Gain measuring position-weighted retrieval quality in top-5.
-                    </div>
-                    <div class="eval-method-item">
-                        <strong>Out-of-Domain Refusal</strong><br>
-                        Percentage of non-medical queries correctly refused with no fabricated answer generated.
-                    </div>
-                    <div class="eval-method-item">
-                        <strong>Citation Accuracy</strong><br>
-                        Every generated assertion links directly to a verified paper_id and original_page metadata entry.
-                    </div>
-                    <div class="eval-method-item">
-                        <strong>Sample Size</strong><br>
-                        75 total benchmark questions: 45 clinical domain questions across 5 subdomains + 22 out-of-domain refusal tests across 8 categories + 8 insufficient-evidence boundary tests.
-                    </div>
+            <!-- Secondary Benchmark Scope & Denominators -->
+            <div class="eval-secondary-grid">
+                <div class="eval-sample-box">
+                    <span class="eval-sample-tag">Domain Guardrail</span>
+                    <div class="eval-sample-num">22 / 22 <span style="font-size:1rem;color:#60a5fa;font-weight:600;">(100.0%)</span></div>
+                    <div class="eval-sample-lbl">Out-of-Domain Refusal</div>
+                    <div class="eval-sample-desc">Rejection of non-medical queries across 8 distractor topics. <em style="color:#64748b;display:block;margin-top:2px;">Note: Limited benchmark sample.</em></div>
+                </div>
+                <div class="eval-sample-box">
+                    <span class="eval-sample-tag">Boundary Scope</span>
+                    <div class="eval-sample-num">8 / 8 <span style="font-size:1rem;color:#14b8a6;font-weight:600;">(100.0%)</span></div>
+                    <div class="eval-sample-lbl">Insufficient Evidence Detection</div>
+                    <div class="eval-sample-desc">Identifies queries outside corpus scope without hallucination. <em style="color:#64748b;display:block;margin-top:2px;">Note: Limited benchmark sample.</em></div>
+                </div>
+                <div class="eval-sample-box">
+                    <span class="eval-sample-tag">Factual Consistency</span>
+                    <div class="eval-sample-num">100.0%</div>
+                    <div class="eval-sample-lbl">Numerical Claim Accuracy</div>
+                    <div class="eval-sample-desc">Zero numerical hallucination across cited clinical metrics and AUROC statistics.</div>
                 </div>
             </div>
 
-            <!-- Evaluation Questions -->
-            <div class="eval-questions-section">
-                <h4>📝 Benchmark Question Inventory (75 Questions)</h4>
-                <div id="evalQuestionsContainer">
-                    <p style="color:#9ca3af;">Loading evaluation questions...</p>
-                </div>
-            </div>
-
-            <!-- Failure Analysis Dashboard -->
-            <div class="eval-failures-section" style="margin-top: 40px;">
-                <div class="section-header" style="text-align: left; margin-bottom: 20px;">
-                    <span class="section-tag" style="background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3);">Failure Analysis &amp; Quality Gate</span>
-                    <h3>Automated Failure Analysis Dashboard</h3>
-                    <p style="color: #9ca3af; font-size: 0.95rem;">Transparent logging of edge-case retrieval mismatches, false refusals, and applied RAG engine algorithmic fixes.</p>
-                </div>
+            <!-- Transparent Failure Analysis (Expandable) -->
+            <details class="eval-details-box" style="margin-top: 24px;">
+                <summary class="eval-details-summary">
+                    <span>⚠️ Transparent Failure Analysis (13 Edge Cases Analyzed)</span>
+                    <span style="font-size:0.8rem;color:#9ca3af;font-weight:400;">Click to expand audit log ▼</span>
+                </summary>
+                <p style="color:#94a3b8;font-size:0.88rem;margin:12px 0 16px;line-height:1.6;">
+                    The 15.6% variance between paper-level citation (86.7%) and exact single-page citation (71.1%) is transparently documented below. In multi-page clinical review papers, key concepts often span across consecutive pages (e.g. section overview on page 4 vs. results on page 5).
+                </p>
                 <div id="failuresTableContainer">
                     <p style="color:#9ca3af;">Loading failure analysis...</p>
                 </div>
-            </div>
+            </details>
+
+            <!-- Benchmark Question Inventory (Expandable) -->
+            <details class="eval-details-box" style="margin-top: 16px;">
+                <summary class="eval-details-summary">
+                    <span>📝 Benchmark Question Inventory (75 Questions)</span>
+                    <span style="font-size:0.8rem;color:#9ca3af;font-weight:400;">Click to view question inventory ▼</span>
+                </summary>
+                <div id="evalQuestionsContainer" style="margin-top:16px;">
+                    <p style="color:#9ca3af;">Loading evaluation questions...</p>
+                </div>
+            </details>
         </div>
     </section>
 

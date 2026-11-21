@@ -1,36 +1,30 @@
-# MediEvidence — AI-Powered Research Assistant for Digital Healthcare Literature
+# MediEvidence: Clinical Literature Research Assistant
 
-[![Python](https://img.shields.io/badge/Python-3.10%20%7C%203.11%20%7C%203.12-blue?logo=python)](https://www.python.org/)
+> An AI-powered research assistant for digital healthcare literature, providing evidence-grounded answers with verifiable paper- and page-level citations.
+
+- **Live Demo (Static Portfolio Demo):** [https://saniya1312s.github.io/MediEvidence-Retrieval-Augmented-Clinical-Evidence-Assistant/](https://saniya1312s.github.io/MediEvidence-Retrieval-Augmented-Clinical-Evidence-Assistant/)
+- **GitHub Repository:** [https://github.com/Saniya1312S/MediEvidence-Retrieval-Augmented-Clinical-Evidence-Assistant](https://github.com/Saniya1312S/MediEvidence-Retrieval-Augmented-Clinical-Evidence-Assistant)
+- **Core Technologies:** Python 3.10+, FastAPI, Qdrant Vector Search, SentenceTransformers (`all-MiniLM-L6-v2`), BM25Okapi, Cross-Encoder Neural Reranking (`ms-marco-MiniLM-L-6-v2`), PyMuPDF
+
+[![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue?logo=python)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.109+-009688?logo=fastapi)](https://fastapi.tiangolo.com/)
-[![Qdrant](https://img.shields.io/badge/Vector%20DB-Qdrant%20Embedded-red?logo=qdrant)](https://qdrant.tech/)
-[![Embeddings](https://img.shields.io/badge/Embeddings-all--MiniLM--L6--v2%20(384d)-indigo)](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2)
-[![Reranker](https://img.shields.io/badge/Reranker-Cross--Encoder%20ms--marco-orange)](https://huggingface.co/cross-encoder/ms-marco-MiniLM-L-6-v2)
-[![Recall@1](https://img.shields.io/badge/Recall%401-86.7%25-brightgreen)](#-evaluation-and-benchmark-results)
-[![MRR](https://img.shields.io/badge/MRR-0.888-brightgreen)](#-evaluation-and-benchmark-results)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-
-> **"Find the research evidence you remember, even when you forget which paper contains it."**
-
-MediEvidence is an open-source, domain-specialized Retrieval-Augmented Generation (RAG) research assistant engineered specifically for **AI in Digital Healthcare Literature**. It solves a ubiquitous challenge researchers encounter daily: you recall a clinical hypothesis, an imaging benchmark, a digital twin architecture, or a wearable sensor specification, but cannot recall which specific paper, author, publication year, or exact PDF page contained that finding.
-
-MediEvidence allows clinical researchers, biomedical engineers, and students to ask natural-language questions across an indexed 30-paper peer-reviewed corpus (570 pages, 281,976 words). It instantly retrieves grounded evidence with **bracketed, page-level citations** `[Paper Title (Year), Page X]`, **PICO clinical parameters** (Population, Intervention, Comparison, Outcome), and **multi-stage retrieval confidence scores**.
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 ---
 
-## 🌐 Live Demo & Interactive Portfolio
+## 🌐 Public Live Demo vs. Full Local Application
 
-> 🚀 **Live Demo:** [https://saniya1312s.github.io/MediEvidence-Retrieval-Augmented-Clinical-Evidence-Assistant/](https://saniya1312s.github.io/MediEvidence-Retrieval-Augmented-Clinical-Evidence-Assistant/)
->
-> **MediEvidence — Static Interactive Portfolio Demo**
-> Explore the 30-paper curated research catalog, filter by clinical category or author, inspect metadata and semantic chunk excerpts, view original PDFs with page navigation, examine the RAG pipeline architecture, and explore the 75-question benchmark evaluation dashboard directly in your browser.
->
-> *(Note: The GitHub Pages deployment is a static client-side demonstration powered by pre-indexed verified evidence. To run real-time neural RAG inference with FastAPI, local embeddings, and Qdrant, see instructions below).*
+MediEvidence operates in two documented modes:
+
+1. **Static Portfolio Demo (GitHub Pages):**  
+   The [public live demonstration](https://saniya1312s.github.io/MediEvidence-Retrieval-Augmented-Clinical-Evidence-Assistant/) is a client-side portfolio demo hosted via GitHub Pages. It enables visitors, researchers, and recruiters to explore the curated 30-paper research catalogue, search paper metadata, view original PDFs with page navigation, inspect semantic chunk excerpts, review RAG architecture diagrams, and examine empirical evaluation metrics with pre-indexed verified evidence.
+   
+2. **Full AI Research Application (Locally Hosted):**  
+   To perform arbitrary real-time neural RAG inference—including live SentenceTransformers dense encoding, local Qdrant HNSW vector search, dynamic BM25 sparse matching, and Cross-Encoder neural reranking—run the FastAPI backend locally as described below.
 
 ---
 
-## ⚡ Run the Full AI Application Locally (Real-Time Neural RAG)
-
-To execute live, real-time RAG inference with SentenceTransformers dense retrieval, Qdrant vector database, BM25 sparse matching, and Cross-Encoder neural reranking:
+## ⚡ Quick Start: Running the Full AI Application Locally
 
 ```bash
 # 1. Clone the repository
@@ -50,7 +44,7 @@ python ingest_pipeline.py
 python main.py
 ```
 
-Open **[http://127.0.0.1:8000](http://127.0.0.1:8000)** to query the live AI backend or **[http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)** for the interactive Swagger API docs.
+Open **[http://127.0.0.1:8000](http://127.0.0.1:8000)** for the interactive research dashboard or **[http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)** for the interactive Swagger API docs.
 
 ---
 
@@ -164,20 +158,25 @@ MediEvidence was evaluated using a comprehensive 75-question ground-truth benchm
 
 ### Verified Benchmark Metrics
 
-| Metric | Target | MediEvidence Measured Result | Description |
-|---|---|---|---|
-| **Recall @ 1** | $\ge 80.0\%$ | **86.7%** | Ground-truth paper retrieved at rank 1 |
-| **Recall @ 3** | $\ge 85.0\%$ | **88.9%** | Ground-truth paper retrieved within top 3 |
-| **Recall @ 5** | $\ge 90.0\%$ | **93.3%** | Ground-truth paper retrieved within top 5 |
-| **Mean Reciprocal Rank (MRR)** | $\ge 0.850$ | **0.888** | Harmonic mean of retrieval ranks |
-| **nDCG @ 5** | $\ge 0.850$ | **0.899** | Normalized Discounted Cumulative Gain |
-| **Paper Citation Accuracy** | $\ge 85.0\%$ | **86.7%** | Exactly identified target paper |
-| **Page-Level Citation Accuracy** | $\ge 70.0\%$ | **71.1%** | Exact target PDF page cited |
-| **Evidence Support Rate** | $\ge 80.0\%$ | **82.2%** | Retrieved passage directly contains evidence for claim |
-| **Numerical Claim Accuracy** | $100.0\%$ | **100.0%** | Zero numerical hallucination (metrics, sample sizes, AUC) |
-| **Out-of-Domain Refusal Precision** | $100.0\%$ | **100.0%** (22/22) | Zero false-acceptance of irrelevant queries |
-| **Insufficient Evidence Detection** | $100.0\%$ | **100.0%** (8/8) | Correctly identified missing evidence without guessing |
-| **Fabricated Citations** | 0 | **0 Fabrications** | Every cited paper and page strictly exists in corpus |
+#### Primary Retrieval & Citation Performance (45 Clinical In-Domain Questions)
+
+| Metric | Measured Result | Benchmark Description |
+|---|:---:|---|
+| **Recall @ 5** | **93.3%** | Target ground-truth paper retrieved within top-5 candidate set |
+| **Mean Reciprocal Rank (MRR)** | **0.888** | Harmonic mean of retrieval ranks across evaluated queries |
+| **nDCG @ 5** | **0.899** | Normalized Discounted Cumulative Gain in top-5 results |
+| **Paper Citation Accuracy** | **86.7%** | Exactly identified target clinical research paper |
+| **Page-Level Citation Accuracy** | **71.1%** | Exact target PDF page cited (multi-page continuity analyzed below) |
+| **Evidence Support Rate** | **82.2%** | Retrieved passage directly contains evidence for claim |
+
+#### Guardrail & Domain Boundary Benchmarks (Limited Test Samples)
+
+| Benchmark | Measured Result | Sample Scope & Notes |
+|---|:---:|---|
+| **Out-of-Domain Refusal** | **22 / 22 (100.0%)** | Rejection of non-medical queries across 8 distractor topics *(limited benchmark sample)* |
+| **Insufficient Evidence Detection** | **8 / 8 (100.0%)** | Correctly identifies queries unanswerable from corpus *(limited benchmark sample)* |
+| **Numerical Claim Accuracy** | **100.0%** | Zero numerical hallucination on extracted metrics and AUROC statistics |
+| **Fabricated Citations** | **0** | Zero non-existent papers or invented page references |
 
 ### Transparent Analysis: The Page-Level Citation Challenge (71.1%)
 
