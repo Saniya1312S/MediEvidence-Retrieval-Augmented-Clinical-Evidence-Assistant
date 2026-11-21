@@ -1069,27 +1069,24 @@ function renderFailureAnalysis() {
                 <thead>
                     <tr>
                         <th style="width:50px;">ID</th>
-                        <th style="min-width:200px;">Question</th>
+                        <th style="min-width:180px;">Question</th>
                         <th>Category</th>
-                        <th>Expected Ground Truth</th>
-                        <th>Observed Output</th>
-                        <th>Root Cause</th>
-                        <th>Fix Applied &amp; Retest</th>
+                        <th>Expected</th>
+                        <th>Observed</th>
+                        <th>Failure Type</th>
+                        <th>Root Cause &amp; Audit Notes</th>
                     </tr>
                 </thead>
                 <tbody>
                     ${failures.map(f => `
                         <tr>
                             <td><span class="paper-id-badge" style="background:rgba(239,68,68,0.2);color:#f87171;border:1px solid rgba(239,68,68,0.3);">${f.id}</span></td>
-                            <td style="font-size:0.82rem;font-weight:500;color:#f3f4f6;max-width:240px;">${f.question}</td>
+                            <td style="font-size:0.82rem;font-weight:500;color:#f3f4f6;max-width:220px;">${f.question}</td>
                             <td><span style="font-size:0.74rem;background:rgba(255,255,255,0.06);padding:2px 8px;border-radius:4px;color:#9ca3af;white-space:nowrap;">${f.category}</span></td>
                             <td style="font-size:0.78rem;color:#10b981;font-weight:600;white-space:nowrap;">${f.expected}</td>
                             <td style="font-size:0.78rem;color:#f87171;white-space:nowrap;">${f.actual}</td>
-                            <td style="font-size:0.76rem;color:#cbd5e1;max-width:200px;">${f.root_cause}</td>
-                            <td style="font-size:0.76rem;color:#38bdf8;max-width:220px;">
-                                <div style="margin-bottom:3px;">${f.fix_applied}</div>
-                                <span style="font-size:0.7rem;color:#10b981;font-weight:700;">✓ ${f.retest_status}</span>
-                            </td>
+                            <td style="font-size:0.76rem;color:#f59e0b;white-space:nowrap;">${f.failure_category || 'Edge-Case Miss'}</td>
+                            <td style="font-size:0.76rem;color:#cbd5e1;max-width:240px;">${f.root_cause || 'Cross-paper overlap in semantic embedding space'}</td>
                         </tr>
                     `).join('')}
                 </tbody>
