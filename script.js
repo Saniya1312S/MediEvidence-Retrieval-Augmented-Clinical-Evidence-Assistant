@@ -96,16 +96,36 @@ function getCatPillClass(category) {
 // DATA INITIALIZATION — load static_data.json with correct field names
 // =====================================================================
 async function initData() {
-    // Check if live API is available
-    try {
-        const h = await fetch('/api/health', { signal: AbortSignal.timeout(2500) });
-        if (h.ok) {
-            isApiOnline = true;
-            console.log('✅ MediEvidence: Live FastAPI backend connected at /api');
+    // Only probe /api/health if running locally (localhost or 127.0.0.1)
+    // Avoids 404 console errors and timeout delays when hosted on GitHub Pages
+    const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    if (isLocal) {
+        try {
+            const h = await fetch('/api/health', { signal: AbortSignal.timeout(1500) });
+            if (h.ok) {
+                isApiOnline = true;
+                console.log('✅ MediEvidence: Live FastAPI backend connected at /api');
+            }
+        } catch {
+            isApiOnline = false;
+            console.log('📂 MediEvidence: Backend offline — loading from static_data.json');
         }
-    } catch {
+    } else {
         isApiOnline = false;
-        console.log('📂 MediEvidence: Backend offline — loading from static_data.json');
+        console.log('🌐 MediEvidence: Running in GitHub Pages static portfolio demo mode');
+    }
+
+    // Configure UI labels based on mode
+    const demoBadge = document.getElementById('demoModeBadge');
+    const liveDot = document.getElementById('liveDot');
+    const staticNotice = document.getElementById('staticAskNotice');
+    if (!isApiOnline) {
+        if (demoBadge) demoBadge.textContent = '⚡ Static Portfolio Demo · Pre-Indexed Evidence & Benchmarks · 30 Papers';
+        if (liveDot) liveDot.style.background = '#38bdf8';
+        if (staticNotice) staticNotice.style.display = 'block';
+    } else {
+        if (demoBadge) demoBadge.textContent = '🟢 Live AI Pipeline Connected · 30-Paper Corpus · 2022–2026';
+        if (staticNotice) staticNotice.style.display = 'none';
     }
 
     // Load static data bundle
@@ -369,7 +389,16 @@ function openPdfViewer(paperId, page = 1) {
     if (idEl) idEl.textContent = paperId;
     if (pageInd) pageInd.textContent = `Page ${currentPdfPage} / ${currentPdfMaxPages}`;
 
-    const pdfUrl = `/api/papers/${paperId}/pdf#page=${currentPdfPage}`;
+    let pdfUrl;
+    if (isApiOnline) {
+        pdfUrl = `/api/papers/${paperId}/pdf#page=${currentPdfPage}`;
+    } else {
+        // In static portfolio mode, serve the static relative PDF file or DOI fallback
+        pdfUrl = paper?.static_pdf_path 
+            ? `${paper.static_pdf_path}#page=${currentPdfPage}` 
+            : (paper?.source_url || `https://doi.org/${paper?.doi}`);
+    }
+
     if (frame) frame.src = pdfUrl;
     if (newTabBtn) newTabBtn.href = pdfUrl;
 
@@ -384,7 +413,10 @@ function changePdfPage(delta) {
         if (pageInd) pageInd.textContent = `Page ${currentPdfPage} / ${currentPdfMaxPages}`;
         const frame = document.getElementById('pdfViewerFrame');
         const newTabBtn = document.getElementById('pdfOpenNewTabBtn');
-        const pdfUrl = `/api/papers/${currentPdfPaperId}/pdf#page=${currentPdfPage}`;
+        const paper = allPapers.find(p => (p.paper_id || '').toUpperCase() === currentPdfPaperId.toUpperCase());
+        const pdfUrl = isApiOnline
+            ? `/api/papers/${currentPdfPaperId}/pdf#page=${currentPdfPage}`
+            : (paper?.static_pdf_path ? `${paper.static_pdf_path}#page=${currentPdfPage}` : (paper?.source_url || `https://doi.org/${paper?.doi}`));
         if (frame) frame.src = pdfUrl;
         if (newTabBtn) newTabBtn.href = pdfUrl;
     }
@@ -810,6 +842,7 @@ function renderQueryResult(res) {
     return `
         <div class="result-box result-grounded">
             <div class="result-section">
+                ${!isApiOnline ? '<div style="display:inline-block;padding:3px 10px;border-radius:6px;background:rgba(56,189,248,0.15);border:1px solid rgba(56,189,248,0.3);color:#38bdf8;font-size:0.75rem;font-weight:700;margin-bottom:10px;">⚡ STATIC PORTFOLIO DEMONSTRATION</div>' : ''}
                 <h4 style="color:#14b8a6;">🤖 Grounded Research Evidence</h4>
                 <div class="result-answer">${res.answer}</div>
             </div>

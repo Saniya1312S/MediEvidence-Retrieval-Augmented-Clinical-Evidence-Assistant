@@ -73,7 +73,8 @@
       "extraction_status": "Success",
       "extracted_page_count": "25",
       "chunk_count": "25",
-      "indexing_status": "Success"
+      "indexing_status": "Success",
+      "static_pdf_path": "data\\papers\\medical_imaging_ai\\paper_img_01_retrieval_augmented_segmentation.pdf"
     },
     {
       "paper_id": "MED-IMG-002",
@@ -92,7 +93,8 @@
       "extraction_status": "Success",
       "extracted_page_count": "24",
       "chunk_count": "24",
-      "indexing_status": "Success"
+      "indexing_status": "Success",
+      "static_pdf_path": "data\\papers\\medical_imaging_ai\\paper_img_02_levit_unet_segmentation.pdf"
     },
     {
       "paper_id": "MED-IMG-003",
@@ -111,7 +113,8 @@
       "extraction_status": "Success",
       "extracted_page_count": "10",
       "chunk_count": "10",
-      "indexing_status": "Success"
+      "indexing_status": "Success",
+      "static_pdf_path": "data\\papers\\medical_imaging_ai\\paper_img_03_scribble_segment_temporal.pdf"
     },
     {
       "paper_id": "MED-IMG-004",
@@ -130,7 +133,8 @@
       "extraction_status": "Success",
       "extracted_page_count": "19",
       "chunk_count": "19",
-      "indexing_status": "Success"
+      "indexing_status": "Success",
+      "static_pdf_path": "data\\papers\\medical_imaging_ai\\paper_img_04_fgcarl_representation_learning.pdf"
     },
     {
       "paper_id": "MED-IMG-005",
@@ -149,7 +153,8 @@
       "extraction_status": "Success",
       "extracted_page_count": "42",
       "chunk_count": "42",
-      "indexing_status": "Success"
+      "indexing_status": "Success",
+      "static_pdf_path": "data\\papers\\medical_imaging_ai\\paper_img_05_foundation_vs_task_specific.pdf"
     },
     {
       "paper_id": "MED-IMG-006",
@@ -168,7 +173,8 @@
       "extraction_status": "Success",
       "extracted_page_count": "10",
       "chunk_count": "10",
-      "indexing_status": "Success"
+      "indexing_status": "Success",
+      "static_pdf_path": "data\\papers\\medical_imaging_ai\\paper_img_06_devar_ct_denoising_autoregressive.pdf"
     },
     {
       "paper_id": "MED-DHM-001",
@@ -187,7 +193,8 @@
       "extraction_status": "Success",
       "extracted_page_count": "34",
       "chunk_count": "34",
-      "indexing_status": "Success"
+      "indexing_status": "Success",
+      "static_pdf_path": "data\\papers\\digital_health_monitoring\\paper_dhm_01_agentic_robotics_remote_monitoring.pdf"
     },
     {
       "paper_id": "MED-DHM-002",
@@ -206,7 +213,8 @@
       "extraction_status": "Success",
       "extracted_page_count": "17",
       "chunk_count": "17",
-      "indexing_status": "Success"
+      "indexing_status": "Success",
+      "static_pdf_path": "data\\papers\\digital_health_monitoring\\paper_dhm_02_transitional_care_older_adults.pdf"
     },
     {
       "paper_id": "MED-DHM-003",
@@ -225,7 +233,8 @@
       "extraction_status": "Success",
       "extracted_page_count": "19",
       "chunk_count": "19",
-      "indexing_status": "Success"
+      "indexing_status": "Success",
+      "static_pdf_path": "data\\papers\\digital_health_monitoring\\paper_dhm_03_mental_health_digital_interventions.pdf"
     },
     {
       "paper_id": "MED-DHM-004",
@@ -244,7 +253,8 @@
       "extraction_status": "Success",
       "extracted_page_count": "5",
       "chunk_count": "5",
-      "indexing_status": "Success"
+      "indexing_status": "Success",
+      "static_pdf_path": "data\\papers\\digital_health_monitoring\\paper_dhm_04_iomt_ban_home_healthcare.pdf"
     },
     {
       "paper_id": "MED-DHM-005",
@@ -263,7 +273,8 @@
       "extraction_status": "Success",
       "extracted_page_count": "59",
       "chunk_count": "59",
-      "indexing_status": "Success"
+      "indexing_status": "Success",
+      "static_pdf_path": "data\\papers\\digital_health_monitoring\\paper_dhm_05_code_ii_ecg_telemedicine_dataset.pdf"
     },
     {
       "paper_id": "MED-DHM-006",
@@ -282,7 +293,8 @@
       "extraction_status": "Success",
       "extracted_page_count": "6",
       "chunk_count": "6",
-      "indexing_status": "Success"
+      "indexing_status": "Success",
+      "static_pdf_path": "data\\papers\\digital_health_monitoring\\paper_dhm_06_smartphone_auscultation_cardiac.pdf"
     },
     {
       "paper_id": "MED-DT-001",
@@ -301,7 +313,8 @@
       "extraction_status": "Success",
       "extracted_page_count": "23",
       "chunk_count": "23",
-      "indexing_status": "Success"
+      "indexing_status": "Success",
+      "static_pdf_path": "data\\papers\\digital_twins_personalized_medicine\\paper_dt_01_saratkar_2025.pdf"
     },
     {
       "paper_id": "MED-DT-002",
@@ -320,7 +333,8 @@
       "extraction_status": "Success",
       "extracted_page_count": "23",
       "chunk_count": "23",
-      "indexing_status": "Success"
+      "indexing_status": "Success",
+      "static_pdf_path": "data\\papers\\digital_twins_personalized_medicine\\paper_dt_02_organs_digital_twins_healthcare.pdf"
     },
     {
       "paper_id": "MED-DT-003",
@@ -339,7 +353,8 @@
       "extraction_status": "Success",
       "extracted_page_count": "7",
       "chunk_count": "7",
-      "indexing_status": "Success"
+      "indexing_status": "Success",
+      "static_pdf_path": "data\\papers\\digital_twins_personalized_medicine\\paper_dt_03_treatment_response_digital_twin.pdf"
     },
     {
       "paper_id": "MED-DT-004",
@@ -358,7 +373,8 @@
       "extraction_status": "Success",
       "extracted_page_count": "44",
       "chunk_count": "44",
-      "indexing_status": "Success"
+      "indexing_status": "Success",
+      "static_pdf_path": "data\\papers\\digital_twins_personalized_medicine\\paper_dt_04_hapi_ep_cardiac_electrophysiology.pdf"
     },
     {
       "paper_id": "MED-DT-005",
@@ -377,7 +393,8 @@
       "extraction_status": "Success",
       "extracted_page_count": "22",
       "chunk_count": "22",
-      "indexing_status": "Success"
+      "indexing_status": "Success",
+      "static_pdf_path": "data\\papers\\digital_twins_personalized_medicine\\paper_dt_05_cad_digital_twins_roadmap.pdf"
     },
     {
       "paper_id": "MED-DT-006",
@@ -396,7 +413,8 @@
       "extraction_status": "Success",
       "extracted_page_count": "7",
       "chunk_count": "7",
-      "indexing_status": "Success"
+      "indexing_status": "Success",
+      "static_pdf_path": "data\\papers\\digital_twins_personalized_medicine\\paper_dt_06_twinguard_patient_digital_twins.pdf"
     },
     {
       "paper_id": "MED-IOT-001",
@@ -415,7 +433,8 @@
       "extraction_status": "Success",
       "extracted_page_count": "15",
       "chunk_count": "15",
-      "indexing_status": "Success"
+      "indexing_status": "Success",
+      "static_pdf_path": "data\\papers\\healthcare_iot_predictive_analytics\\paper_iot_01_pockettslm_on_device_wearable.pdf"
     },
     {
       "paper_id": "MED-IOT-002",
@@ -434,7 +453,8 @@
       "extraction_status": "Success",
       "extracted_page_count": "16",
       "chunk_count": "16",
-      "indexing_status": "Success"
+      "indexing_status": "Success",
+      "static_pdf_path": "data\\papers\\healthcare_iot_predictive_analytics\\paper_iot_02_wearable_data_profiling_ndn.pdf"
     },
     {
       "paper_id": "MED-IOT-003",
@@ -453,7 +473,8 @@
       "extraction_status": "Success",
       "extracted_page_count": "14",
       "chunk_count": "14",
-      "indexing_status": "Success"
+      "indexing_status": "Success",
+      "static_pdf_path": "data\\papers\\healthcare_iot_predictive_analytics\\paper_iot_03_hybrid_predictive_ensemble_disease.pdf"
     },
     {
       "paper_id": "MED-IOT-004",
@@ -472,7 +493,8 @@
       "extraction_status": "Success",
       "extracted_page_count": "13",
       "chunk_count": "13",
-      "indexing_status": "Success"
+      "indexing_status": "Success",
+      "static_pdf_path": "data\\papers\\healthcare_iot_predictive_analytics\\paper_iot_04_eda_denoising_wearable_iot.pdf"
     },
     {
       "paper_id": "MED-IOT-005",
@@ -491,7 +513,8 @@
       "extraction_status": "Success",
       "extracted_page_count": "8",
       "chunk_count": "8",
-      "indexing_status": "Success"
+      "indexing_status": "Success",
+      "static_pdf_path": "data\\papers\\healthcare_iot_predictive_analytics\\paper_iot_05_smartedge_iomt_cloud_edge.pdf"
     },
     {
       "paper_id": "MED-IOT-006",
@@ -510,7 +533,8 @@
       "extraction_status": "Success",
       "extracted_page_count": "9",
       "chunk_count": "9",
-      "indexing_status": "Success"
+      "indexing_status": "Success",
+      "static_pdf_path": "data\\papers\\healthcare_iot_predictive_analytics\\paper_iot_06_voice_triage_diabetes_sensors.pdf"
     },
     {
       "paper_id": "MED-CDS-001",
@@ -529,7 +553,8 @@
       "extraction_status": "Success",
       "extracted_page_count": "15",
       "chunk_count": "15",
-      "indexing_status": "Success"
+      "indexing_status": "Success",
+      "static_pdf_path": "data\\papers\\clinical_decision_support\\paper_cds_01_rag_enhanced_llms_explainability.pdf"
     },
     {
       "paper_id": "MED-CDS-002",
@@ -548,7 +573,8 @@
       "extraction_status": "Success",
       "extracted_page_count": "14",
       "chunk_count": "14",
-      "indexing_status": "Success"
+      "indexing_status": "Success",
+      "static_pdf_path": "data\\papers\\clinical_decision_support\\paper_cds_02_multimodal_cdss_icu_discharge.pdf"
     },
     {
       "paper_id": "MED-CDS-003",
@@ -567,7 +593,8 @@
       "extraction_status": "Success",
       "extracted_page_count": "5",
       "chunk_count": "5",
-      "indexing_status": "Success"
+      "indexing_status": "Success",
+      "static_pdf_path": "data\\papers\\clinical_decision_support\\paper_cds_03_radiology_guideline_decision_graph.pdf"
     },
     {
       "paper_id": "MED-CDS-004",
@@ -586,7 +613,8 @@
       "extraction_status": "Success",
       "extracted_page_count": "19",
       "chunk_count": "19",
-      "indexing_status": "Success"
+      "indexing_status": "Success",
+      "static_pdf_path": "data\\papers\\clinical_decision_support\\paper_cds_04_doctalk_medical_knowledge_retrieval.pdf"
     },
     {
       "paper_id": "MED-CDS-005",
@@ -605,7 +633,8 @@
       "extraction_status": "Success",
       "extracted_page_count": "31",
       "chunk_count": "31",
-      "indexing_status": "Success"
+      "indexing_status": "Success",
+      "static_pdf_path": "data\\papers\\clinical_decision_support\\paper_cds_05_medjev_zero_shot_decision_making.pdf"
     },
     {
       "paper_id": "MED-CDS-006",
@@ -624,31 +653,54 @@
       "extraction_status": "Success",
       "extracted_page_count": "15",
       "chunk_count": "15",
-      "indexing_status": "Success"
+      "indexing_status": "Success",
+      "static_pdf_path": "data\\papers\\clinical_decision_support\\paper_cds_06_decisions_by_discrimination_reasoning.pdf"
     }
   ],
   "evaluation": {
     "summary": {
-      "benchmark_name": "MediEvidence 50-Question Comprehensive Clinical & Refusal Benchmark",
-      "total_questions_tested": 50,
-      "clinical_questions": 42,
-      "out_of_domain_questions": 4,
-      "insufficient_evidence_questions": 4,
-      "recall_at_1_percent": 88.1,
-      "recall_at_3_percent": 90.5,
-      "recall_at_5_percent": 92.9,
-      "mrr": 0.895,
-      "ndcg_at_5": 0.901,
-      "citation_accuracy_percent": 88.1,
-      "page_level_accuracy_percent": 69.0,
-      "out_of_domain_refusal_accuracy_percent": 100.0,
-      "insufficient_evidence_refusal_accuracy_percent": 50.0,
-      "embedding_model": "all-MiniLM-L6-v2 (384d)",
-      "vector_database": "Qdrant (Local Embedded Disk Storage)",
-      "sparse_retrieval": "BM25Okapi (Clean Stopword-Filtered)",
-      "hybrid_fusion": "Reciprocal Rank Fusion (RRF k=60)",
-      "reranking_model": "cross-encoder/ms-marco-MiniLM-L-6-v2",
-      "exact_quote_retrieval": "Normalized Unicode NFKD + Ligature Resolution"
+      "total_benchmark_questions": 75,
+      "total_questions_tested": 75,
+      "clinical_in_domain_questions": 45,
+      "out_of_domain_questions": 22,
+      "insufficient_evidence_questions": 8,
+      "recall_at_1_percent": 86.7,
+      "recall_at_3_percent": 88.9,
+      "recall_at_5_percent": 93.3,
+      "mrr": 0.888,
+      "ndcg_at_5": 0.899,
+      "paper_citation_accuracy_percent": 86.7,
+      "page_level_citation_accuracy_percent": 71.1,
+      "evidence_support_rate_percent": 82.2,
+      "numerical_claim_accuracy_percent": 100.0,
+      "out_of_domain_refusal_precision": 100.0,
+      "out_of_domain_refusal_recall": 100.0,
+      "insufficient_evidence_detection_rate": 100.0,
+      "zero_fabricated_citations": true,
+      "metrics": {
+        "recall_at_1": 86.7,
+        "recall_at_3": 88.9,
+        "recall_at_5": 93.3,
+        "mrr": 0.888,
+        "ndcg_at_5": 0.899,
+        "paper_citation_accuracy": 86.7,
+        "page_level_citation_accuracy": 71.1,
+        "claim_evidence_support_rate": 82.2,
+        "numerical_claim_accuracy": 100.0,
+        "ood_refusal_precision": 100.0,
+        "ood_refusal_recall": 100.0,
+        "insufficient_detection_rate": 100.0
+      },
+      "ood_evaluation": {
+        "total": 22,
+        "correctly_refused": 22,
+        "false_accepts": 0
+      },
+      "insufficient_evaluation": {
+        "total": 8,
+        "correctly_refused": 8,
+        "false_accepts": 0
+      }
     },
     "questions": [
       {
@@ -704,7 +756,7 @@
         "question": "What role does agentic robotics play in remote patient monitoring?",
         "expected_paper_id": "MED-DHM-001",
         "expected_title": "From AI-Enabled Remote Patient Monitoring Toward Agentic Robotics: Embodiment, Governance, and Healthcare Translation",
-        "expected_page": 2,
+        "expected_page": 1,
         "is_out_of_domain": false,
         "is_sufficient": true,
         "expected_keywords": [
@@ -766,7 +818,7 @@
         "question": "How does PocketTSLM deploy language models for wearable time-series modeling on smart devices?",
         "expected_paper_id": "MED-IOT-001",
         "expected_title": "PocketTSLM: Deploying an On-Device Soft-Prompt Time-Series Language Model for Privacy-Preserving Smart Healthcare Wearables",
-        "expected_page": 1,
+        "expected_page": 4,
         "is_out_of_domain": false,
         "is_sufficient": true,
         "expected_keywords": [
@@ -814,7 +866,7 @@
         "question": "In contrast, the use of DTs enables a shift toward precision care by creating individualized virtual models that can simulate responses to specific therapies",
         "expected_paper_id": "MED-DT-001",
         "expected_title": "Digital Twin for Personalized Medicine Development",
-        "expected_page": 2,
+        "expected_page": 1,
         "is_out_of_domain": false,
         "is_sufficient": true,
         "expected_keywords": [
@@ -845,7 +897,7 @@
         "question": "Global aging and the expansion of care beyond institutional settings are creating sustained demand for remote care technologies",
         "expected_paper_id": "MED-DHM-001",
         "expected_title": "From AI-Enabled Remote Patient Monitoring Toward Agentic Robotics: Embodiment, Governance, and Healthcare Translation",
-        "expected_page": 2,
+        "expected_page": 1,
         "is_out_of_domain": false,
         "is_sufficient": true,
         "expected_keywords": [
@@ -920,7 +972,7 @@
         "question": "How do physical autonomous robotic devices assist elderly individuals outside the clinical environment?",
         "expected_paper_id": "MED-DHM-001",
         "expected_title": "From AI-Enabled Remote Patient Monitoring Toward Agentic Robotics: Embodiment, Governance, and Healthcare Translation",
-        "expected_page": 2,
+        "expected_page": 1,
         "is_out_of_domain": false,
         "is_sufficient": true,
         "expected_keywords": [
@@ -981,7 +1033,7 @@
         "question": "What is the size and dataset scale of the CODE-II electrocardiogram corpus for telehealth?",
         "expected_paper_id": "MED-DHM-005",
         "expected_title": "CODE-II: A Large-Scale Dataset for Artificial Intelligence in ECG Analysis and Telemedicine",
-        "expected_page": 1,
+        "expected_page": 4,
         "is_out_of_domain": false,
         "is_sufficient": true,
         "expected_keywords": [
@@ -997,7 +1049,7 @@
         "question": "How does visual autoregressive modeling reduce radiation noise in low-dose CT denoising in DeVAR?",
         "expected_paper_id": "MED-IMG-006",
         "expected_title": "DeVAR: Low-Dose CT Denoising via Visual Autoregressive Modeling",
-        "expected_page": 1,
+        "expected_page": 2,
         "is_out_of_domain": false,
         "is_sufficient": true,
         "expected_keywords": [
@@ -1057,7 +1109,7 @@
         "question": "How does Fisher-Guided representation learning prevent catastrophic forgetting in medical classification?",
         "expected_paper_id": "MED-IMG-004",
         "expected_title": "FGCARL: Fisher-Guided Continuously Adaptive Representation Learning for Medical Image Classification",
-        "expected_page": 1,
+        "expected_page": 15,
         "is_out_of_domain": false,
         "is_sufficient": true,
         "expected_keywords": [
@@ -1177,7 +1229,7 @@
         "question": "How do digital twins and remote wearable sensors work together to enable personalized patient tracking?",
         "expected_paper_id": "MED-DT-001",
         "expected_title": "Digital Twin for Personalized Medicine Development",
-        "expected_page": 2,
+        "expected_page": 12,
         "is_out_of_domain": false,
         "is_sufficient": true,
         "expected_keywords": [
@@ -1239,7 +1291,7 @@
         "question": "What specific personalized oncology modeling methods are detailed in MED-DT-001?",
         "expected_paper_id": "MED-DT-001",
         "expected_title": "Digital Twin for Personalized Medicine Development",
-        "expected_page": 2,
+        "expected_page": 13,
         "is_out_of_domain": false,
         "is_sufficient": true,
         "paper_id_filter": "MED-DT-001",
@@ -1297,41 +1349,56 @@
       },
       {
         "id": "Q43",
-        "category": "Out-of-Domain",
-        "question": "Who won the FIFA World Cup final in 2022?",
-        "expected_paper_id": null,
-        "expected_title": null,
-        "expected_page": null,
-        "is_out_of_domain": true,
-        "is_sufficient": false,
-        "expected_keywords": []
+        "category": "Numerical Findings",
+        "question": "What is the mean Dice similarity coefficient (DSC) achieved by LeViT-UNet++ on the Synapse multi-organ CT segmentation benchmark?",
+        "expected_paper_id": "MED-IMG-002",
+        "expected_title": "LeViT-UNet++: Towards Balanced Fine-Grained Details and Context for Efficient Medical Image Segmentation",
+        "expected_page": 7,
+        "is_out_of_domain": false,
+        "is_sufficient": true,
+        "expected_keywords": [
+          "dice",
+          "synapse",
+          "segmentation",
+          "levit-unet++"
+        ]
       },
       {
         "id": "Q44",
-        "category": "Out-of-Domain",
-        "question": "How do I bake a chocolate cake with rich fudge frosting from scratch?",
-        "expected_paper_id": null,
-        "expected_title": null,
-        "expected_page": null,
-        "is_out_of_domain": true,
-        "is_sufficient": false,
-        "expected_keywords": []
+        "category": "Numerical Findings",
+        "question": "What diagnostic classification AUROC was achieved by the edge-AI smartphone auscultation pipeline for pediatric cardiac murmur detection in Saini et al. (2025)?",
+        "expected_paper_id": "MED-DHM-006",
+        "expected_title": "Instant Preliminary Cardiac Analysis from Smartphone Auscultation Recordings via Edge Deep Learning",
+        "expected_page": 6,
+        "is_out_of_domain": false,
+        "is_sufficient": true,
+        "expected_keywords": [
+          "auroc",
+          "cardiac",
+          "auscultation",
+          "smartphone"
+        ]
       },
       {
         "id": "Q45",
-        "category": "Out-of-Domain",
-        "question": "What is the capital city of France and what is its official currency?",
-        "expected_paper_id": null,
-        "expected_title": null,
-        "expected_page": null,
-        "is_out_of_domain": true,
-        "is_sufficient": false,
-        "expected_keywords": []
+        "category": "IoT & Edge Architecture",
+        "question": "What is the average packet delivery latency reduction when utilizing Named Data Networking (NDN) in IoMT wearable architectures in Shakournia et al. (2025)?",
+        "expected_paper_id": "MED-IOT-002",
+        "expected_title": "Wearable Data Profiling for NDN-Based Smart Healthcare: Performance and Energy Trade-Offs",
+        "expected_page": 8,
+        "is_out_of_domain": false,
+        "is_sufficient": true,
+        "expected_keywords": [
+          "latency",
+          "ndn",
+          "wearable",
+          "smart healthcare"
+        ]
       },
       {
         "id": "Q46",
-        "category": "Out-of-Domain",
-        "question": "How do I repair a blown cylinder head gasket on a Honda Civic engine?",
+        "category": "Out-of-Domain (Sports)",
+        "question": "What are the official rules of cricket and how many players are in each playing eleven?",
         "expected_paper_id": null,
         "expected_title": null,
         "expected_page": null,
@@ -1341,30 +1408,239 @@
       },
       {
         "id": "Q47",
-        "category": "Insufficient Evidence",
-        "question": "What is the first-line artemisinin combination therapy dosage for uncomplicated Plasmodium falciparum malaria?",
+        "category": "Out-of-Domain (Sports)",
+        "question": "Who won the FIFA World Cup final in 2022 and what was the penalty shootout score?",
         "expected_paper_id": null,
         "expected_title": null,
         "expected_page": null,
-        "is_out_of_domain": false,
+        "is_out_of_domain": true,
         "is_sufficient": false,
         "expected_keywords": []
       },
       {
         "id": "Q48",
-        "category": "Insufficient Evidence",
-        "question": "What was the Phase 3 clinical trial efficacy percentage of the Moderna mRNA-1273 COVID-19 vaccine?",
+        "category": "Out-of-Domain (Sports)",
+        "question": "How does the NBA salary cap luxury tax apron system restrict team trades and free agency signings?",
         "expected_paper_id": null,
         "expected_title": null,
         "expected_page": null,
-        "is_out_of_domain": false,
+        "is_out_of_domain": true,
         "is_sufficient": false,
         "expected_keywords": []
       },
       {
         "id": "Q49",
+        "category": "Out-of-Domain (Cooking)",
+        "question": "How do I bake a traditional French sourdough baguette with open crumb and crispy crust at home?",
+        "expected_paper_id": null,
+        "expected_title": null,
+        "expected_page": null,
+        "is_out_of_domain": true,
+        "is_sufficient": false,
+        "expected_keywords": []
+      },
+      {
+        "id": "Q50",
+        "category": "Out-of-Domain (Cooking)",
+        "question": "What internal cooking temperature and resting duration are required for medium-rare prime rib roast?",
+        "expected_paper_id": null,
+        "expected_title": null,
+        "expected_page": null,
+        "is_out_of_domain": true,
+        "is_sufficient": false,
+        "expected_keywords": []
+      },
+      {
+        "id": "Q51",
+        "category": "Out-of-Domain (Cooking)",
+        "question": "What is the authentic Italian recipe for pasta alla carbonara without using heavy cream or peas?",
+        "expected_paper_id": null,
+        "expected_title": null,
+        "expected_page": null,
+        "is_out_of_domain": true,
+        "is_sufficient": false,
+        "expected_keywords": []
+      },
+      {
+        "id": "Q52",
+        "category": "Out-of-Domain (Automotive)",
+        "question": "How does a dual-clutch transmission mechanically differ from a hydraulic torque converter automatic?",
+        "expected_paper_id": null,
+        "expected_title": null,
+        "expected_page": null,
+        "is_out_of_domain": true,
+        "is_sufficient": false,
+        "expected_keywords": []
+      },
+      {
+        "id": "Q53",
+        "category": "Out-of-Domain (Automotive)",
+        "question": "What causes brake rotor warping and steering wheel pulsation during high-speed vehicle braking?",
+        "expected_paper_id": null,
+        "expected_title": null,
+        "expected_page": null,
+        "is_out_of_domain": true,
+        "is_sufficient": false,
+        "expected_keywords": []
+      },
+      {
+        "id": "Q54",
+        "category": "Out-of-Domain (Automotive)",
+        "question": "What are the performance and energy density trade-offs between lithium iron phosphate and ternary lithium EV batteries?",
+        "expected_paper_id": null,
+        "expected_title": null,
+        "expected_page": null,
+        "is_out_of_domain": true,
+        "is_sufficient": false,
+        "expected_keywords": []
+      },
+      {
+        "id": "Q55",
+        "category": "Out-of-Domain (Geography)",
+        "question": "What is the capital city of Australia and what are its prominent federal government landmarks?",
+        "expected_paper_id": null,
+        "expected_title": null,
+        "expected_page": null,
+        "is_out_of_domain": true,
+        "is_sufficient": false,
+        "expected_keywords": []
+      },
+      {
+        "id": "Q56",
+        "category": "Out-of-Domain (Geography)",
+        "question": "Which European nations share official international land borders with Switzerland?",
+        "expected_paper_id": null,
+        "expected_title": null,
+        "expected_page": null,
+        "is_out_of_domain": true,
+        "is_sufficient": false,
+        "expected_keywords": []
+      },
+      {
+        "id": "Q57",
+        "category": "Out-of-Domain (Geography)",
+        "question": "What is the official summit elevation of Mount Everest and what are the main ascent climbing routes?",
+        "expected_paper_id": null,
+        "expected_title": null,
+        "expected_page": null,
+        "is_out_of_domain": true,
+        "is_sufficient": false,
+        "expected_keywords": []
+      },
+      {
+        "id": "Q58",
+        "category": "Out-of-Domain (Entertainment)",
+        "question": "Which movie won the Academy Award for Best Picture at the 96th Oscars ceremony in 2024?",
+        "expected_paper_id": null,
+        "expected_title": null,
+        "expected_page": null,
+        "is_out_of_domain": true,
+        "is_sufficient": false,
+        "expected_keywords": []
+      },
+      {
+        "id": "Q59",
+        "category": "Out-of-Domain (Entertainment)",
+        "question": "What is the chronological timeline viewing order for Marvel Cinematic Universe Phase 4 films?",
+        "expected_paper_id": null,
+        "expected_title": null,
+        "expected_page": null,
+        "is_out_of_domain": true,
+        "is_sufficient": false,
+        "expected_keywords": []
+      },
+      {
+        "id": "Q60",
+        "category": "Out-of-Domain (Entertainment)",
+        "question": "How many Grammy awards has Taylor Swift won throughout her music recording and album career?",
+        "expected_paper_id": null,
+        "expected_title": null,
+        "expected_page": null,
+        "is_out_of_domain": true,
+        "is_sufficient": false,
+        "expected_keywords": []
+      },
+      {
+        "id": "Q61",
+        "category": "Out-of-Domain (Finance)",
+        "question": "How does the Bitcoin quadrennial halving protocol reduce block subsidy rewards for miners?",
+        "expected_paper_id": null,
+        "expected_title": null,
+        "expected_page": null,
+        "is_out_of_domain": true,
+        "is_sufficient": false,
+        "expected_keywords": []
+      },
+      {
+        "id": "Q62",
+        "category": "Out-of-Domain (Finance)",
+        "question": "How is the Black-Scholes partial differential equation applied to price European stock options?",
+        "expected_paper_id": null,
+        "expected_title": null,
+        "expected_page": null,
+        "is_out_of_domain": true,
+        "is_sufficient": false,
+        "expected_keywords": []
+      },
+      {
+        "id": "Q63",
+        "category": "Out-of-Domain (Finance)",
+        "question": "How do central bank discount rate adjustments influence corporate bond yields and mortgage borrowing rates?",
+        "expected_paper_id": null,
+        "expected_title": null,
+        "expected_page": null,
+        "is_out_of_domain": true,
+        "is_sufficient": false,
+        "expected_keywords": []
+      },
+      {
+        "id": "Q64",
+        "category": "Out-of-Domain (Programming)",
+        "question": "How does the React useEffect cleanup function prevent memory leaks during component lifecycle unmounting?",
+        "expected_paper_id": null,
+        "expected_title": null,
+        "expected_page": null,
+        "is_out_of_domain": true,
+        "is_sufficient": false,
+        "expected_keywords": []
+      },
+      {
+        "id": "Q65",
+        "category": "Out-of-Domain (Programming)",
+        "question": "What is the architectural difference between CSS Flexbox and CSS Grid layout algorithms?",
+        "expected_paper_id": null,
+        "expected_title": null,
+        "expected_page": null,
+        "is_out_of_domain": true,
+        "is_sufficient": false,
+        "expected_keywords": []
+      },
+      {
+        "id": "Q66",
+        "category": "Out-of-Domain (Programming)",
+        "question": "How do Docker multi-stage builds optimize production container image size and security attack surface?",
+        "expected_paper_id": null,
+        "expected_title": null,
+        "expected_page": null,
+        "is_out_of_domain": true,
+        "is_sufficient": false,
+        "expected_keywords": []
+      },
+      {
+        "id": "Q67",
+        "category": "Out-of-Domain (General Science)",
+        "question": "What is quantum entanglement and how did the Aspect experiment test Bell's inequalities?",
+        "expected_paper_id": null,
+        "expected_title": null,
+        "expected_page": null,
+        "is_out_of_domain": true,
+        "is_sufficient": false,
+        "expected_keywords": []
+      },
+      {
+        "id": "Q68",
         "category": "Insufficient Evidence",
-        "question": "What is the cost comparison between continuous subcutaneous insulin pump therapy versus multiple daily injections for Type 1 diabetes?",
+        "question": "What is the standard recommended pediatric dosage regimen for artemisinin-lumefantrine combination therapy in uncomplicated Plasmodium falciparum malaria?",
         "expected_paper_id": null,
         "expected_title": null,
         "expected_page": null,
@@ -1373,9 +1649,75 @@
         "expected_keywords": []
       },
       {
-        "id": "Q50",
+        "id": "Q69",
         "category": "Insufficient Evidence",
-        "question": "What is the standardized SUV cutoff threshold for florbetapir amyloid-beta PET imaging in Alzheimer disease diagnosis?",
+        "question": "What was the final Phase 3 randomized clinical trial efficacy percentage of the Moderna mRNA-1273 COVID-19 vaccine against severe hospitalization?",
+        "expected_paper_id": null,
+        "expected_title": null,
+        "expected_page": null,
+        "is_out_of_domain": false,
+        "is_sufficient": false,
+        "expected_keywords": []
+      },
+      {
+        "id": "Q70",
+        "category": "Insufficient Evidence",
+        "question": "What is the standardized composite SUV cutoff threshold for florbetapir (18F-AV-45) amyloid-beta PET imaging in Alzheimer disease diagnosis?",
+        "expected_paper_id": null,
+        "expected_title": null,
+        "expected_page": null,
+        "is_out_of_domain": false,
+        "is_sufficient": false,
+        "expected_keywords": []
+      },
+      {
+        "id": "Q71",
+        "category": "Insufficient Evidence",
+        "question": "What is the average monthly out-of-pocket prescription cost for continuous subcutaneous insulin infusion pumps and consumables in Type 1 diabetes?",
+        "expected_paper_id": null,
+        "expected_title": null,
+        "expected_page": null,
+        "is_out_of_domain": false,
+        "is_sufficient": false,
+        "expected_keywords": []
+      },
+      {
+        "id": "Q72",
+        "category": "Insufficient Evidence",
+        "question": "What are the CD34+ cell dose thresholds and busulfan conditioning protocols in CRISPR-Cas9 exa-cel gene editing trials for sickle cell anemia?",
+        "expected_paper_id": null,
+        "expected_title": null,
+        "expected_page": null,
+        "is_out_of_domain": false,
+        "is_sufficient": false,
+        "expected_keywords": []
+      },
+      {
+        "id": "Q73",
+        "category": "Insufficient Evidence",
+        "question": "What are the microscopic surgical resection margin guidelines and 5-ALA fluorescence thresholds for glioblastoma multiforme supratentorial resections?",
+        "expected_paper_id": null,
+        "expected_title": null,
+        "expected_page": null,
+        "is_out_of_domain": false,
+        "is_sufficient": false,
+        "expected_keywords": []
+      },
+      {
+        "id": "Q74",
+        "category": "Insufficient Evidence",
+        "question": "What is the incidence percentage of infusion-related hypersensitivity reactions and ARIA-E brain edema in lecanemab monoclonal antibody therapy?",
+        "expected_paper_id": null,
+        "expected_title": null,
+        "expected_page": null,
+        "is_out_of_domain": false,
+        "is_sufficient": false,
+        "expected_keywords": []
+      },
+      {
+        "id": "Q75",
+        "category": "Insufficient Evidence",
+        "question": "What is the standardized post-operative passive range-of-motion milestone timeline following robotic-assisted total knee arthroplasty?",
         "expected_paper_id": null,
         "expected_title": null,
         "expected_page": null,
@@ -1385,9 +1727,9 @@
       }
     ],
     "failures": {
-      "total_evaluated": 50,
-      "total_failures": 7,
-      "failure_rate_percent": 14.0,
+      "total_evaluated": 75,
+      "total_failures": 13,
+      "failure_rate_percent": 17.3,
       "failures": [
         {
           "id": "Q01",
@@ -1396,9 +1738,43 @@
           "expected": "Paper MED-DT-001 Page 2",
           "actual": "Retrieved Paper MED-DT-002 Page 2",
           "failure_category": "Top Citation Mismatch",
-          "root_cause": "BM25 or dense score favored competitor paper with similar topic words",
-          "fix_applied": "Exact quotation detector prioritizes verified text matches; Cross-encoder jointly ranks",
-          "retest_status": "Passes with Hybrid RRF & Exact Search"
+          "root_cause": "BM25 or dense score favored competitor paper"
+        },
+        {
+          "id": "Q16",
+          "question": "In what manner do computer-generated patient simulations help tailor healthcare interventions to specific individuals?",
+          "category": "Semantic Retrieval",
+          "expected": "Paper MED-DT-001 Page 2",
+          "actual": "Retrieved Paper MED-DT-001 Page 11",
+          "failure_category": "Page-Level Discrepancy",
+          "root_cause": "Expected page annotated introduction while retriever surfaced detailed methodology section"
+        },
+        {
+          "id": "Q17",
+          "question": "What vision transformer architectures achieve high precision contour tracing in radiological scans?",
+          "category": "Semantic Retrieval",
+          "expected": "Paper MED-IMG-002 Page 1",
+          "actual": "Retrieved Paper MED-IMG-002 Page 3",
+          "failure_category": "Page-Level Discrepancy",
+          "root_cause": "Expected page annotated introduction while retriever surfaced detailed methodology section"
+        },
+        {
+          "id": "Q18",
+          "question": "How do physical autonomous robotic devices assist elderly individuals outside the clinical environment?",
+          "category": "Semantic Retrieval",
+          "expected": "Paper MED-DHM-001 Page 1",
+          "actual": "Retrieved Paper MED-DHM-001 Page 20",
+          "failure_category": "Page-Level Discrepancy",
+          "root_cause": "Expected page annotated introduction while retriever surfaced detailed methodology section"
+        },
+        {
+          "id": "Q19",
+          "question": "How can compact sequence models run locally on personal smart accessories without leaking sensitive medical telemetry?",
+          "category": "Semantic Retrieval",
+          "expected": "Paper MED-IOT-001 Page 1",
+          "actual": "Refused (\ud83d\uded1 Refused (Insufficient Evidence in Literature))",
+          "failure_category": "False Refusal",
+          "root_cause": "Sufficiency threshold exceeded or tokens missing"
         },
         {
           "id": "Q20",
@@ -1407,64 +1783,70 @@
           "expected": "Paper MED-CDS-001 Page 1",
           "actual": "Retrieved Paper MED-CDS-004 Page 1",
           "failure_category": "Top Citation Mismatch",
-          "root_cause": "BM25 or dense score favored competitor paper with similar topic words",
-          "fix_applied": "Exact quotation detector prioritizes verified text matches; Cross-encoder jointly ranks",
-          "retest_status": "Passes with Hybrid RRF & Exact Search"
+          "root_cause": "BM25 or dense score favored competitor paper"
         },
         {
           "id": "Q21",
           "question": "What is the total page count and chunk count of the primary publication by Saratkar et al. (2025)?",
           "category": "Numerical Findings",
           "expected": "Paper MED-DT-001 Page 1",
-          "actual": "Refused (False Negative)",
+          "actual": "Refused (\ud83d\uded1 Refused (Insufficient Evidence in Literature))",
           "failure_category": "False Refusal",
-          "root_cause": "Refusal threshold was set too strictly for varied phrasing",
-          "fix_applied": "Tuned Stage 2 confidence threshold to 0.35 with token overlap fallback",
-          "retest_status": "Resolved"
+          "root_cause": "Sufficiency threshold exceeded or tokens missing"
+        },
+        {
+          "id": "Q27",
+          "question": "How does Fisher-Guided representation learning prevent catastrophic forgetting in medical classification?",
+          "category": "Methodology",
+          "expected": "Paper MED-IMG-004 Page 15",
+          "actual": "Retrieved Paper MED-IMG-004 Page 3",
+          "failure_category": "Page-Level Discrepancy",
+          "root_cause": "Expected page annotated introduction while retriever surfaced detailed methodology section"
         },
         {
           "id": "Q36",
           "question": "How does deep neural segmentation compare with on-device wearable analytics in digital healthcare?",
           "category": "Multi-Paper",
           "expected": "Paper MED-IMG-002 Page 1",
-          "actual": "Refused (False Negative)",
+          "actual": "Refused (\ud83d\uded1 Refused (Insufficient Evidence in Literature))",
           "failure_category": "False Refusal",
-          "root_cause": "Refusal threshold was set too strictly for varied phrasing",
-          "fix_applied": "Tuned Stage 2 confidence threshold to 0.35 with token overlap fallback",
-          "retest_status": "Resolved"
+          "root_cause": "Sufficiency threshold exceeded or tokens missing"
+        },
+        {
+          "id": "Q37",
+          "question": "What are the common explainability techniques used in LLM-based CDSS and radiology decision graphs?",
+          "category": "Multi-Paper",
+          "expected": "Paper MED-CDS-001 Page 1",
+          "actual": "Retrieved Paper MED-CDS-001 Page 3",
+          "failure_category": "Page-Level Discrepancy",
+          "root_cause": "Expected page annotated introduction while retriever surfaced detailed methodology section"
         },
         {
           "id": "Q38",
           "question": "How do IoT body area networks integrate with cloud and edge systems for elderly healthcare?",
           "category": "Multi-Paper",
           "expected": "Paper MED-DHM-004 Page 1",
-          "actual": "Retrieved Paper MED-IOT-002 Page 4",
+          "actual": "Retrieved Paper MED-IOT-005 Page 1",
           "failure_category": "Top Citation Mismatch",
-          "root_cause": "BM25 or dense score favored competitor paper with similar topic words",
-          "fix_applied": "Exact quotation detector prioritizes verified text matches; Cross-encoder jointly ranks",
-          "retest_status": "Passes with Hybrid RRF & Exact Search"
+          "root_cause": "BM25 or dense score favored competitor paper"
         },
         {
-          "id": "Q48",
-          "question": "What was the Phase 3 clinical trial efficacy percentage of the Moderna mRNA-1273 COVID-19 vaccine?",
-          "category": "Insufficient Evidence",
-          "expected": "Refuse (Insufficient Evidence)",
-          "actual": "Accepted with citations: MED-DHM-005",
-          "failure_category": "False Acceptance (Unsupported Claim)",
-          "root_cause": "Candidate chunk had high generic medical similarity despite missing specific finding",
-          "fix_applied": "Added Stage 2 token overlap & minimum confidence requirements",
-          "retest_status": "Fixed in Stage 2 Sufficiency Check"
+          "id": "Q39",
+          "question": "What specific personalized oncology modeling methods are detailed in MED-DT-001?",
+          "category": "Paper-Specific",
+          "expected": "Paper MED-DT-001 Page 13",
+          "actual": "Retrieved Paper MED-DT-001 Page 19",
+          "failure_category": "Page-Level Discrepancy",
+          "root_cause": "Expected page annotated introduction while retriever surfaced detailed methodology section"
         },
         {
-          "id": "Q50",
-          "question": "What is the standardized SUV cutoff threshold for florbetapir amyloid-beta PET imaging in Alzheimer disease diagnosis?",
-          "category": "Insufficient Evidence",
-          "expected": "Refuse (Insufficient Evidence)",
-          "actual": "Accepted with citations: MED-DHM-005",
-          "failure_category": "False Acceptance (Unsupported Claim)",
-          "root_cause": "Candidate chunk had high generic medical similarity despite missing specific finding",
-          "fix_applied": "Added Stage 2 token overlap & minimum confidence requirements",
-          "retest_status": "Fixed in Stage 2 Sufficiency Check"
+          "id": "Q43",
+          "question": "What is the mean Dice similarity coefficient (DSC) achieved by LeViT-UNet++ on the Synapse multi-organ CT segmentation benchmark?",
+          "category": "Numerical Findings",
+          "expected": "Paper MED-IMG-002 Page 7",
+          "actual": "Retrieved Paper MED-IMG-002 Page 14",
+          "failure_category": "Page-Level Discrepancy",
+          "root_cause": "Expected page annotated introduction while retriever surfaced detailed methodology section"
         }
       ]
     }
@@ -10489,5 +10871,129 @@
       "evidence_passages": [],
       "pico_evidence": null
     }
+  },
+  "failures": {
+    "total_evaluated": 75,
+    "total_failures": 13,
+    "failure_rate_percent": 17.3,
+    "failures": [
+      {
+        "id": "Q01",
+        "question": "How are digital twins used in personalized medicine development?",
+        "category": "In-Domain Factual",
+        "expected": "Paper MED-DT-001 Page 2",
+        "actual": "Retrieved Paper MED-DT-002 Page 2",
+        "failure_category": "Top Citation Mismatch",
+        "root_cause": "BM25 or dense score favored competitor paper"
+      },
+      {
+        "id": "Q16",
+        "question": "In what manner do computer-generated patient simulations help tailor healthcare interventions to specific individuals?",
+        "category": "Semantic Retrieval",
+        "expected": "Paper MED-DT-001 Page 2",
+        "actual": "Retrieved Paper MED-DT-001 Page 11",
+        "failure_category": "Page-Level Discrepancy",
+        "root_cause": "Expected page annotated introduction while retriever surfaced detailed methodology section"
+      },
+      {
+        "id": "Q17",
+        "question": "What vision transformer architectures achieve high precision contour tracing in radiological scans?",
+        "category": "Semantic Retrieval",
+        "expected": "Paper MED-IMG-002 Page 1",
+        "actual": "Retrieved Paper MED-IMG-002 Page 3",
+        "failure_category": "Page-Level Discrepancy",
+        "root_cause": "Expected page annotated introduction while retriever surfaced detailed methodology section"
+      },
+      {
+        "id": "Q18",
+        "question": "How do physical autonomous robotic devices assist elderly individuals outside the clinical environment?",
+        "category": "Semantic Retrieval",
+        "expected": "Paper MED-DHM-001 Page 1",
+        "actual": "Retrieved Paper MED-DHM-001 Page 20",
+        "failure_category": "Page-Level Discrepancy",
+        "root_cause": "Expected page annotated introduction while retriever surfaced detailed methodology section"
+      },
+      {
+        "id": "Q19",
+        "question": "How can compact sequence models run locally on personal smart accessories without leaking sensitive medical telemetry?",
+        "category": "Semantic Retrieval",
+        "expected": "Paper MED-IOT-001 Page 1",
+        "actual": "Refused (\ud83d\uded1 Refused (Insufficient Evidence in Literature))",
+        "failure_category": "False Refusal",
+        "root_cause": "Sufficiency threshold exceeded or tokens missing"
+      },
+      {
+        "id": "Q20",
+        "question": "How can retrieval-grounded generative models clarify diagnostic recommendations for attending physicians?",
+        "category": "Semantic Retrieval",
+        "expected": "Paper MED-CDS-001 Page 1",
+        "actual": "Retrieved Paper MED-CDS-004 Page 1",
+        "failure_category": "Top Citation Mismatch",
+        "root_cause": "BM25 or dense score favored competitor paper"
+      },
+      {
+        "id": "Q21",
+        "question": "What is the total page count and chunk count of the primary publication by Saratkar et al. (2025)?",
+        "category": "Numerical Findings",
+        "expected": "Paper MED-DT-001 Page 1",
+        "actual": "Refused (\ud83d\uded1 Refused (Insufficient Evidence in Literature))",
+        "failure_category": "False Refusal",
+        "root_cause": "Sufficiency threshold exceeded or tokens missing"
+      },
+      {
+        "id": "Q27",
+        "question": "How does Fisher-Guided representation learning prevent catastrophic forgetting in medical classification?",
+        "category": "Methodology",
+        "expected": "Paper MED-IMG-004 Page 15",
+        "actual": "Retrieved Paper MED-IMG-004 Page 3",
+        "failure_category": "Page-Level Discrepancy",
+        "root_cause": "Expected page annotated introduction while retriever surfaced detailed methodology section"
+      },
+      {
+        "id": "Q36",
+        "question": "How does deep neural segmentation compare with on-device wearable analytics in digital healthcare?",
+        "category": "Multi-Paper",
+        "expected": "Paper MED-IMG-002 Page 1",
+        "actual": "Refused (\ud83d\uded1 Refused (Insufficient Evidence in Literature))",
+        "failure_category": "False Refusal",
+        "root_cause": "Sufficiency threshold exceeded or tokens missing"
+      },
+      {
+        "id": "Q37",
+        "question": "What are the common explainability techniques used in LLM-based CDSS and radiology decision graphs?",
+        "category": "Multi-Paper",
+        "expected": "Paper MED-CDS-001 Page 1",
+        "actual": "Retrieved Paper MED-CDS-001 Page 3",
+        "failure_category": "Page-Level Discrepancy",
+        "root_cause": "Expected page annotated introduction while retriever surfaced detailed methodology section"
+      },
+      {
+        "id": "Q38",
+        "question": "How do IoT body area networks integrate with cloud and edge systems for elderly healthcare?",
+        "category": "Multi-Paper",
+        "expected": "Paper MED-DHM-004 Page 1",
+        "actual": "Retrieved Paper MED-IOT-005 Page 1",
+        "failure_category": "Top Citation Mismatch",
+        "root_cause": "BM25 or dense score favored competitor paper"
+      },
+      {
+        "id": "Q39",
+        "question": "What specific personalized oncology modeling methods are detailed in MED-DT-001?",
+        "category": "Paper-Specific",
+        "expected": "Paper MED-DT-001 Page 13",
+        "actual": "Retrieved Paper MED-DT-001 Page 19",
+        "failure_category": "Page-Level Discrepancy",
+        "root_cause": "Expected page annotated introduction while retriever surfaced detailed methodology section"
+      },
+      {
+        "id": "Q43",
+        "question": "What is the mean Dice similarity coefficient (DSC) achieved by LeViT-UNet++ on the Synapse multi-organ CT segmentation benchmark?",
+        "category": "Numerical Findings",
+        "expected": "Paper MED-IMG-002 Page 7",
+        "actual": "Retrieved Paper MED-IMG-002 Page 14",
+        "failure_category": "Page-Level Discrepancy",
+        "root_cause": "Expected page annotated introduction while retriever surfaced detailed methodology section"
+      }
+    ]
   }
 }

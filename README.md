@@ -17,6 +17,43 @@ MediEvidence allows clinical researchers, biomedical engineers, and students to 
 
 ---
 
+## 🌐 Live Demo & Interactive Portfolio
+
+> 🚀 **Live Demo:** [https://saniya1312s.github.io/MediEvidence-Retrieval-Augmented-Clinical-Evidence-Assistant/](https://saniya1312s.github.io/MediEvidence-Retrieval-Augmented-Clinical-Evidence-Assistant/)
+>
+> **MediEvidence — Static Interactive Portfolio Demo**
+> Explore the 30-paper curated research catalog, filter by clinical category or author, inspect metadata and semantic chunk excerpts, view original PDFs with page navigation, examine the RAG pipeline architecture, and explore the 75-question benchmark evaluation dashboard directly in your browser.
+>
+> *(Note: The GitHub Pages deployment is a static client-side demonstration powered by pre-indexed verified evidence. To run real-time neural RAG inference with FastAPI, local embeddings, and Qdrant, see instructions below).*
+
+---
+
+## ⚡ Run the Full AI Application Locally (Real-Time Neural RAG)
+
+To execute live, real-time RAG inference with SentenceTransformers dense retrieval, Qdrant vector database, BM25 sparse matching, and Cross-Encoder neural reranking:
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/Saniya1312S/MediEvidence-Retrieval-Augmented-Clinical-Evidence-Assistant.git
+cd MediEvidence-Retrieval-Augmented-Clinical-Evidence-Assistant
+
+# 2. Set up virtual environment and install dependencies
+python -m venv venv
+# Linux / macOS: source venv/bin/activate
+# Windows PowerShell: .\venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+
+# 3. Build local Qdrant vector database & BM25 inverted index (processes 30 PDFs, 570 pages in ~2 mins)
+python ingest_pipeline.py
+
+# 4. Launch FastAPI server with interactive web dashboard
+python main.py
+```
+
+Open **[http://127.0.0.1:8000](http://127.0.0.1:8000)** to query the live AI backend or **[http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)** for the interactive Swagger API docs.
+
+---
+
 ## ⚠️ Educational Research Notice & Clinical Disclaimer
 
 > [!IMPORTANT]
@@ -304,13 +341,13 @@ python build_and_evaluate_expanded.py
 
 ## 🌐 Live Demo & Deployment Status
 
-### Honest Feasibility Assessment: Deployment Pending
+### Deployment Environments Overview
 
-| Deployment Environment | Feasibility Status | Technical Rationale |
-|---|---|---|
-| **Local Environment (`127.0.0.1:8000`)** | **Fully Functional (Recommended)** | Zero-latency inference, full access to local PyMuPDF extraction, Qdrant embedded engine, and Hugging Face neural reranker. |
-| **Static Demo (GitHub Pages)** | **Available** | Operates via `data/static_data.json` fallback, allowing portfolio visitors to explore the 30-paper catalog, view chunk citations, inspect architecture, and examine evaluation results without spinning up Python. |
-| **Cloud Hosting (Render / Railway / Hugging Face Spaces)** | **Deployment Pending** | MediEvidence's hybrid stack (`sentence-transformers` 384d embedder + Cross-Encoder reranker + PyMuPDF) requires approximately **1.2 GB RAM** during initialization. Free-tier cloud instances (512 MB cap) experience Out-Of-Memory (OOM) killing or severe cold-start latency. Full deployment to a dedicated cloud tier or containerized Hugging Face Space is planned. |
+| Deployment Environment | Status | Access / Instructions | Technical Rationale |
+|---|---|---|---|
+| **Static Demo (GitHub Pages)** | **🟢 Live & Active** | [Launch Demo](https://saniya1312s.github.io/MediEvidence-Retrieval-Augmented-Clinical-Evidence-Assistant/) | Client-side static demonstration powered by pre-indexed verified evidence bundle (`data/static_data.json`), allowing instant browser exploration of 30 papers, PDF viewer, architecture, and benchmark dashboard with zero backend dependencies. |
+| **Local Environment (`127.0.0.1:8000`)** | **🟢 Fully Functional** | `python main.py` | Full access to real-time PyMuPDF extraction, SentenceTransformers dense embeddings, Qdrant embedded vector database, BM25 lexical search, and Cross-Encoder neural reranker. |
+| **Cloud Hosting (Render / Railway / Hugging Face Spaces)** | **⏳ Cloud Deployment Roadmap** | [Docker Blueprint](#cloud-deployment-blueprint-docker--containerized) | MediEvidence's full neural stack (`sentence-transformers` 384d embedder + Cross-Encoder reranker + PyMuPDF) requires approximately **1.2 GB RAM** during initialization. Free-tier cloud instances (512 MB cap) experience Out-Of-Memory (OOM) killing or severe cold-start latency. Full deployment to a dedicated cloud tier or containerized Hugging Face Space is planned. |
 
 ### Cloud Deployment Blueprint (Docker / Containerized)
 

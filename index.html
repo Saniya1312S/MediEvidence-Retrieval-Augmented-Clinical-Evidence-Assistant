@@ -39,8 +39,8 @@
         <div class="container hero-container">
             <div class="hero-badge-row">
                 <span class="hero-badge">
-                    <span class="live-dot"></span>
-                    AI in Digital Healthcare Research · 30-Paper Corpus · 2022–2026
+                    <span class="live-dot" id="liveDot"></span>
+                    <span id="demoModeBadge">AI in Digital Healthcare Research · 30-Paper Corpus · 2022–2026</span>
                 </span>
             </div>
             <h1 class="hero-title">
@@ -623,6 +623,11 @@
 
             <div class="ask-layout">
                 <div class="ask-panel">
+                    <!-- Static Demo Notice (Displayed on GitHub Pages) -->
+                    <div id="staticAskNotice" style="display:none;margin-bottom:16px;padding:12px 18px;background:rgba(56,189,248,0.1);border:1px solid rgba(56,189,248,0.3);border-radius:8px;font-size:0.88rem;color:#bae6fd;">
+                        ⚡ <strong>Static Portfolio Demo:</strong> Demonstrating pre-indexed research evidence &amp; verified benchmark answers. For full live RAG querying with real-time neural reranking and Qdrant vector search, run the FastAPI backend locally.
+                    </div>
+
                     <!-- Mode Tabs -->
                     <div class="mode-tabs">
                         <button class="mode-tab active" id="modeAllBtn" onclick="setQueryMode('all')">🌐 Search All Papers</button>
@@ -868,7 +873,7 @@
             <div class="section-header">
                 <span class="section-tag">Rigorous Benchmarking</span>
                 <h2>Evaluation &amp; Groundedness Metrics</h2>
-                <p>Evaluated on 50 comprehensive benchmark questions across 10 categories (42 clinical + 4 out-of-domain + 4 insufficient-evidence) with actual measured results.</p>
+                <p>Evaluated on 75 comprehensive benchmark questions across clinical in-domain, out-of-domain refusal, and insufficient-evidence boundary tests with verified measured results.</p>
             </div>
 
             <div class="eval-grid" id="evalGrid">
@@ -900,14 +905,14 @@
                     </div>
                     <div class="eval-method-item">
                         <strong>Sample Size</strong><br>
-                        50 total questions: 42 clinical domain questions across 8 categories + 4 out-of-domain refusal tests + 4 insufficient-evidence boundary tests.
+                        75 total benchmark questions: 45 clinical domain questions across 5 subdomains + 22 out-of-domain refusal tests across 8 categories + 8 insufficient-evidence boundary tests.
                     </div>
                 </div>
             </div>
 
             <!-- Evaluation Questions -->
             <div class="eval-questions-section">
-                <h4>📝 Benchmark Question Inventory (50 Questions)</h4>
+                <h4>📝 Benchmark Question Inventory (75 Questions)</h4>
                 <div id="evalQuestionsContainer">
                     <p style="color:#9ca3af;">Loading evaluation questions...</p>
                 </div>
